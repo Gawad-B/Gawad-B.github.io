@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'motion/react';
-import { Home, User, Code, Briefcase, Mail, Menu, X, Github, Linkedin, Twitter } from 'lucide-react';
+import { Home, User, Code, Briefcase, Mail, Menu, X, Github, Linkedin, Facebook } from 'lucide-react';
 import { Hero } from './components/Hero';
 import { About } from './components/About';
 import { Skills } from './components/Skills';
@@ -146,7 +146,7 @@ export default function App() {
             <p className="text-white/60">&copy; 2025 Portfolio. All rights reserved.</p>
             <div className="flex gap-4">
               <a
-                href="https://github.com/yourusername"
+                href="https://github.com/Gawad-B"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-white/60 hover:text-purple-400 transition-colors"
@@ -154,7 +154,7 @@ export default function App() {
                 <Github className="w-5 h-5" />
               </a>
               <a
-                href="https://linkedin.com/in/yourusername"
+                href="https://linkedin.com/in/abdelrahman-gawad-3536302bb"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-white/60 hover:text-cyan-400 transition-colors"
@@ -162,12 +162,12 @@ export default function App() {
                 <Linkedin className="w-5 h-5" />
               </a>
               <a
-                href="https://twitter.com/yourusername"
+                href="https://facebook.com/Abdelrahmangawad20052812"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-white/60 hover:text-pink-400 transition-colors"
               >
-                <Twitter className="w-5 h-5" />
+                <Facebook className="w-5 h-5" />
               </a>
             </div>
           </div>
