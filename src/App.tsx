@@ -143,7 +143,7 @@ export default function App() {
       <footer className="relative z-10 border-t border-white/10 backdrop-blur-md bg-black/30 py-8">
         <div className="container mx-auto px-4">
           <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-            <p className="text-white/60">&copy; 2025 Portfolio. All rights reserved.</p>
+            <p className="text-white/60">&copy; Gawad's Portfolio. All rights reserved.</p>
             <div className="flex gap-4">
               <a
                 href="https://github.com/Gawad-B"
