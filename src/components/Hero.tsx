@@ -104,7 +104,13 @@ export function Hero() {
             transition={{ delay: 1.2, duration: 1 }}
             className="pt-12"
           >
-            <ArrowDown className="w-6 h-6 mx-auto animate-bounce text-cyan-400" />
+            <button
+              onClick={() => document.getElementById('about')?.scrollIntoView({ behavior: 'smooth' })}
+              className="cursor-pointer hover:scale-110 transition-transform"
+              aria-label="Scroll to About section"
+            >
+              <ArrowDown className="w-6 h-6 mx-auto animate-bounce text-cyan-400" />
+            </button>
           </motion.div>
         </motion.div>
       </div>
