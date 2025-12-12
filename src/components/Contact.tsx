@@ -91,7 +91,7 @@ export function Contact() {
                     </div>
                     <div>
                       <p className="text-white/50">Email</p>
-                      <a href="mail-to:abdelrahman.gawad.28@gmail.com">abdelrahman.gawad.28@gmail.com</a>
+                      <a href="mailto:abdelrahman.gawad.28@gmail.com">abdelrahman.gawad.28@gmail.com</a>
                     </div>
                   </div>
                   <div className="flex items-center gap-4 text-white/70">
@@ -100,7 +100,7 @@ export function Contact() {
                     </div>
                     <div>
                       <p className="text-white/50">Phone</p>
-                      <a href="tel:+20 1027321793">+20 1027321793</a>
+                      <a href="tel:+201027321793">+20 1027321793</a>
                     </div>
                   </div>
                   <div className="flex items-center gap-4 text-white/70">
