@@ -59,7 +59,7 @@ export function Projects() {
       gradient: 'from-cyan-500 to-pink-500',
       tags: ['Python', 'React', 'PostgreSQL', 'AWS'],
       githubUrl: 'https://github.com/Gawad-B/Quizzy',
-      demoUrl: '',
+      demoUrl: 'https://quizzy.serveblog.',
     },
   ];
 
