@@ -57,9 +57,9 @@ export function Projects() {
       description: 'Educational Platform for creating and taking quizzes with real-time feedback and analytics using AI technology.',
       image: '/assets/quizzy.png',
       gradient: 'from-cyan-500 to-pink-500',
-      tags: ['Python', 'React', 'PostgreSQL', 'AWS'],
+      tags: ['Python', 'React', 'PostgreSQL', 'AWS', 'NodeJS', 'Firebase', 'Typerscript', 'Vite'],
       githubUrl: 'https://github.com/Gawad-B/Quizzy',
-      demoUrl: 'https://quizzy.serveblog.',
+      demoUrl: 'https://quizzy.serveblog.net',
     },
   ];
 
