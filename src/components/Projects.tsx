@@ -6,6 +6,10 @@ import { ImageWithFallback } from './figma/ImageWithFallback';
 export function Projects() {
   const [ref, isInView] = useInView({ threshold: 0.2 });
 
+  const openProjectImage = (imageUrl: string) => {
+    window.open(imageUrl, '_blank', 'noopener,noreferrer');
+  };
+
   const projects = [
     {
       title: 'Library System Management',
@@ -85,7 +89,18 @@ export function Projects() {
                 transition={{ delay: index * 0.1, duration: 0.5 }}
                 className="group"
               >
-                <div className="h-full backdrop-blur-md bg-white/5 rounded-2xl overflow-hidden border border-white/10 hover:border-white/20 transition-all hover:transform hover:scale-105">
+                <div
+                  className="h-full backdrop-blur-md bg-white/5 rounded-2xl overflow-hidden border border-white/10 hover:border-white/20 transition-all hover:transform hover:scale-105 cursor-pointer"
+                  role="button"
+                  tabIndex={0}
+                  onClick={() => openProjectImage(project.image)}
+                  onKeyDown={event => {
+                    if (event.key === 'Enter' || event.key === ' ') {
+                      event.preventDefault();
+                      openProjectImage(project.image);
+                    }
+                  }}
+                >
                   <div className="relative h-48 overflow-hidden">
                     <div className={`absolute inset-0 bg-gradient-to-br ${project.gradient} opacity-50`} />
                     <ImageWithFallback
@@ -113,6 +128,7 @@ export function Projects() {
                           href={project.demoUrl}
                           target="_blank"
                           rel="noopener noreferrer"
+                          onClick={event => event.stopPropagation()}
                           className="flex items-center gap-2 text-cyan-400 hover:text-cyan-300 transition-colors"
                         >
                           <ExternalLink className="w-4 h-4" />
@@ -123,6 +139,7 @@ export function Projects() {
                         href={project.githubUrl}
                         target="_blank"
                         rel="noopener noreferrer"
+                        onClick={event => event.stopPropagation()}
                         className="flex items-center gap-2 text-pink-400 hover:text-pink-300 transition-colors"
                       >
                         <Github className="w-4 h-4" />
