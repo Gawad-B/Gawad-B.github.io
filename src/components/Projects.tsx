@@ -21,12 +21,12 @@ export function Projects() {
       demoUrl: '',
     },
     {
-      title: 'Password Manager',
-      description: 'A password manager application with auto generation and search features.',
-      image: '/assets/passwordmanger.png',
+      title: 'CVD',
+      description: 'Cardiovascular Disease Risk Prediction using machine learning to predict the risk of cardiovascular disease based on patient data.',
+      image: '/assets/cvd.png',
       gradient: 'from-pink-500 to-cyan-500',
-      tags: ['Python'],
-      githubUrl: 'https://github.com/Gawad-B/Password-Manager',
+      tags: ['Python', 'FastAPI', 'CSS', 'Typescript', 'NodeJS', 'React', 'Vite', 'PostgreSQL', 'Jupyter Notebook'],
+      githubUrl: 'https://github.com/Gawad-B/CVD',
       demoUrl: '',
     },
     {
