@@ -27,7 +27,7 @@ export function Projects() {
       gradient: 'from-pink-500 to-cyan-500',
       tags: ['Python', 'FastAPI', 'CSS', 'Typescript', 'NodeJS', 'React', 'Vite', 'PostgreSQL', 'Jupyter Notebook'],
       githubUrl: 'https://github.com/Gawad-B/CVD',
-      demoUrl: '',
+      demoUrl: 'https://cvd-pi.vercel.app/',
     },
     {
       title: 'ATTG',
