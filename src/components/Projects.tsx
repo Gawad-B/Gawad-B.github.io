@@ -1,158 +1,127 @@
 import { motion } from 'motion/react';
-import { ExternalLink, Github } from 'lucide-react';
-import { useInView } from './useInView';
-import { ImageWithFallback } from './figma/ImageWithFallback';
+
+interface ProjectCard {
+  kind: string;
+  title: string;
+  titleColor: string;
+  glow: string;
+  texture: string;
+  desc: string;
+  tags: string[];
+  link: string | null;
+}
+
+const PROJECTS: ProjectCard[] = [
+  {
+    kind: 'Ed-Tech · Coming Soon',
+    title: 'Quizzy',
+    titleColor: '#f6c177',
+    glow: 'rgba(235,188,186,.25)',
+    texture: 'radial-gradient(circle at 15% 20%,rgba(235,188,186,.06),transparent 55%)',
+    desc: 'A full-stack quiz platform — React + Vite frontend, Express API, PostgreSQL database, and Firebase-backed auth with email verification and password recovery. Repo is private while I rebuild it — code coming soon.',
+    tags: ['React', 'Vite', 'Express', 'PostgreSQL', 'Firebase Auth'],
+    link: null,
+  },
+  {
+    kind: 'Scheduling · CSP',
+    title: 'ATTG',
+    titleColor: '#eb6f92',
+    glow: 'rgba(196,167,231,.25)',
+    texture:
+      'repeating-linear-gradient(135deg,transparent,transparent 14px,rgba(196,167,231,.03) 14px,rgba(196,167,231,.03) 15px)',
+    desc: 'Automatic Timetable Generator — builds conflict-free class schedules with constraint satisfaction, balancing rooms, instructors, and time slots.',
+    tags: ['Python', 'TypeScript', 'Tailwind CSS'],
+    link: 'https://github.com/Gawad-B/Automatic-Timetable-Generator',
+  },
+  {
+    kind: 'Healthcare AI',
+    title: 'RDMID',
+    titleColor: '#f6c177',
+    glow: 'rgba(156,207,216,.25)',
+    texture: 'radial-gradient(circle at 80% 15%,rgba(156,207,216,.05),transparent 55%)',
+    desc: 'A latent diffusion pipeline that generates synthetic medical imagery for rare diseases, helping augment scarce clinical datasets for research.',
+    tags: ['Python', 'Diffusion Models', 'Bootstrap CSS'],
+    link: 'https://github.com/Gawad-B/latent-diffusion-model',
+  },
+  {
+    kind: 'Linux Ritual',
+    title: 'Prayer Times',
+    titleColor: '#eb6f92',
+    glow: 'rgba(49,116,143,.3)',
+    texture: 'radial-gradient(circle at 20% 85%,rgba(49,116,143,.08),transparent 55%)',
+    desc: 'A GNOME Shell extension that tracks prayer times fully offline — top-bar countdown, full timetable, adhan playback, and location-aware calculation.',
+    tags: ['TypeScript', 'GNOME Shell', 'GStreamer'],
+    link: 'https://github.com/Gawad-B/Prayer_TImes',
+  },
+  {
+    kind: 'Healthcare AI',
+    title: 'CVD Prediction',
+    titleColor: '#eb6f92',
+    glow: 'rgba(196,167,231,.25)',
+    texture:
+      'repeating-linear-gradient(0deg,transparent,transparent 18px,rgba(196,167,231,.03) 18px,rgba(196,167,231,.03) 19px)',
+    desc: 'An ensemble ML system (XGBoost + stacked models) that predicts cardiovascular disease risk from clinical data — precision tuned for the cases that matter most.',
+    tags: ['Python', 'XGBoost', 'scikit-learn'],
+    link: 'https://github.com/Gawad-B/CVD',
+  },
+  {
+    kind: 'Ambient Web',
+    title: 'This Portfolio',
+    titleColor: '#f6c177',
+    glow: 'rgba(156,207,216,.25)',
+    texture: 'radial-gradient(circle at 80% 85%,rgba(156,207,216,.05),transparent 55%)',
+    desc: "The site you're floating through right now — a Rosé Pine night sky with particles, cursor sparkles, and zero UI libraries.",
+    tags: ['React', 'TypeScript', 'Canvas'],
+    link: 'https://github.com/Gawad-B/Gawad-B.github.io',
+  },
+];
 
 export function Projects() {
-  const [ref, isInView] = useInView({ threshold: 0.2 });
-
-  const openProjectImage = (imageUrl: string) => {
-    window.open(imageUrl, '_blank', 'noopener,noreferrer');
-  };
-
-  const projects = [
-    {
-      title: 'Library System Management',
-      description: 'A python application to manage library operations and there are admin dashboard.',
-      image: '/assets/library.png',
-      gradient: 'from-purple-500 to-pink-500',
-      tags: ['Python'],
-      githubUrl: 'https://github.com/Ahmed-Tahan7/Library_Management_System',
-      demoUrl: '',
-    },
-    {
-      title: 'CVD',
-      description: 'Cardiovascular Disease Risk Prediction using machine learning to predict the risk of cardiovascular disease based on patient data.',
-      image: '/assets/cvd.png',
-      gradient: 'from-pink-500 to-cyan-500',
-      tags: ['Python', 'FastAPI', 'CSS', 'Typescript', 'NodeJS', 'React', 'Vite', 'PostgreSQL', 'Jupyter Notebook'],
-      githubUrl: 'https://github.com/Gawad-B/CVD',
-      demoUrl: 'https://cvd-pi.vercel.app',
-    },
-    {
-      title: 'ATTG',
-      description: 'Automatic Timetable Generator with constrain satisfaction using CSP Algorithm.',
-      image: '/assets/attg.png',
-      gradient: 'from-cyan-500 to-purple-500',
-      tags: ['Python', 'Typescript', 'TailwindCSS'],
-      githubUrl: 'https://github.com/Gawad-B/Automatic-Timetable-Generator',
-      demoUrl: '',
-    },
-    {
-      title: 'Portfolio Website',
-      description: 'Personal portfolio website to showcase my projects and skills.',
-      image: '/assets/portfolio.png',
-      gradient: 'from-purple-500 to-cyan-500',
-      tags: ['React', 'Typescript', 'TailwindCSS', 'Javascript'],
-      githubUrl: 'https://github.com/Gawad-B/Gawad-B.github.io',
-      demoUrl: 'https://gawad-b.github.io',
-    },
-    {
-      title: 'RDMID',
-      description: 'A web application for managing and generating medical images for rare diseases using AI technology.',
-      image: '/assets/RDMID.png',
-      gradient: 'from-pink-500 to-purple-500',
-      tags: ['Python', 'API', 'Bootstrap CSS', 'Javascript'],
-      githubUrl: 'https://github.com/Gawad-B/latent-diffusion-model',
-      demoUrl: '',
-    },
-    {
-      title: 'Quizzy',
-      description: 'Educational Platform for creating and taking quizzes with real-time feedback and analytics using AI technology.',
-      image: '/assets/quizzy.png',
-      gradient: 'from-cyan-500 to-pink-500',
-      tags: ['Python', 'React', 'PostgreSQL', 'AWS', 'NodeJS', 'Firebase', 'Typerscript', 'Vite'],
-      githubUrl: 'https://github.com/Gawad-B/Quizzy',
-      demoUrl: 'https://quizzy.serveblog.net',
-    },
-  ];
-
   return (
-    <section id="projects" className="min-h-screen flex items-center justify-center px-4 py-20">
-      <div className="container mx-auto">
-        <motion.div
-          ref={ref}
-          initial={{ opacity: 0, y: 50 }}
-          animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 50 }}
-          transition={{ duration: 0.6 }}
-        >
-          <h2 className="text-4xl md:text-5xl mb-12 text-center bg-gradient-to-r from-pink-500 to-cyan-500 bg-clip-text text-transparent">
-            My Projects
-          </h2>
-
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {projects.map((project, index) => (
-              <motion.div
-                key={project.title}
-                initial={{ opacity: 0, y: 50 }}
-                animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 50 }}
-                transition={{ delay: index * 0.1, duration: 0.5 }}
-                className="group"
-              >
-                <div
-                  className="h-full backdrop-blur-md bg-white/5 rounded-2xl overflow-hidden border border-white/10 hover:border-white/20 transition-all hover:transform hover:scale-105 cursor-pointer"
-                  role="button"
-                  tabIndex={0}
-                  onClick={() => openProjectImage(project.image)}
-                  onKeyDown={event => {
-                    if (event.key === 'Enter' || event.key === ' ') {
-                      event.preventDefault();
-                      openProjectImage(project.image);
-                    }
-                  }}
-                >
-                  <div className="relative h-48 overflow-hidden">
-                    <div className={`absolute inset-0 bg-gradient-to-br ${project.gradient} opacity-50`} />
-                    <ImageWithFallback
-                      src={typeof project.image === 'string' ? project.image : `https://images.unsplash.com/photo-1${Math.floor(Math.random() * 1000000000)}?w=400&h=300&fit=crop`}
-                      alt={project.title}
-                      className="w-full h-full object-cover opacity-60 group-hover:opacity-80 transition-opacity"
-                    />
-                  </div>
-                  <div className="p-6">
-                    <h3 className="mb-2">{project.title}</h3>
-                    <p className="text-white/60 mb-4">{project.description}</p>
-                    <div className="flex flex-wrap gap-2 mb-4">
-                      {project.tags.map(tag => (
-                        <span
-                          key={tag}
-                          className="px-3 py-1 rounded-full bg-white/10 border border-white/20 text-sm"
-                        >
-                          {tag}
-                        </span>
-                      ))}
-                    </div>
-                    <div className="flex gap-4">
-                      {project.demoUrl && (
-                        <a
-                          href={project.demoUrl}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          onClick={event => event.stopPropagation()}
-                          className="flex items-center gap-2 text-cyan-400 hover:text-cyan-300 transition-colors"
-                        >
-                          <ExternalLink className="w-4 h-4" />
-                          <span>Demo</span>
-                        </a>
-                      )}
-                      <a
-                        href={project.githubUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        onClick={event => event.stopPropagation()}
-                        className="flex items-center gap-2 text-pink-400 hover:text-pink-300 transition-colors"
-                      >
-                        <Github className="w-4 h-4" />
-                        <span>Code</span>
-                      </a>
-                    </div>
-                  </div>
-                </div>
-              </motion.div>
-            ))}
-          </div>
-        </motion.div>
+    <motion.section
+      id="projects"
+      className="rp-projects"
+      initial={{ opacity: 0, scale: 0.97, y: 10 }}
+      whileInView={{ opacity: 1, scale: 1, y: 0 }}
+      viewport={{ once: true, amount: 0.12 }}
+      transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
+    >
+      <h2 className="rp-section-heading">Projects</h2>
+      <div className="rp-projects-track">
+        {PROJECTS.map(project => (
+          <article
+            key={project.title}
+            className="rp-card"
+            style={{ backgroundImage: project.texture }}
+            onMouseEnter={e => {
+              e.currentTarget.style.boxShadow = `0 12px 48px ${project.glow}`;
+            }}
+            onMouseLeave={e => {
+              e.currentTarget.style.boxShadow = 'none';
+            }}
+          >
+            <div className="rp-card-kind">{project.kind}</div>
+            <h3 className="rp-card-title" style={{ color: project.titleColor }}>
+              {project.title}
+            </h3>
+            <p className="rp-card-desc">{project.desc}</p>
+            <div className="rp-card-tags">
+              {project.tags.map(tag => (
+                <span key={tag} className="rp-card-tag">
+                  {tag}
+                </span>
+              ))}
+            </div>
+            {project.link ? (
+              <a href={project.link} target="_blank" rel="noopener noreferrer" className="rp-card-link">
+                ↗ GitHub
+              </a>
+            ) : (
+              <span className="rp-card-link rp-card-link--disabled">🔒 Repo Private</span>
+            )}
+          </article>
+        ))}
       </div>
-    </section>
+    </motion.section>
   );
 }

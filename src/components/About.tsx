@@ -1,77 +1,57 @@
 import { motion } from 'motion/react';
-import { useInView } from './useInView';
 
 export function About() {
-  const [ref, isInView] = useInView({ threshold: 0.2 });
-
   return (
-    <section id="about" className="min-h-screen flex items-center justify-center px-4 py-20">
-      <div className="container mx-auto">
-        <motion.div
-          ref={ref}
-          initial={{ opacity: 0, y: 50 }}
-          animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 50 }}
-          transition={{ duration: 0.6 }}
-          className="max-w-4xl mx-auto"
-        >
-          <h2 className="text-4xl md:text-5xl mb-8 text-center bg-gradient-to-r from-purple-500 to-cyan-500 bg-clip-text text-transparent">
-            About Me
-          </h2>
-
-          <div className="backdrop-blur-md bg-white/5 rounded-3xl p-8 md:p-12 border border-white/10 shadow-2xl">
-            <div className="grid md:grid-cols-2 gap-8 items-center">
-              <motion.div
-                initial={{ opacity: 0, x: -50 }}
-                animate={isInView ? { opacity: 1, x: 0 } : { opacity: 0, x: -50 }}
-                transition={{ delay: 0.2, duration: 0.6 }}
-              >
-                <div className="aspect-square rounded-2xl bg-gradient-to-br from-purple-500 via-pink-500 to-cyan-500 p-1">
-                  <div className="w-full h-full rounded-2xl bg-black flex items-center justify-center text-8xl">
-                    🧬
-                  </div>
-                </div>
-              </motion.div>
-
-              <motion.div
-                initial={{ opacity: 0, x: 50 }}
-                animate={isInView ? { opacity: 1, x: 0 } : { opacity: 0, x: 50 }}
-                transition={{ delay: 0.4, duration: 0.6 }}
-                className="space-y-4 text-white/80"
-              >
-                <p>
-                  I’m a Computer Science student with a minor in Bioinformatics, passionate about creating practical and impactful technology. 
-                  I work primarily as a Python developer and web developer, building efficient tools, clean backend systems, and modern web experiences.
-                </p>
-                <p>
-                  Alongside my core development work, I also have foundational knowledge in cybersecurity, 
-                  which helps me apply secure coding practices and better understand how to protect applications and data.
-                </p>
-                <p>
-                  I enjoy exploring the intersection of software, biology, and innovation, 
-                  and I’m always learning new technologies to grow both as a developer and a problem-solver.
-                </p>
-                <div className="flex flex-wrap gap-3 pt-4">
-                  <span className="px-4 py-2 rounded-full bg-gradient-to-r from-purple-500/20 to-pink-500/20 border border-purple-500/30">
-                    Creative
-                  </span>
-                  <span className="px-4 py-2 rounded-full bg-gradient-to-r from-pink-500/20 to-cyan-500/20 border border-pink-500/30">
-                    Innovative
-                  </span>
-                  <span className="px-4 py-2 rounded-full bg-gradient-to-r from-cyan-500/20 to-purple-500/20 border border-cyan-500/30">
-                    Detail-Oriented
-                  </span>
-                  <span className="px-4 py-2 rounded-full bg-gradient-to-r from-cyan-500/20 to-purple-500/20 border border-cyan-500/30">
-                    Dedicated
-                  </span>
-                  <span className="px-4 py-2 rounded-full bg-gradient-to-r from-cyan-500/20 to-purple-500/20 border border-cyan-500/30">
-                    Adaptable
-                  </span>
-                </div>
-              </motion.div>
-            </div>
+    <motion.section
+      id="about"
+      className="rp-about"
+      initial={{ opacity: 0, scale: 0.97, y: 10 }}
+      whileInView={{ opacity: 1, scale: 1, y: 0 }}
+      viewport={{ once: true, amount: 0.12 }}
+      transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
+    >
+      <h2 className="rp-section-heading">About</h2>
+      <div className="rp-about-grid">
+        <div className="rp-blob">
+          <svg viewBox="0 0 200 200">
+            <defs>
+              <linearGradient id="blobGrad" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0%" stopColor="#31748f" />
+                <stop offset="100%" stopColor="#c4a7e7" />
+              </linearGradient>
+            </defs>
+            <path
+              d="M100 12 C145 8 185 45 188 95 C191 140 160 185 108 190 C60 194 16 162 12 110 C8 62 50 17 100 12 Z"
+              fill="none"
+              stroke="url(#blobGrad)"
+              strokeWidth={2.5}
+            />
+            <path
+              d="M100 26 C138 22 172 52 175 96 C178 134 152 172 106 176 C64 180 27 152 24 108 C21 68 57 30 100 26 Z"
+              fill="#1f1d2e"
+            />
+          </svg>
+          <div className="rp-blob-photo">
+            <img src="/assets/profile.jpg" alt="Abdelrahman Gawad" className="rp-blob-photo-img" />
           </div>
-        </motion.div>
+        </div>
+        <div className="rp-bio">
+          <p>
+            I'm Abdelrahman — from Alexandria, the city where the Mediterranean does most of my thinking for me. I
+            study CS at Egypt-Japan University, deep in AI and bioinformatics.
+          </p>
+          <p>
+            By day I train ensemble models to predict cardiovascular disease before it happens — the kind of ML
+            that might actually buy someone more time. By night I rice my Linux setup for the hundredth time,
+            because the terminal should be beautiful too.
+          </p>
+          <p>
+            When I'm not shipping React apps or tuning XGBoost, I'm probably lost in a story-driven game, taking
+            notes on how it made me <em>feel</em> — then trying to smuggle that feeling into everything I build.
+          </p>
+          <p className="rp-bio-quote">"Craft is just care, made visible."</p>
+        </div>
       </div>
-    </section>
+    </motion.section>
   );
 }
