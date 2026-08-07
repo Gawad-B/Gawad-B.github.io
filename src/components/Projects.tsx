@@ -9,9 +9,21 @@ interface ProjectCard {
   desc: string;
   tags: string[];
   link: string | null;
+  linkLabel?: string;
 }
 
 const PROJECTS: ProjectCard[] = [
+  {
+    kind: 'Healthcare · LIS',
+    title: 'Labora',
+    titleColor: '#9ccfd8',
+    glow: 'rgba(156,207,216,.25)',
+    texture: 'radial-gradient(circle at 15% 20%,rgba(156,207,216,.06),transparent 55%)',
+    desc: 'A laboratory information system for a medical lab — patient registration, test ordering, result entry and validation, bilingual Arabic/English PDF reports with full RTL, billing, and direct result capture from analyzers over ASTM. Carries the parts a lab is judged on: Westgard-rule quality control, delta checks, critical-value callback records, encrypted backups with a rehearsed restore, and native Windows and Linux installers. Repo is private — the landing page is below.',
+    tags: ['TypeScript', 'React', 'Express', 'PostgreSQL', 'Prisma', 'Docker'],
+    link: 'https://laboralanding.freeddns.org',
+    linkLabel: '↗ Landing Page',
+  },
   {
     kind: 'Ed-Tech · Coming Soon',
     title: 'Quizzy',
@@ -114,7 +126,7 @@ export function Projects() {
             </div>
             {project.link ? (
               <a href={project.link} target="_blank" rel="noopener noreferrer" className="rp-card-link">
-                ↗ GitHub
+                {project.linkLabel ?? '↗ GitHub'}
               </a>
             ) : (
               <span className="rp-card-link rp-card-link--disabled">🔒 Repo Private</span>
