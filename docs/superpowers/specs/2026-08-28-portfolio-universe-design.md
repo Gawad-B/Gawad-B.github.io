@@ -486,3 +486,36 @@ Seven changes, from a review of Rev 1 against the reference
 7. Counts, head metadata, OG card, and all QA suites updated; full
    production tour (boot → scroll to every stop → panel → ship → back)
    passes with zero console errors.
+
+---
+
+## Rev 4 amendment (2026-08-28): Aphelion Station
+
+Owner request: the Milano parked at Saturn "doesn't look good" — move it
+somewhere visible and approachable; proposal: a space station with the
+ship docked. Judged by a five-judge council (art direction, UX,
+narrative, graphics engineering, skeptic) run under the LLM-council
+protocol (independent opinions → cross-ranking → chairman synthesis;
+executed with independent Claude judges — no FIREWORKS_API_KEY on this
+machine). Vote 4–1 for the station; placement synthesis:
+
+- **STN APHELION** orbits at r=84, phase 1.05, inclination 5° — past the
+  belt (ends r=78), inside r≈86 so the whole structure stays inside the
+  system-overview frustum at every orbital phase (verified against the
+  fov-50 camera at (0,70,142)). Contact becomes the outward journey's
+  terminus: radius is now monotonic with scroll (9→19→30→48–78→84).
+- The skeptic's objection (the parking joke is load-bearing) became an
+  acceptance criterion: the citation migrated from illegal SPOT to
+  illegal DURATION (11 years at a 15-minute visitor berth, fine still
+  accruing, "DRIVER: ABSENT · PROBABLY INSIDE" kept verbatim).
+- Engineering per the council: the Milano's 16 hull meshes merged into
+  one vertex-coloured call (+1 glow merge), funding the station's ~6
+  calls — peak draw calls DROPPED 89 → 83 of 90. One permanent berth
+  floodlight (always-mounted scene → light count never changes
+  mid-session). Windows are a single tier-scaled InstancedMesh.
+- Approach + ingress shots are composed in the station's own frame
+  (it translates but never rotates), so the docked-ship-against-ring
+  framing is stable at every orbital phase.
+- Exit lands at 'projects' (both Esc/EXIT VESSEL and scroll-up); the
+  HUD discovery hint moved to the belt; the canopy view is now a
+  whole-system recap (sun ember, Saturn speck, belt sparks, gantry).

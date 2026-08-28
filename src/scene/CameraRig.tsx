@@ -134,10 +134,29 @@ const SHOTS: Record<string, Shot> = {
    pushes to the canopy while the airlock veil rises to cover the moment
    the camera crosses the hull. Both follow the registered ship body, so
    they stay correct while Saturn (and the ship with it) keeps orbiting. */
+/* Composed in the STATION's frame, not the orbital frame: the station
+   translates along its orbit but never rotates, so a local-space shot is
+   stable at every phase — ship in the foreground, berth arm mid-frame,
+   hab ring and hub as the backdrop. An orbital-frame follow can't
+   guarantee the ring stays behind the ship. */
 const MILANO_APPROACH: Shot = {
-  fov: 40,
+  fov: 38,
   weight: 1.05,
-  resolve: follow('milano-ship', -3.6, 2.2, 8.4),
+  resolve: (pos, target) => {
+    const st = getBody('waystation');
+    if (!st) {
+      pos.set(0, 5, 96);
+      target.set(0, 0, 84);
+      return;
+    }
+    // Front-starboard quarter: nose and berth collar lead the eye left
+    // toward the arm, the hab ring opens as an ellipse behind, and the
+    // stern (with its engine glow) stays angled away from the lens.
+    pos.set(12.6, 3.4, 2.6);
+    st.localToWorld(pos);
+    target.set(1.9, 0.3, 4.4);
+    st.localToWorld(target);
+  },
 };
 const MILANO_INGRESS: Shot = {
   fov: 46,

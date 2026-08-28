@@ -26,9 +26,9 @@ with sync_playwright() as p:
     print("\ndiscovery")
     check("ship entry is anonymous before discovery",
           "·" in pg.inner_text(".hud-nav-btn--ship .hud-nav-label"))
-    pg.click("button:has-text('SKILLS')")
-    time.sleep(3.5)
-    check("proximity hint appears at Saturn", pg.locator(".hud-hint").count() == 1)
+    pg.click("button:has-text('PROJECTS')")
+    time.sleep(4.5)
+    check("proximity hint appears at the belt", pg.locator(".hud-hint").count() == 1)
     check("hint names the vessel", "UNREGISTERED" in pg.inner_text(".hud-hint").upper())
 
     print("\nentry")
@@ -76,8 +76,8 @@ with sync_playwright() as p:
     pg.click(".mon-exit")
     time.sleep(3.5)
     check("monitor closes", pg.locator(".mon-screen").count() == 0)
-    check("returned to Saturn, where the ship is parked",
-          "SATURN" in pg.inner_text(".hud-status").upper())
+    check("returned to the belt, beside the station",
+          "BELT" in pg.inner_text(".hud-status").upper())
     pg.click(".hud-nav-btn--ship")
     pg.wait_for_selector(".mon-screen", timeout=20000)
     pg.keyboard.press("Escape")
@@ -89,9 +89,9 @@ with sync_playwright() as p:
     named = False
     for _ in range(30):  # callouts render once the flight settles
         time.sleep(0.4)
-        if pg.locator(".sc-callout", has_text="The Milano").count() == 1: named = True; break
-    check("the parked ship is named on the system map", named)
-    pg.locator(".sc-callout", has_text="The Milano").click()
+        if pg.locator(".sc-callout", has_text="APHELION").count() == 1: named = True; break
+    check("the station is named on the system map", named)
+    pg.locator(".sc-callout", has_text="APHELION").click()
     pg.wait_for_selector(".mon-screen", timeout=25000)
     check("the map callout boards the ship", pg.locator(".mon-screen").count() == 1)
     pg.keyboard.press("Escape")

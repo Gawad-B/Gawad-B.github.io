@@ -7,7 +7,7 @@ import { SKILL_GROUPS, ALL_SKILLS } from '../src/data/skills';
 import { PROJECTS } from '../src/data/projects';
 import { WORLDS, PROJECT_WORLDS, PROJECT_WORLD_IDS } from '../src/data/worlds';
 import { PERSONAL } from '../src/data/personal';
-import { MILANO } from '../src/data/milano';
+import { MILANO, STATION } from '../src/data/milano';
 
 let failures = 0;
 function check(name: string, cond: boolean, detail = '') {
@@ -133,6 +133,9 @@ check('github url', PERSONAL.contact.github.startsWith('https://github.com/'));
 check('linkedin url', PERSONAL.contact.linkedin.startsWith('https://linkedin.com/in/'));
 check('web3forms key present', PERSONAL.contact.formKey.length === 36);
 check('>= 8 milano quips', MILANO.quips.length >= 8, `got ${MILANO.quips.length}`);
+check('station has a panel designation', STATION.panel.startsWith('STN'));
+check('the ship is docked at the station', MILANO.location.includes(STATION.panel));
+check('the citation still states the fine', MILANO.citation.lines.some((l) => l.includes('40,000')));
 check('quips are short (<= 70 chars)', MILANO.quips.every((q) => q.length <= 70));
 
 console.log(failures === 0 ? '\n✓ all data checks passed\n' : `\n✗ ${failures} failure(s)\n`);

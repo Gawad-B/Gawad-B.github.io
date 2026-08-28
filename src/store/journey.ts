@@ -102,8 +102,9 @@ interface JourneyState {
   advance: (delta: 1 | -1) => void;
 }
 
-/** The ship is parked in Saturn's rings, so leaving it returns there. */
-const MILANO_HOME: Region = 'skills';
+/** The ship is docked at Aphelion Station past the belt, so leaving it
+    returns to the belt — the nearest stop, and the scroll-adjacent one. */
+const MILANO_HOME: Region = 'projects';
 
 /* The boarding/exit sequences hold short timers (veil up → swap → veil
    down). Any direct navigation must cancel them, or a stale timer would

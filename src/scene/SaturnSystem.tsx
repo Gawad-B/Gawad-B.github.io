@@ -2,7 +2,6 @@ import * as THREE from 'three';
 import { Planet } from './Planet';
 import { SaturnRings } from './SaturnRings';
 import { SkillMoons } from './SkillMoons';
-import { Milano } from './Milano';
 import { WORLDS } from '@/data/worlds';
 
 const SATURN = WORLDS.saturn;
@@ -25,7 +24,6 @@ export function SaturnSystem() {
 
       <SaturnRings planetRadius={SATURN.radius} />
       <SkillMoons planetRadius={SATURN.radius} />
-      <Milano planetRadius={SATURN.radius} />
     </group>
   );
 }

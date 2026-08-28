@@ -59,7 +59,7 @@ check('enterMilano inside the ship is a no-op', s().region === 'milano-interior'
 s().exitMilano();
 check('exit veils first, swaps later', s().region === 'milano-interior' && s().veil === true);
 await settle();
-check('exitMilano returns to where the ship is parked', s().region === 'skills');
+check('exitMilano returns to the belt beside the station', s().region === 'projects');
 check('departure restarts the camera at the hull', s().cameraCue === 'from-ship');
 check('milanoFound persists after exit', s().milanoFound === true);
 await settle();

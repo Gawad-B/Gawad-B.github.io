@@ -140,26 +140,110 @@ function Cockpit() {
 }
 
 /**
- * The view through the canopy: Saturn and its rings, still turning outside.
- * This is the payoff for the ship being parked in the Cassini Division —
- * the reason the interior doesn't feel like a modal is that you can see
- * where you left the universe.
+ * The view through the canopy: the whole surveyed system, seen from the
+ * berth at its edge — the hypergiant reduced to an ember, Saturn a ringed
+ * speck, the belt a scatter of drifting sparks. A recap of everywhere
+ * you've been, framed by the station's gantry. The reason the interior
+ * doesn't feel like a modal is that you can see where you left the
+ * universe.
  */
 function CanopyView() {
   const group = useRef<THREE.Group>(null);
+  const strobe = useRef<THREE.Mesh>(null);
   const reducedMotion = useJourney((s) => s.reducedMotion);
 
-  useFrame((_, delta) => {
-    // The ship is drifting slightly, so the view outside drifts with it.
-    if (!reducedMotion && group.current) group.current.rotation.y += delta * 0.008;
+  useFrame((state, delta) => {
+    // The ship breathes against the berth clamps; the view drifts with it.
+    if (!reducedMotion && group.current) group.current.rotation.y += delta * 0.004;
+    const mat = strobe.current?.material as THREE.MeshBasicMaterial | undefined;
+    if (mat) {
+      const phase = state.clock.elapsedTime % 3.2;
+      mat.opacity = reducedMotion ? 0.7 : phase < 0.14 ? 1 : 0.06;
+    }
   });
 
+  const sparks = useMemo(() => {
+    // The project belt from outside: a loose arc of catalogue-coloured dots.
+    let seed = 4242;
+    const rand = () => {
+      seed = (seed * 1664525 + 1013904223) % 4294967296;
+      return seed / 4294967296;
+    };
+    const n = 14;
+    const pos = new Float32Array(n * 3);
+    const col = new Float32Array(n * 3);
+    const c = new THREE.Color();
+    for (let i = 0; i < n; i++) {
+      const a = -0.9 + (i / n) * 1.4 + rand() * 0.08;
+      pos[i * 3] = Math.sin(a) * 46 - 8;
+      pos[i * 3 + 1] = 2.5 + rand() * 3.5;
+      pos[i * 3 + 2] = -46 - Math.cos(a) * 18;
+      c.set(rand() > 0.6 ? '#d8b48a' : '#9fb4cc');
+      const mag = 0.5 + rand() * 0.5;
+      col[i * 3] = c.r * mag;
+      col[i * 3 + 1] = c.g * mag;
+      col[i * 3 + 2] = c.b * mag;
+    }
+    const g = new THREE.BufferGeometry();
+    g.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+    g.setAttribute('color', new THREE.BufferAttribute(col, 3));
+    return g;
+  }, []);
+
   return (
-    <group ref={group} position={[-20, 6.5, -44]} rotation={[0.2, 0.5, 0.12]} scale={1.75}>
-      <group scale={[1, 0.9, 1]}>
-        <Planet world={SATURN} lightDir={[1, 0.42, 0.5]} />
+    <group ref={group}>
+      {/* The star, eleven light-hours astern. */}
+      <mesh position={[-30, 7, -78]}>
+        <sphereGeometry args={[2.6, 24, 16]} />
+        <meshBasicMaterial color="#ff7a45" toneMapped={false} />
+      </mesh>
+      <mesh position={[-30, 7, -78]}>
+        <sphereGeometry args={[4.4, 20, 12]} />
+        <meshBasicMaterial
+          color="#ff5722"
+          transparent
+          opacity={0.16}
+          blending={THREE.AdditiveBlending}
+          depthWrite={false}
+        />
+      </mesh>
+
+      {/* Saturn, a ringed speck halfway home. */}
+      <group position={[-9.5, 5.2, -58]} rotation={[0.3, 0.4, 0.2]} scale={0.42}>
+        <group scale={[1, 0.9, 1]}>
+          <Planet world={SATURN} lightDir={[-1, 0.3, 0.4]} />
+        </group>
+        <SaturnRings planetRadius={SATURN.radius} />
       </group>
-      <SaturnRings planetRadius={SATURN.radius} />
+
+      {/* The belt, drifting sparks between here and the star. */}
+      <points geometry={sparks}>
+        <pointsMaterial
+          size={0.55}
+          vertexColors
+          transparent
+          opacity={0.9}
+          sizeAttenuation
+          depthWrite={false}
+        />
+      </points>
+
+      {/* Station gantry crossing the canopy's right edge — the visual
+          proof of being docked rather than adrift. */}
+      <group position={[10.5, 2, -18]} rotation={[0.1, -0.35, 0.42]}>
+        <mesh>
+          <boxGeometry args={[0.5, 14, 0.5]} />
+          <meshStandardMaterial color="#232b3a" roughness={0.7} metalness={0.4} />
+        </mesh>
+        <mesh position={[-0.6, -3.4, 0]} rotation={[0, 0, 0.9]}>
+          <boxGeometry args={[0.28, 4.2, 0.28]} />
+          <meshStandardMaterial color="#39435a" roughness={0.7} metalness={0.4} />
+        </mesh>
+        <mesh ref={strobe} position={[0, 4.6, 0.4]}>
+          <sphereGeometry args={[0.16, 8, 8]} />
+          <meshBasicMaterial color="#ff5f57" transparent toneMapped={false} />
+        </mesh>
+      </group>
     </group>
   );
 }

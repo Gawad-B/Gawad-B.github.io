@@ -7,6 +7,7 @@ import { OrbitPath } from './OrbitPath';
 import { AboutPlanet } from './AboutPlanet';
 import { SaturnSystem } from './SaturnSystem';
 import { ProjectWorld } from './ProjectWorld';
+import { Waystation } from './Waystation';
 import { QUALITY } from './quality';
 import { registerBody, unregisterBody } from './bodies';
 import { markBoot } from '@/store/boot';
@@ -36,6 +37,11 @@ const KEPLER_K = 1.15;
 const ORBITS: OrbitSpec[] = [
   { id: 'hd-189733-b', radius: 19, phase: 0.62, inclination: 3 },
   { id: 'saturn', radius: 30, phase: 3.45, inclination: -2 },
+  /* Aphelion Station: past the belt (which ends at 78), inside r≈86 so
+     the whole structure stays inside the system-overview frustum at
+     every orbital phase; the start phase sits ~180° from the belt arc
+     so neither photobombs the other for the length of any real visit. */
+  { id: 'waystation', radius: 84, phase: 1.05, inclination: 5 },
   ...PROJECT_WORLDS.map((w, i) => ({
     id: w.id,
     /* Starts OUTSIDE Saturn's moon field: Saturn orbits at 30 and its
@@ -218,6 +224,7 @@ export function SolarSystem() {
         <Orbiting key={o.id} spec={o}>
           {o.id === 'hd-189733-b' && <AboutPlanet />}
           {o.id === 'saturn' && <SaturnSystem />}
+          {o.id === 'waystation' && <Waystation />}
           {PROJECT_WORLDS.some((w) => w.id === o.id) && (
             <ProjectWorld world={PROJECT_WORLDS.find((w) => w.id === o.id)!} />
           )}

@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useFrame, useThree } from '@react-three/fiber';
 import * as THREE from 'three';
-import { CASSINI_MID } from './SaturnRings';
+import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
 import { Hotspot } from './Hotspot';
 import { registerBody, unregisterBody } from './bodies';
 import { useJourney } from '@/store/journey';
@@ -17,14 +17,17 @@ import { blip } from '@/audio/ambience';
  * twin nacelles, canopy. Chipped orange-and-blue plating, because a
  * salvage hauler should look like it has been somewhere.
  *
- * Parked in the Cassini Division — a real 4,700 km gap between the A and B
- * rings, and therefore the single worst legal parking space in the solar
- * system.
+ * Docked at Aphelion Station's visitor berth — a 15-minute berth it has
+ * occupied for eleven years, which is the closest this pilot gets to
+ * legal parking.
+ *
+ * The hull is MERGED: every opaque primitive is baked into one
+ * vertex-coloured geometry (1 draw call instead of 12), the three engine
+ * glows into another. That reclaimed budget is what pays for the station.
  */
 
-/* Big enough to read as a vehicle from the skills shot (~35 units out).
-   At 1× it was a 1.4-unit speck lost against the rings — technically
-   present, practically invisible, which defeats a parked easter egg. */
+/* Big enough to read as a vehicle from the region shots. At 1x it was a
+   1.4-unit speck — technically present, practically invisible. */
 const SHIP_SCALE = 2.3;
 
 const HULL_BLUE = '#2c4a68';
@@ -32,23 +35,87 @@ const HULL_ORANGE = '#b8541f';
 const HULL_DARK = '#1a2230';
 const ENGINE_GLOW = '#7fd4e8';
 
+/** Bake one primitive into the merge list with a solid vertex colour. */
+function bake(
+  list: THREE.BufferGeometry[],
+  geo: THREE.BufferGeometry,
+  color: string,
+  position: [number, number, number],
+  rotation: [number, number, number] = [0, 0, 0],
+  scale: [number, number, number] = [1, 1, 1],
+) {
+  const g = geo.toNonIndexed();
+  geo.dispose();
+  const m = new THREE.Matrix4().compose(
+    new THREE.Vector3(...position),
+    new THREE.Quaternion().setFromEuler(new THREE.Euler(...rotation)),
+    new THREE.Vector3(...scale),
+  );
+  g.applyMatrix4(m);
+  const c = new THREE.Color(color);
+  const n = g.attributes.position!.count;
+  const colors = new Float32Array(n * 3);
+  for (let i = 0; i < n; i++) {
+    colors[i * 3] = c.r;
+    colors[i * 3 + 1] = c.g;
+    colors[i * 3 + 2] = c.b;
+  }
+  g.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+  // A single merged material can't vary per piece, so drop per-geometry
+  // UVs (unused — everything is flat colour) to keep attributes uniform.
+  g.deleteAttribute('uv');
+  list.push(g);
+}
+
+function useShipGeometry() {
+  return useMemo(() => {
+    const hull: THREE.BufferGeometry[] = [];
+    // Fuselage — a stretched capsule, nose forward on -Z.
+    bake(hull, new THREE.CapsuleGeometry(0.19, 0.92, 6, 16), HULL_BLUE, [0, 0, 0], [Math.PI / 2, 0, 0]);
+    // Nose cone
+    bake(hull, new THREE.ConeGeometry(0.19, 0.34, 16), HULL_ORANGE, [0, 0, -0.78], [-Math.PI / 2, 0, 0]);
+    for (const side of [-1, 1]) {
+      // Forward-swept wings — swept toward the nose, the whole silhouette.
+      bake(hull, new THREE.BoxGeometry(0.72, 0.035, 0.3), HULL_BLUE,
+        [side * 0.44, -0.02, 0.06], [0, side * -0.34, side * 0.12]);
+      // Wing stripe
+      bake(hull, new THREE.BoxGeometry(0.3, 0.038, 0.075), HULL_ORANGE,
+        [side * 0.6, -0.005, 0.06], [0, side * -0.34, side * 0.12]);
+      // Nacelle on the wingtip
+      bake(hull, new THREE.CylinderGeometry(0.072, 0.06, 0.44, 12), HULL_DARK,
+        [side * 0.78, -0.03, 0.18], [Math.PI / 2, 0, 0]);
+      // Landing skids — vestigial now; it docks more than it lands.
+      bake(hull, new THREE.BoxGeometry(0.035, 0.12, 0.42), HULL_DARK, [side * 0.16, -0.21, 0.05]);
+    }
+    // Dorsal fin
+    bake(hull, new THREE.BoxGeometry(0.03, 0.28, 0.26), HULL_DARK, [0, 0.22, 0.34], [0.28, 0, 0]);
+    // Main thruster cluster
+    bake(hull, new THREE.CylinderGeometry(0.15, 0.17, 0.16, 14), HULL_DARK, [0, 0, 0.56], [Math.PI / 2, 0, 0]);
+
+    // The engines are cold; the bells still carry standby glow.
+    // Standby glow, not thrust: small and dimmed — a cold engine's pilot
+    // light. Full-brightness discs at docking range read as toys.
+    const glow: THREE.BufferGeometry[] = [];
+    for (const side of [-1, 1]) {
+      bake(glow, new THREE.CircleGeometry(0.042, 12), '#4e8fa2', [side * 0.78, -0.03, 0.41]);
+    }
+    bake(glow, new THREE.CircleGeometry(0.085, 14), '#4e8fa2', [0, 0, 0.645]);
+
+    return {
+      hull: mergeGeometries(hull, false)!,
+      glow: mergeGeometries(glow, false)!,
+    };
+  }, []);
+}
+
 function ShipBody() {
+  const geo = useShipGeometry();
   const materials = useMemo(
     () => ({
       hull: new THREE.MeshStandardMaterial({
-        color: new THREE.Color(HULL_BLUE),
-        roughness: 0.62,
-        metalness: 0.58,
-      }),
-      accent: new THREE.MeshStandardMaterial({
-        color: new THREE.Color(HULL_ORANGE),
-        roughness: 0.5,
-        metalness: 0.45,
-      }),
-      dark: new THREE.MeshStandardMaterial({
-        color: new THREE.Color(HULL_DARK),
-        roughness: 0.8,
-        metalness: 0.35,
+        vertexColors: true,
+        roughness: 0.55,
+        metalness: 0.34,
       }),
       glass: new THREE.MeshStandardMaterial({
         color: new THREE.Color('#0d1a2a'),
@@ -67,81 +134,20 @@ function ShipBody() {
 
   return (
     <group>
-      {/* Fuselage — a stretched capsule, nose forward on -Z. */}
-      <mesh material={materials.hull} rotation={[Math.PI / 2, 0, 0]}>
-        <capsuleGeometry args={[0.19, 0.92, 6, 16]} />
-      </mesh>
-
-      {/* Nose cone */}
-      <mesh material={materials.accent} position={[0, 0, -0.78]} rotation={[-Math.PI / 2, 0, 0]}>
-        <coneGeometry args={[0.19, 0.34, 16]} />
-      </mesh>
-
-      {/* Canopy — offset up and forward, faceted rather than smooth. */}
+      <mesh geometry={geo.hull} material={materials.hull} />
+      <mesh geometry={geo.glow} material={materials.engine} />
+      {/* Canopy — offset up and forward, faceted rather than smooth.
+          Separate: glass wants its own roughness and emissive. */}
       <mesh material={materials.glass} position={[0, 0.13, -0.38]} scale={[0.9, 0.6, 1.5]}>
         <icosahedronGeometry args={[0.15, 1]} />
       </mesh>
-
-      {/* Forward-swept wings. Swept toward the nose, which is the whole
-          silhouette. */}
-      {[-1, 1].map((side) => (
-        <group key={side}>
-          <mesh
-            material={materials.hull}
-            position={[side * 0.44, -0.02, 0.06]}
-            rotation={[0, side * -0.34, side * 0.12]}
-          >
-            <boxGeometry args={[0.72, 0.035, 0.3]} />
-          </mesh>
-          {/* Wing stripe */}
-          <mesh
-            material={materials.accent}
-            position={[side * 0.6, -0.005, 0.06]}
-            rotation={[0, side * -0.34, side * 0.12]}
-          >
-            <boxGeometry args={[0.3, 0.038, 0.075]} />
-          </mesh>
-          {/* Nacelle on the wingtip */}
-          <mesh
-            material={materials.dark}
-            position={[side * 0.78, -0.03, 0.18]}
-            rotation={[Math.PI / 2, 0, 0]}
-          >
-            <cylinderGeometry args={[0.072, 0.06, 0.44, 12]} />
-          </mesh>
-          {/* Engine bell, emissive */}
-          <mesh material={materials.engine} position={[side * 0.78, -0.03, 0.41]}>
-            <circleGeometry args={[0.058, 12]} />
-          </mesh>
-        </group>
-      ))}
-
-      {/* Dorsal fin */}
-      <mesh material={materials.dark} position={[0, 0.22, 0.34]} rotation={[0.28, 0, 0]}>
-        <boxGeometry args={[0.03, 0.28, 0.26]} />
-      </mesh>
-
-      {/* Main thruster cluster */}
-      <mesh material={materials.dark} position={[0, 0, 0.56]} rotation={[Math.PI / 2, 0, 0]}>
-        <cylinderGeometry args={[0.15, 0.17, 0.16, 14]} />
-      </mesh>
-      <mesh material={materials.engine} position={[0, 0, 0.645]}>
-        <circleGeometry args={[0.125, 14]} />
-      </mesh>
-
-      {/* Landing skids — it is, after all, parked. */}
-      {[-1, 1].map((side) => (
-        <mesh key={`skid${side}`} material={materials.dark} position={[side * 0.16, -0.21, 0.05]}>
-          <boxGeometry args={[0.035, 0.12, 0.42]} />
-        </mesh>
-      ))}
     </group>
   );
 }
 
 /** Anchor beacon: a double-flash red strobe, the universal signal for
     "parked, unattended, please do not tow". Also how the eye finds a
-    dark hull against dark rings from across the system. */
+    dark hull against the void from across the system. */
 function Beacon() {
   const ref = useRef<THREE.Mesh>(null);
   const reducedMotion = useJourney((s) => s.reducedMotion);
@@ -166,7 +172,9 @@ function Beacon() {
   );
 }
 
-/** The engines are cold; only the standby lamps are lit. */
+/** The engines are cold; only the standby lamps are lit. They double as
+    the berth's fill light — the station adds no light of its own, because
+    changing the scene's light count would recompile every lit shader. */
 function StandbyLamps() {
   const ref = useRef<THREE.PointLight>(null);
   const reducedMotion = useJourney((s) => s.reducedMotion);
@@ -180,20 +188,22 @@ function StandbyLamps() {
       : 0.34 + Math.abs(Math.sin(t * 1.7) * Math.sin(t * 0.43)) * 0.5;
   });
 
-  return <pointLight ref={ref} position={[0, 0.05, 0.4]} color={ENGINE_GLOW} distance={6} />;
+  return <pointLight ref={ref} position={[0, 0.05, 0.4]} color={ENGINE_GLOW} distance={9} />;
 }
 
 interface Props {
-  planetRadius: number;
+  /** Berth position in the station's local frame. */
+  position: [number, number, number];
+  rotation?: [number, number, number];
 }
 
 /**
- * Places the ship in the ring gap and makes it the contact entry point.
- * It has a HUD nav entry too, so discovering it is a bonus rather than a
+ * The contact entry point, docked wherever the station puts it. It has a
+ * HUD nav entry too, so discovering it is a bonus rather than a
  * requirement — an easter egg that gates your contact details isn't an
  * easter egg, it's a maze.
  */
-export function Milano({ planetRadius }: Props) {
+export function Milano({ position, rotation = [0, 0, 0] }: Props) {
   const group = useRef<THREE.Group>(null);
   const enterMilano = useJourney((s) => s.enterMilano);
   const reducedMotion = useJourney((s) => s.reducedMotion);
@@ -202,18 +212,6 @@ export function Milano({ planetRadius }: Props) {
   const camera = useThree((s) => s.camera);
   const viewport = useThree((s) => s.size);
   const projected = useMemo(() => new THREE.Vector3(), []);
-
-  // Sitting in the middle of the Cassini Division, off to one side of the
-  // planet so it's silhouetted against the gap rather than lost in the ring.
-  const orbitRadius = CASSINI_MID * planetRadius;
-  const angle = -0.72;
-  /* Hovering just above the gap: high enough that the rolled hull and
-     wingtips clear the ring plane, low enough to still read as parked
-     IN the division (the citation insists on it). */
-  const position = useMemo<[number, number, number]>(
-    () => [Math.cos(angle) * orbitRadius, 0.72, Math.sin(angle) * orbitRadius],
-    [orbitRadius],
-  );
 
   useEffect(() => {
     const node = group.current;
@@ -227,10 +225,9 @@ export function Milano({ planetRadius }: Props) {
 
     if (!reducedMotion) {
       const t = state.clock.elapsedTime;
-      // Badly parked: rolled over, nose down, drifting very slightly.
-      group.current.rotation.z = -0.34 + Math.sin(t * 0.21) * 0.02;
-      group.current.rotation.x = 0.16 + Math.cos(t * 0.17) * 0.015;
-      group.current.position.y = position[1] + Math.sin(t * 0.28) * 0.03;
+      // Docked, not rigid: a slow breath against the berth clamps.
+      group.current.rotation.z = rotation[2] + Math.sin(t * 0.21) * 0.012;
+      group.current.position.y = position[1] + Math.sin(t * 0.28) * 0.02;
     }
 
     // Keep the marker pinned to the ship while it's hovered.
@@ -248,7 +245,7 @@ export function Milano({ planetRadius }: Props) {
   });
 
   return (
-    <group ref={group} position={position} rotation={[0.16, 2.1, -0.34]}>
+    <group ref={group} position={position} rotation={rotation}>
       <group scale={hovered ? SHIP_SCALE * 1.05 : SHIP_SCALE}>
         <ShipBody />
         <StandbyLamps />

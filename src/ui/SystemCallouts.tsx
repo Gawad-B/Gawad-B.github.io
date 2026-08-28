@@ -3,6 +3,7 @@ import { useJourney } from '@/store/journey';
 import { getBody } from '@/scene/bodies';
 import { PROJECTS } from '@/data/projects';
 import { worldForProject, WORLDS } from '@/data/worlds';
+import { STATION } from '@/data/milano';
 import './callouts.css';
 
 interface Callout {
@@ -30,10 +31,10 @@ const CALLOUTS: Callout[] = [
     target: () => ({ kind: 'region', value: 'skills' }),
   },
   {
-    /* The parked ship, named like every other body — an easter egg you
-       can't find isn't an easter egg, it's a maze. */
-    id: 'milano-ship',
-    eyebrow: 'The Milano · parked',
+    /* The harbor, named like every other body — one combined callout for
+       station + docked ship: one goal, one target. */
+    id: 'waystation',
+    eyebrow: `${STATION.panel} · ${STATION.berth}`,
     label: 'Contact',
     accent: '#ff5f57',
     target: () => ({ kind: 'milano', value: '' }),

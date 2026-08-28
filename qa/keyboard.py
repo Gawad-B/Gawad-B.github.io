@@ -28,11 +28,14 @@ with sync_playwright() as p:
     print("\ndigits jump to the five stations")
     pg.keyboard.press("3"); check("3 → Saturn", wait_pos(pg,"SATURN"))
     pg.keyboard.press("4"); check("4 → belt", wait_pos(pg,"EXOPLANET"))
-    pg.keyboard.press("5"); check("5 → the ship", wait_pos(pg,"MILANO"))
-    pg.wait_for_selector(".mon-screen",timeout=20000)
+    pg.keyboard.press("5")
+    # Boarding is a flown sequence (approach → hold → ingress) — wait for
+    # the monitor, then confirm the readout.
+    pg.wait_for_selector(".mon-screen",timeout=25000)
+    check("5 → the ship", wait_pos(pg,"MILANO"))
 
     print("\nEsc walks back out, one layer at a time")
-    pg.keyboard.press("Escape"); check("Esc exits the vessel", wait_pos(pg,"SATURN"))
+    pg.keyboard.press("Escape"); check("Esc exits the vessel (to the belt)", wait_pos(pg,"EXOPLANET"))
     pg.keyboard.press("4"); wait_pos(pg,"EXOPLANET")
     pg.click(".mf-row:has-text('RDMID')"); time.sleep(3)
     check("dossier open", pg.locator(".pnl").count()==1)

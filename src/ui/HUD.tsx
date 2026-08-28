@@ -119,10 +119,10 @@ export function HUD() {
       {/* --- Right rail: audio + hints --- */}
       <div className="hud-rail">
         <AudioToggle />
-        {entered && !milanoFound && region === 'skills' && (
+        {entered && !milanoFound && region === 'projects' && (
           <p className="hud-hint" role="note">
             <span className="hud-hint-dot" aria-hidden="true" />
-            {MILANO.marker} detected in the ring gap
+            {MILANO.marker} — docking beacon past the belt
           </p>
         )}
       </div>
