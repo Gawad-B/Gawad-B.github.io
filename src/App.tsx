@@ -11,6 +11,7 @@ import { HeroOverlay } from './ui/HeroOverlay';
 import { AboutDossier } from './ui/AboutDossier';
 import { SkillPanel } from './ui/SkillPanel';
 import { ProjectPanel } from './ui/ProjectPanel';
+import { ContactConsole } from './ui/ContactConsole';
 import { HoverLabel } from './ui/HoverLabel';
 import { useKeyboardNav } from './ui/useKeyboardNav';
 import { useJourney } from './store/journey';
@@ -35,6 +36,7 @@ function UniverseApp({ mobile }: { mobile: boolean }) {
         <>
           {region === 'hero' && <HeroOverlay />}
           {region === 'about' && <AboutDossier />}
+          {region === 'milano-interior' && <ContactConsole />}
           {focus.kind === 'skill' && focus.id && <SkillPanel skillId={focus.id} />}
           {focus.kind === 'project' && focus.id && <ProjectPanel projectId={focus.id} />}
           <HoverLabel />

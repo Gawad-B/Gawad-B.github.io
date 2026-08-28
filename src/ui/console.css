@@ -1,0 +1,318 @@
+/* ============================================================
+   Contact console — the ship's screen, not a modal.
+   ============================================================ */
+
+.con {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-panel);
+  display: grid;
+  place-items: center;
+  padding: clamp(0.8rem, 3vw, 2rem);
+  pointer-events: none;
+}
+
+.con-card {
+  width: min(40rem, 100%);
+  max-height: min(88dvh, 46rem);
+  pointer-events: auto;
+  animation: con-in 900ms var(--ease-flight) both;
+}
+
+/* Mounted to the right, so the canopy view stays clear on the left. */
+@media (min-width: 1100px) {
+  .con { place-items: center end; padding-right: clamp(1rem, 4vw, 3.5rem); }
+  .con-card { width: min(35rem, 52vw); }
+}
+@keyframes con-in {
+  from { opacity: 0; transform: translateY(26px) scale(0.985); filter: blur(8px); }
+  to   { opacity: 1; transform: translateY(0) scale(1);        filter: blur(0); }
+}
+
+.con-screen {
+  display: flex;
+  flex-direction: column;
+  max-height: inherit;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 1.2rem 1.2rem 1.4rem;
+  scrollbar-width: thin;
+  scrollbar-color: var(--instr-25) transparent;
+}
+@media (min-width: 768px) {
+  .con-screen { padding: 1.5rem 1.7rem 1.7rem; }
+}
+
+/* --- header --- */
+.con-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-shrink: 0;
+}
+.con-eyebrow { color: var(--alert); }
+.con-title {
+  margin: 0.45rem 0 0.3rem;
+  font-family: var(--font-display);
+  font-weight: 300;
+  font-size: clamp(1.4rem, 4vw, 1.9rem);
+  line-height: 1;
+  letter-spacing: -0.04em;
+  color: var(--instr-100);
+}
+.con-loc {
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: var(--text-2xs);
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+  color: var(--instr-45);
+}
+
+.con-exit {
+  flex-shrink: 0;
+  padding: 0.4rem 0.85rem;
+  border: 1px solid color-mix(in srgb, var(--instr-100) 14%, transparent);
+  border-radius: 999px;
+  background: none;
+  font-family: var(--font-mono);
+  font-size: var(--text-2xs);
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+  color: var(--instr-70);
+  cursor: pointer;
+  transition: color var(--dur-instrument) var(--ease-instrument),
+    border-color var(--dur-instrument) var(--ease-instrument);
+}
+.con-exit:hover {
+  color: var(--signal);
+  border-color: color-mix(in srgb, var(--signal) 50%, transparent);
+}
+
+/* --- boot log --- */
+.con-log {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  flex-shrink: 0;
+  margin: 1.15rem 0 0;
+  padding: 0.6rem 0.75rem;
+  border: 1px solid color-mix(in srgb, var(--data) 16%, transparent);
+  border-radius: 4px;
+  background: color-mix(in srgb, var(--data) 4%, transparent);
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  line-height: 1.5;
+  color: var(--data);
+  min-height: 2.9em;
+}
+.con-log-prompt { color: var(--instr-25); }
+.con-log-line { animation: con-log-in 420ms var(--ease-instrument) both; }
+@keyframes con-log-in {
+  from { opacity: 0; transform: translateY(4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.con-log-caret {
+  width: 6px;
+  height: 1em;
+  background: var(--data);
+  opacity: 0.7;
+  animation: con-blink 1.1s steps(1, end) infinite;
+}
+@keyframes con-blink {
+  0%, 49%   { opacity: 0.7; }
+  50%, 100% { opacity: 0; }
+}
+
+/* --- section scaffolding --- */
+.con-channels,
+.con-transmit {
+  flex-shrink: 0;
+  margin-top: 1.3rem;
+  padding-top: 1.1rem;
+  border-top: 1px solid color-mix(in srgb, var(--instr-100) 8%, transparent);
+}
+.con-label { margin: 0 0 0.7rem; color: var(--instr-45); }
+
+/* --- channels --- */
+.con-channels ul {
+  display: grid;
+  gap: 1px;
+  margin: 0;
+  padding: 1px;
+  list-style: none;
+  border-radius: 4px;
+  background: color-mix(in srgb, var(--instr-100) 7%, transparent);
+  overflow: hidden;
+}
+@media (min-width: 560px) {
+  .con-channels ul { grid-template-columns: 1fr 1fr; }
+}
+.con-channel {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  height: 100%;
+  padding: 0.6rem 0.8rem;
+  background: var(--void-2);
+  text-decoration: none;
+  transition: background var(--dur-instrument) var(--ease-instrument);
+}
+.con-channel:hover { background: var(--void-3); }
+.con-channel-key {
+  flex-shrink: 0;
+  width: 4.2rem;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  color: var(--instr-45);
+}
+.con-channel-val {
+  flex: 1;
+  min-width: 0;
+  font-size: var(--text-xs);
+  color: var(--instr-100);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.con-channel-go {
+  flex-shrink: 0;
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  color: var(--instr-25);
+  transition: color var(--dur-instrument) var(--ease-instrument),
+    transform var(--dur-instrument) var(--ease-instrument);
+}
+.con-channel:hover .con-channel-go {
+  color: var(--signal);
+  transform: translate(2px, -2px);
+}
+
+/* --- transmitter --- */
+.con-hint {
+  margin: -0.3rem 0 0.9rem;
+  font-size: var(--text-xs);
+  color: var(--instr-45);
+}
+.con-row {
+  display: grid;
+  gap: 0.7rem;
+}
+@media (min-width: 560px) {
+  .con-row { grid-template-columns: 1fr 1fr; }
+}
+.con-field {
+  display: grid;
+  gap: 0.3rem;
+  margin-bottom: 0.7rem;
+}
+.con-field label {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  color: var(--instr-45);
+}
+.con-field input,
+.con-field textarea {
+  width: 100%;
+  padding: 0.55rem 0.7rem;
+  border: 1px solid color-mix(in srgb, var(--instr-100) 11%, transparent);
+  border-radius: 3px;
+  background: var(--void-0);
+  font-family: var(--font-display);
+  font-size: var(--text-sm);
+  color: var(--instr-100);
+  resize: vertical;
+  transition: border-color var(--dur-instrument) var(--ease-instrument);
+}
+.con-field input:hover,
+.con-field textarea:hover { border-color: color-mix(in srgb, var(--instr-100) 20%, transparent); }
+.con-field input:focus,
+.con-field textarea:focus { border-color: var(--data); }
+
+.con-actions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-top: 0.3rem;
+}
+.con-send {
+  padding: 0.55rem 1.4rem;
+  border: 1px solid color-mix(in srgb, var(--signal) 50%, transparent);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--signal) 11%, transparent);
+  font-family: var(--font-mono);
+  font-size: var(--text-2xs);
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  color: var(--signal);
+  cursor: pointer;
+  transition: background var(--dur-instrument) var(--ease-instrument),
+    transform 140ms var(--ease-instrument);
+}
+.con-send:hover:not(:disabled) { background: color-mix(in srgb, var(--signal) 20%, transparent); }
+.con-send:active:not(:disabled) { transform: scale(0.98); }
+.con-send:disabled { opacity: 0.55; cursor: progress; }
+
+.con-status {
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: var(--text-2xs);
+  line-height: 1.4;
+  color: var(--instr-45);
+}
+.con-status.is-error { color: var(--alert); }
+.con-status.is-ok { color: var(--data); }
+
+/* ============================================================
+   The citation. Stated once, in the corner, not laboured.
+   ============================================================ */
+/* Left column, under the HUD status block. The top-right corner already
+   belongs to the audio toggle. */
+.con-plate {
+  position: absolute;
+  top: 8.4rem;
+  left: clamp(0.9rem, 2.5vw, 1.6rem);
+  max-width: 15rem;
+  padding: 0.6rem 0.8rem;
+  border: 1px solid color-mix(in srgb, var(--alert) 30%, transparent);
+  border-radius: 4px;
+  background: color-mix(in srgb, var(--void-0) 78%, transparent);
+  backdrop-filter: blur(10px);
+  transform: rotate(-1.6deg);
+  pointer-events: none;
+}
+.con-plate-title {
+  margin: 0 0 0.4rem;
+  font-family: var(--font-mono);
+  font-size: var(--text-2xs);
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--alert);
+}
+.con-plate ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 0.2rem;
+}
+.con-plate li {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.06em;
+  line-height: 1.45;
+  color: var(--instr-45);
+}
+
+/* The console occupies the screen on mobile; the citation has no room and
+   the audio toggle already lives in that corner. */
+@media (max-width: 900px) {
+  .con-plate { display: none; }
+}
