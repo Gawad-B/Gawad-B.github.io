@@ -42,6 +42,11 @@ with sync_playwright() as p:
     pg.keyboard.press("Escape"); time.sleep(1.2)
     check("Esc closes the dossier, stays in the belt",
           pg.locator(".pnl").count()==0 and "EXOPLANET" in pg.inner_text(".hud-status"))
+    pg.keyboard.press("Escape")
+    check("Esc from a bare region zooms out to the system map", wait_pos(pg,"HELIOCENTRIC"))
+    pg.keyboard.press("1"); wait_pos(pg,"STEPHENSON")
+    pg.keyboard.press("Escape")
+    check("Esc works from home too", wait_pos(pg,"HELIOCENTRIC"))
 
     print("\nkeys stay out of form fields")
     pg.keyboard.press("5"); wait_pos(pg,"MILANO")

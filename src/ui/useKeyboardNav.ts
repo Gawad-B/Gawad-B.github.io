@@ -54,6 +54,11 @@ export function useKeyboardNav() {
           } else if (focus.kind !== 'none') {
             blip('close');
             clearFocus();
+          } else if (region !== 'system') {
+            // Nothing layered left to close: zoom out to the map. From
+            // ANY place, enough Escapes always end at the universe view.
+            blip('close');
+            travelTo('system');
           }
           return;
         case '1':
