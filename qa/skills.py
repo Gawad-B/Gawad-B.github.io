@@ -43,18 +43,40 @@ with sync_playwright() as p:
         return None
     target = aim()
     check("found an on-screen moon to aim at", target is not None)
-    pg.mouse.move(target["x"], target["y"])
-    time.sleep(0.45)
-    check("hover label appears", pg.locator(".hvr").count() == 1)
+
+    # Poll rather than sleep a fixed amount. Under the software rasteriser
+    # available here the scene runs at ~2fps, so acquiring hover takes a
+    # second or more of wall clock — a fixed wait either flakes or hides a
+    # real failure. Re-aim each attempt because the moons are orbiting.
+    def acquire(timeout=14.0):
+        deadline = time.time() + timeout
+        while time.time() < deadline:
+            m = aim()
+            if not m:
+                time.sleep(0.3); continue
+            pg.mouse.move(m["x"], m["y"])
+            time.sleep(0.5)
+            if pg.locator(".hvr").count() == 1:
+                return m
+        return None
+    acquired = acquire()
+    check("hover label appears", acquired is not None)
+    if acquired: target = acquired
     if pg.locator(".hvr").count():
         lbl = pg.inner_text(".hvr-label")
         names = [m["name"] for m in (pg.evaluate("window.__moonScreen") or [])]
         check(f"label names a real skill ({lbl!r})", lbl in names)
 
     print("\nclick → panel")
-    hovered_name = pg.inner_text(".hvr-label") if pg.locator(".hvr").count() else target["name"]
-    pg.mouse.click(target["x"], target["y"])
-    time.sleep(1.8)
+    # Re-acquire immediately before clicking: a moon that has drifted past the
+    # 44px release radius has correctly dropped hover, and clicking a stale
+    # position would test nothing.
+    live = acquire() or target
+    hovered_name = pg.inner_text(".hvr-label") if pg.locator(".hvr").count() else live["name"]
+    pg.mouse.click(live["x"], live["y"])
+    for _ in range(16):
+        if pg.locator(".pnl").count() == 1: break
+        time.sleep(0.5)
     check("skill panel opens", pg.locator(".pnl").count() == 1)
     if pg.locator(".pnl").count():
         check("panel titles the hovered skill", pg.inner_text(".pnl-title").strip() == hovered_name,

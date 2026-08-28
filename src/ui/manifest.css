@@ -21,6 +21,26 @@
 }
 .rail > * { pointer-events: auto; }
 
+/* The rail needs its own ground. A neighbouring world can fill the frame
+   behind it — approaching 55 Cancri e puts WASP-76 b's molten dayside
+   directly under the manifest — and per-panel contrast rules do nothing for
+   the chrome. Soft and wide so it reads as vignetting, not a sidebar. */
+.rail::before {
+  content: '';
+  position: fixed;
+  inset: 0 auto 0 0;
+  width: 27rem;
+  z-index: -1;
+  pointer-events: none;
+  background: linear-gradient(
+    to right,
+    rgb(4 6 11 / 0.86) 0%,
+    rgb(4 6 11 / 0.66) 38%,
+    rgb(4 6 11 / 0.26) 72%,
+    transparent 100%
+  );
+}
+
 .mf {
   min-height: 0;
   width: min(15rem, 26vw);
@@ -58,8 +78,8 @@
   border: 1px solid transparent;
   border-left: 1px solid color-mix(in srgb, var(--instr-100) 9%, transparent);
   border-radius: 0 3px 3px 0;
-  background: color-mix(in srgb, var(--void-0) 50%, transparent);
-  backdrop-filter: blur(8px);
+  background: color-mix(in srgb, var(--void-0) 80%, transparent);
+  backdrop-filter: blur(10px);
   text-align: left;
   cursor: pointer;
   transition: border-color var(--dur-instrument) var(--ease-instrument),
@@ -72,7 +92,7 @@
 }
 .mf-row.is-active {
   border-left-color: var(--accent);
-  background: color-mix(in srgb, var(--accent) 9%, color-mix(in srgb, var(--void-0) 58%, transparent));
+  background: color-mix(in srgb, var(--accent) 10%, color-mix(in srgb, var(--void-0) 82%, transparent));
 }
 
 .mf-index {
@@ -84,8 +104,12 @@
   color: var(--instr-45);
   transition: color var(--dur-instrument) var(--ease-instrument);
 }
+/* NOT the accent. World accents are derived from astronomy, and some are
+   genuinely dark — TrES-2b's #c1352b measures 3.7:1 on the row ground and
+   fails AA as text. Identity is carried by the left border and the dot,
+   which are non-text and only need 3:1. */
 .mf-row:hover .mf-index,
-.mf-row.is-active .mf-index { color: var(--accent); }
+.mf-row.is-active .mf-index { color: var(--instr-100); }
 
 .mf-body {
   display: grid;
@@ -136,6 +160,8 @@
    Mobile: horizontal scroller sitting above the nav bar.
    ============================================================ */
 @media (max-width: 767px) {
+  .rail::before { display: none; }
+
   /* The rail must be pinned to the viewport width. A flex column takes the
      width of its widest child, and the manifest's horizontal scroller is
      ~1200px of content — which stretched the rail and pushed the navigation

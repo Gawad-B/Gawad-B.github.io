@@ -40,12 +40,28 @@ with sync_playwright() as p:
                            ("skills","button:has-text('SKILLS')"),
                            ("projects","button:has-text('PROJECTS')"),
                            ("milano",".hud-nav-btn--ship")]:
+            want = {"hero":"hero","about":"about","skills":"skills",
+                    "projects":"projects","milano":"milano-interior"}[label]
             if sel:
-                pg.click(sel); time.sleep(4.5)
-            time.sleep(1.5)
-            m = pg.evaluate("window.__perf")
-            if label == "skills" and m:
-                per_region.setdefault(tier_label, {})["skills"] = m
+                pg.click(sel)
+            # Wait for the probe to report the region it was asked about, and
+            # for the camera to have settled, before trusting the sample.
+            m = None
+            deadline = time.time() + 30
+            while time.time() < deadline:
+                time.sleep(0.6)
+                cand = pg.evaluate("window.__perf")
+                if cand and cand.get("region") == want and cand.get("settled"):
+                    time.sleep(1.2)
+                    m = pg.evaluate("window.__perf")
+                    if m and m.get("region") == want:
+                        break
+                    m = None
+            if not m:
+                check(f"{label}: sample aligned to region", False, f"never saw region={want}")
+                continue
+            if m:
+                per_region.setdefault(tier_label, {})[label] = m
             if not m:
                 check(f"{label}: probe reported", False); continue
             print(f"    {label:<9} calls {m['calls']:>4}  tris {m['triangles']:>8,}  "
@@ -72,10 +88,16 @@ check("Saturn's 48 moons are one InstancedMesh",
       per_region.get("high", {}).get("skills", {}).get("instancedMeshes", 0) >= 1,
       f"got {per_region.get('high', {}).get('skills', {}).get('instancedMeshes')}")
 
-print("\ntier scaling")
-check("low tier draws fewer triangles than high",
-      results["low"]["triangles"] < results["high"]["triangles"],
-      f"low={results['low']['triangles']:,} high={results['high']['triangles']:,}")
+print("\ntier scaling (same region, both tiers — comparing peaks across")
+print("regions is meaningless when which region peaks depends on sampling)")
+for region in ("hero", "skills", "projects"):
+    hi = per_region.get("high", {}).get(region)
+    lo = per_region.get("low", {}).get(region)
+    if not hi or not lo:
+        check(f"{region}: sampled on both tiers", False); continue
+    check(f"{region}: low tier draws no more than high "
+          f"({lo['triangles']:,} <= {hi['triangles']:,})",
+          lo["triangles"] <= hi["triangles"])
 # NOT asserted on `programs`: that counter is cumulative across the session
 # as regions compile their materials, so it never decreases and is
 # order-dependent. The honest signal that the low tier drops post-processing

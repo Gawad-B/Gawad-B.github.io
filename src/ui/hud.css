@@ -19,8 +19,8 @@
   padding: 0.7rem 0.9rem;
   border: 1px solid color-mix(in srgb, var(--instr-100) 7%, transparent);
   border-radius: 4px;
-  background: color-mix(in srgb, var(--void-0) 62%, transparent);
-  backdrop-filter: blur(10px);
+  background: color-mix(in srgb, var(--void-0) 84%, transparent);
+  backdrop-filter: blur(12px);
   pointer-events: none;
 }
 .hud-status-row {
@@ -66,8 +66,8 @@
   border: 1px solid transparent;
   border-left: 1px solid color-mix(in srgb, var(--instr-100) 10%, transparent);
   border-radius: 0 3px 3px 0;
-  background: color-mix(in srgb, var(--void-0) 55%, transparent);
-  backdrop-filter: blur(8px);
+  background: color-mix(in srgb, var(--void-0) 80%, transparent);
+  backdrop-filter: blur(10px);
   font-family: var(--font-mono);
   font-size: var(--text-xs);
   letter-spacing: 0.09em;
@@ -87,7 +87,7 @@
 .hud-nav-btn.is-active {
   color: var(--signal);
   border-left-color: var(--signal);
-  background: color-mix(in srgb, var(--signal) 7%, color-mix(in srgb, var(--void-0) 60%, transparent));
+  background: color-mix(in srgb, var(--signal) 9%, color-mix(in srgb, var(--void-0) 84%, transparent));
 }
 .hud-nav-index {
   font-size: var(--text-2xs);
@@ -107,7 +107,14 @@
   opacity: 0;
   transition: opacity var(--dur-instrument) var(--ease-instrument);
 }
-.hud-nav-btn.is-active .hud-nav-tick { opacity: 1; }
+.hud-nav-btn.is-active .hud-nav-tick {
+  opacity: 1;
+  animation: hud-breathe 3.4s var(--ease-instrument) infinite;
+}
+@keyframes hud-breathe {
+  0%, 100% { opacity: 1;    transform: scale(1); }
+  50%      { opacity: 0.45; transform: scale(0.72); }
+}
 
 /* The ship entry stays deliberately anonymous until it's found. */
 .hud-nav-btn--ship .hud-nav-label { letter-spacing: 0.3em; }
@@ -129,8 +136,8 @@
   place-items: center;
   border: 1px solid color-mix(in srgb, var(--instr-100) 9%, transparent);
   border-radius: 4px;
-  background: color-mix(in srgb, var(--void-0) 62%, transparent);
-  backdrop-filter: blur(10px);
+  background: color-mix(in srgb, var(--void-0) 84%, transparent);
+  backdrop-filter: blur(12px);
   color: var(--instr-45);
   cursor: pointer;
   transition: color var(--dur-instrument) var(--ease-instrument),
@@ -151,8 +158,8 @@
   padding: 0.5rem 0.75rem;
   border: 1px solid color-mix(in srgb, var(--alert) 30%, transparent);
   border-radius: 4px;
-  background: color-mix(in srgb, var(--void-0) 72%, transparent);
-  backdrop-filter: blur(10px);
+  background: color-mix(in srgb, var(--void-0) 86%, transparent);
+  backdrop-filter: blur(12px);
   font-family: var(--font-mono);
   font-size: var(--text-2xs);
   line-height: 1.45;
@@ -182,8 +189,8 @@
   padding: 0.4rem 0.7rem;
   border: 1px solid color-mix(in srgb, var(--instr-100) 6%, transparent);
   border-radius: 4px;
-  background: color-mix(in srgb, var(--void-0) 66%, transparent);
-  backdrop-filter: blur(10px);
+  background: color-mix(in srgb, var(--void-0) 82%, transparent);
+  backdrop-filter: blur(12px);
   font-family: var(--font-mono);
   font-size: var(--text-2xs);
   letter-spacing: 0.08em;

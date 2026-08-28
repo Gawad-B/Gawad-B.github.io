@@ -170,7 +170,7 @@ export function SkillMoons({ planetRadius }: { planetRadius: number }) {
     if (debug) {
       const w = window as Window & { __moonScreen?: unknown; __moonState?: unknown };
       w.__moonScreen = screen;
-      w.__moonState = { isolatedBand, hovered, count: screen.length };
+      w.__moonState = { isolatedBand, hovered, count: screen.length, px: Math.round(px), py: Math.round(py), ndc: [+pointer.x.toFixed(3), +pointer.y.toFixed(3)], nearest: screen.length ? Math.round(Math.min(...screen.map(m=>Math.hypot(m.x-px,m.y-py)))) : -1 };
     }
 
     if (best !== hovered) {

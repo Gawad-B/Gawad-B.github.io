@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { useFrame, useThree } from '@react-three/fiber';
 import { markBoot } from '@/store/boot';
+import { useJourney } from '@/store/journey';
 
 /**
  * Lives inside the Canvas and reports the two milestones only the render
@@ -12,6 +13,8 @@ export function BootProbe() {
   const settled = useRef(0);
   const gl = useThree((s) => s.gl);
   const scene = useThree((s) => s.scene);
+  const region = useJourney((s) => s.region);
+  const phase = useJourney((s) => s.phase);
 
   useEffect(() => {
     markBoot('sky');
@@ -51,6 +54,11 @@ export function BootProbe() {
       else if (o.type === 'Points') points += 1;
     });
     w.__perf = {
+      /* Stamped so a sampler can verify it is reading the region it thinks
+         it is. At software-render frame rates a fixed sleep after a click
+         routinely samples the previous region. */
+      region,
+      settled: phase === 'idle',
       calls: info.render.calls,
       triangles: info.render.triangles,
       points: info.render.points,

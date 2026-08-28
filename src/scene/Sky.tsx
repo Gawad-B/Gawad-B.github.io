@@ -4,6 +4,7 @@ import * as THREE from 'three';
 import { NEBULA_VERTEX, NEBULA_FRAGMENT, nebulaUniforms, NEBULA_PALETTES } from './shaders/nebula.glsl';
 import { QUALITY } from './quality';
 import { useJourney } from '@/store/journey';
+import { DistantVessel } from './DistantVessel';
 
 /** Deterministic PRNG — the sky must be identical across reloads. */
 function mulberry32(seed: number) {
@@ -201,6 +202,7 @@ export function Sky() {
       <Starfield count={budget.stars} />
       <Nebulae count={budget.nebulaBillboards} octaves={budget.octaves} />
       <Dust count={budget.dust} />
+      {tier !== 'low' && <DistantVessel />}
     </group>
   );
 }
