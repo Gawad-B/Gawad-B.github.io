@@ -18,7 +18,7 @@ An interactive 3D portfolio where the space scene *is* the navigation: one star 
 | **@react-three/postprocessing** | Bloom + vignette (`src/scene/Universe.tsx`) | The cinematic glow on emissives (star, beacons, station windows), tiered down or off on weaker GPUs. |
 | **Zustand** | State stores (`src/store/`) — journey/camera, hover, boot progress | Subscription-based state that updates 60×/second without re-rendering the React tree. |
 | **Tailwind CSS v4** | Design tokens and instrument-panel UI (`src/styles/`, `src/ui/*.css`) | One `@theme` token source (palette, spacing, z-layers) shared by every HUD panel. |
-| **Playwright** (Python) | 14 test suites in `qa/` | Tests the real rendered site: all 48 moons, all 6 worlds, boarding, keyboard, a11y, mobile, and draw-call budgets. |
+| **Playwright** (Python) | 12 browser suites + 2 unit suites in `qa/` | Tests the real rendered site: all 48 moons, all 6 worlds, boarding, keyboard, a11y, mobile, and draw-call budgets. |
 | **Web3Forms** | Contact transmitter (`src/ui/MonitorScreen.tsx`) | The form posts from the browser — no backend to host or maintain. |
 | **GitHub Actions → GitHub Pages** | `.github/workflows/deploy.yml` | Fully static site, so Pages hosts it free at the original URL; every push to `main` typechecks, builds, and deploys. |
 
