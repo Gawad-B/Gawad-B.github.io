@@ -46,29 +46,28 @@ with sync_playwright() as p:
         time.sleep(0.15)
         if pg.evaluate("()=>document.body.style.cursor") == "pointer": got = True; break
     check("hovering a body acquires (cursor: pointer)", got)
+    check("the hover banner appears", pg.locator(".hvr").count() == 1)
 
-    # 2. No floating hover label duplicates the map callouts in system view.
-    check("map view suppresses the floating hover label",
-          pg.locator(".hover-label, .hvr").count() == 0)
-
-    # 3. Pointer slides onto a DOM overlay (the nav rail) — the canvas
+    # 2. Pointer slides onto a DOM overlay (the nav rail) — the canvas
     #    stops receiving events; the hover must still release.
     pg.mouse.move(140, 700, steps=2)
     released = False
     for _ in range(12):
         time.sleep(0.15)
-        if pg.evaluate("()=>document.body.style.cursor") != "pointer": released = True; break
-    check("hover releases when the pointer leaves for a DOM overlay", released)
+        if pg.evaluate("()=>document.body.style.cursor") != "pointer" and pg.locator(".hvr").count() == 0:
+            released = True; break
+    check("banner releases when the pointer leaves for a DOM overlay", released)
 
-    # 4. Re-acquire and park the pointer on empty canvas: release too.
+    # 3. Re-acquire and park the pointer on empty canvas: release too.
     pg.mouse.move(x, y, steps=4)
     time.sleep(0.4)
     pg.mouse.move(x + 220, y + 160, steps=6)  # empty space, still on canvas
     released = False
     for _ in range(12):
         time.sleep(0.15)
-        if pg.evaluate("()=>document.body.style.cursor") != "pointer": released = True; break
-    check("hover releases on empty canvas", released)
+        if pg.evaluate("()=>document.body.style.cursor") != "pointer" and pg.locator(".hvr").count() == 0:
+            released = True; break
+    check("banner releases on empty canvas", released)
 
 print(f"\n{'✓ hover release verified' if not fails else '✗ '+str(len(fails))+' failure(s)'}\n")
 sys.exit(0 if not fails else 1)

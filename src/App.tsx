@@ -47,9 +47,7 @@ function UniverseApp({ mobile }: { mobile: boolean }) {
           {region === 'milano-interior' && <MilanoPlate />}
           {focus.kind === 'skill' && focus.id && <SkillPanel skillId={focus.id} />}
           {focus.kind === 'project' && focus.id && <ProjectPanel projectId={focus.id} />}
-          {/* In the system overview the map callouts name everything;
-              a floating hover label there duplicates (and overlaps) them. */}
-          {region !== 'system' && <HoverLabel />}
+          <HoverLabel />
           <SystemCallouts />
           {/* One column: the manifest stacks above the region selector, so
               layout guarantees they can't overlap regardless of how many
