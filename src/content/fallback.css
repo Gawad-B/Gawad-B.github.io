@@ -1,0 +1,359 @@
+/* ============================================================
+   Fallback / text-mode styling.
+   Styles the SAME ContentSpine markup as a deep-space document.
+   Scoped under .fb so it can never leak into the 3D overlay layer.
+   ============================================================ */
+
+.fb {
+  position: relative;
+  min-height: 100dvh;
+  background:
+    radial-gradient(120% 80% at 50% -10%, #101a2e 0%, transparent 55%),
+    radial-gradient(90% 60% at 80% 110%, #1a1220 0%, transparent 60%),
+    var(--void-0);
+  overflow-x: hidden;
+}
+
+/* --- CSS-only starfield. Fixed, pointer-events-none, no scroll cost. --- */
+.fb-stars {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+}
+.fb-stars span {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+}
+.fb-stars-a {
+  width: 1px;
+  height: 1px;
+  box-shadow:
+    12vw 18vh 0 0 #f2f5fa, 34vw 8vh 0 0 #aeb8c9, 61vw 27vh 0 0 #f2f5fa,
+    83vw 12vh 0 0 #7fd4e8, 8vw 61vh 0 0 #aeb8c9, 27vw 78vh 0 0 #f2f5fa,
+    49vw 55vh 0 0 #6e7a8d, 72vw 71vh 0 0 #f2f5fa, 91vw 88vh 0 0 #aeb8c9,
+    41vw 92vh 0 0 #7fd4e8, 55vw 4vh 0 0 #aeb8c9, 19vw 41vh 0 0 #f2f5fa;
+  opacity: 0.9;
+}
+.fb-stars-b {
+  width: 2px;
+  height: 2px;
+  box-shadow:
+    22vw 31vh 0 0 #ffb35c, 68vw 44vh 0 0 #f2f5fa, 88vw 62vh 0 0 #7fd4e8,
+    5vw 84vh 0 0 #f2f5fa, 45vw 15vh 0 0 #aeb8c9, 77vw 95vh 0 0 #f2f5fa;
+  opacity: 0.55;
+}
+.fb-stars-c {
+  width: 1px;
+  height: 1px;
+  box-shadow:
+    3vw 7vh 0 0 #3d4655, 16vw 52vh 0 0 #3d4655, 31vw 66vh 0 0 #3d4655,
+    58vw 82vh 0 0 #3d4655, 66vw 9vh 0 0 #3d4655, 79vw 37vh 0 0 #3d4655,
+    95vw 51vh 0 0 #3d4655, 37vw 34vh 0 0 #3d4655;
+  opacity: 0.8;
+}
+
+/* A dim limb at the top edge — the hypergiant, implied. */
+.fb-horizon {
+  position: fixed;
+  top: -40vh;
+  left: 50%;
+  width: 150vw;
+  height: 90vh;
+  transform: translateX(-50%);
+  pointer-events: none;
+  background: radial-gradient(50% 50% at 50% 100%, rgb(140 36 16 / 0.35), transparent 70%);
+  z-index: 0;
+}
+
+.fb-shell {
+  position: relative;
+  z-index: 1;
+  max-width: 62rem;
+  margin: 0 auto;
+  padding: clamp(2rem, 6vw, 6rem) clamp(1rem, 5vw, 3rem) 6rem;
+}
+
+/* --- Banner --- */
+.fb-banner {
+  margin-bottom: clamp(3rem, 8vw, 6rem);
+}
+.fb-banner-inner {
+  padding: 1.25rem 1.5rem;
+}
+.fb-banner-inner p:not(.eyebrow) {
+  margin: 0.75rem 0 0;
+  max-width: 46ch;
+  color: var(--instr-70);
+  font-size: var(--text-sm);
+  line-height: 1.65;
+}
+
+.fb-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-top: 1.25rem;
+  padding: 0.55rem 0.6rem 0.55rem 1.1rem;
+  border: 1px solid color-mix(in srgb, var(--signal) 45%, transparent);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--signal) 10%, transparent);
+  color: var(--signal);
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background var(--dur-instrument) var(--ease-instrument),
+    transform var(--dur-instrument) var(--ease-instrument);
+}
+.fb-cta:hover {
+  background: color-mix(in srgb, var(--signal) 18%, transparent);
+}
+.fb-cta:active {
+  transform: scale(0.98);
+}
+/* Trailing icon lives in its own circle — never naked beside the label. */
+.fb-cta-icon {
+  display: grid;
+  place-items: center;
+  width: 1.75rem;
+  height: 1.75rem;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--signal) 20%, transparent);
+  transition: transform var(--dur-instrument) var(--ease-instrument);
+}
+.fb-cta:hover .fb-cta-icon {
+  transform: translate(2px, -1px) scale(1.05);
+}
+
+/* ============================================================
+   The revealed ContentSpine
+   ============================================================ */
+
+.cs-visible {
+  display: block;
+}
+
+.cs-visible header {
+  margin-bottom: clamp(3.5rem, 9vw, 7rem);
+}
+.cs-visible h1 {
+  margin: 0.9rem 0 0.75rem;
+  font-family: var(--font-display);
+  font-weight: 300;
+  font-size: clamp(2.25rem, 7vw, 4.5rem);
+  line-height: 0.98;
+  letter-spacing: -0.04em;
+  color: var(--instr-100);
+}
+.cs-visible header p:nth-of-type(1) {
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--signal);
+}
+.cs-visible header p:nth-of-type(2) {
+  max-width: 44ch;
+  margin: 1.25rem 0 0;
+  font-size: var(--text-lg);
+  line-height: 1.6;
+  color: var(--instr-70);
+}
+
+.cs-visible > section {
+  margin-bottom: clamp(3.5rem, 9vw, 7rem);
+}
+.cs-visible h2 {
+  margin: 0 0 2rem;
+  padding-bottom: 0.85rem;
+  border-bottom: 1px solid color-mix(in srgb, var(--instr-100) 10%, transparent);
+  font-family: var(--font-mono);
+  font-weight: 500;
+  font-size: var(--text-xs);
+  letter-spacing: var(--track-eyebrow);
+  text-transform: uppercase;
+  color: var(--instr-45);
+}
+
+.cs-visible p {
+  max-width: 68ch;
+  margin: 0 0 1.15rem;
+  font-size: var(--text-base);
+  line-height: 1.75;
+  color: var(--instr-70);
+}
+
+.cs-visible blockquote {
+  margin: 2rem 0;
+  padding-left: 1.25rem;
+  border-left: 1px solid color-mix(in srgb, var(--signal) 40%, transparent);
+}
+.cs-quote {
+  font-family: var(--font-serif);
+  font-size: clamp(1.25rem, 3vw, 1.75rem);
+  font-style: italic;
+  line-height: 1.4;
+  color: var(--instr-100);
+}
+
+.cs-telemetry {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr));
+  gap: 1px;
+  margin: 2.5rem 0 0;
+  padding: 1px;
+  background: color-mix(in srgb, var(--instr-100) 8%, transparent);
+  border-radius: 5px;
+  overflow: hidden;
+}
+.cs-telemetry > div {
+  padding: 1rem 1.1rem;
+  background: var(--void-1);
+}
+.cs-telemetry dt {
+  font-family: var(--font-mono);
+  font-size: var(--text-2xs);
+  letter-spacing: var(--track-eyebrow);
+  text-transform: uppercase;
+  color: var(--instr-45);
+}
+.cs-telemetry dd {
+  margin: 0.4rem 0 0;
+  font-size: var(--text-sm);
+  color: var(--instr-100);
+}
+
+/* --- Skills: group blocks with chip lists --- */
+.cs-visible #skills > section {
+  margin-bottom: 2.25rem;
+}
+.cs-visible h3 {
+  margin: 0 0 0.9rem;
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: var(--text-lg);
+  letter-spacing: -0.02em;
+  color: var(--instr-100);
+}
+.cs-visible #skills ul {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.cs-visible #skills li {
+  padding: 0.3rem 0.7rem;
+  border: 1px solid color-mix(in srgb, var(--instr-100) 10%, transparent);
+  border-radius: 3px;
+  background: var(--void-1);
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  color: var(--instr-70);
+}
+
+/* --- Projects --- */
+.cs-visible article {
+  position: relative;
+  margin-bottom: 1px;
+  padding: 1.75rem clamp(1.1rem, 3vw, 2rem);
+  background: var(--void-1);
+  border: 1px solid color-mix(in srgb, var(--instr-100) 7%, transparent);
+  border-radius: 5px;
+}
+.cs-visible article + article {
+  margin-top: 0.75rem;
+}
+.cs-visible article h3 {
+  display: flex;
+  align-items: baseline;
+  gap: 0.85rem;
+  margin-bottom: 0.35rem;
+  font-size: var(--text-xl);
+}
+.cs-index {
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  color: var(--signal);
+}
+.cs-world {
+  margin: 0.6rem 0 1rem !important;
+  font-family: var(--font-mono);
+  font-size: var(--text-xs) !important;
+  color: var(--instr-45) !important;
+}
+.cs-world b {
+  font-weight: 500;
+  color: var(--data);
+}
+.cs-sub {
+  margin: 1.25rem 0 0.55rem;
+  font-family: var(--font-mono);
+  font-size: var(--text-2xs);
+  font-weight: 500;
+  letter-spacing: var(--track-eyebrow);
+  text-transform: uppercase;
+  color: var(--instr-45);
+}
+.cs-tech {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.cs-tech li {
+  padding: 0.2rem 0.55rem;
+  border: 1px solid color-mix(in srgb, var(--data) 22%, transparent);
+  border-radius: 3px;
+  font-family: var(--font-mono);
+  font-size: var(--text-2xs);
+  color: var(--data);
+}
+.cs-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1.5rem;
+  margin: 1.4rem 0 0;
+  padding: 0;
+  list-style: none;
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  color: var(--instr-45);
+}
+.cs-visible a {
+  color: var(--signal);
+  text-decoration: none;
+  border-bottom: 1px solid color-mix(in srgb, var(--signal) 35%, transparent);
+  transition: border-color var(--dur-blip) var(--ease-instrument);
+}
+.cs-visible a:hover {
+  border-bottom-color: var(--signal);
+}
+.cs-private {
+  margin: 1rem 0 0 !important;
+  font-family: var(--font-mono);
+  font-size: var(--text-2xs) !important;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--instr-45) !important;
+}
+
+.cs-visible footer,
+.fb-sign {
+  margin-top: 4rem;
+  font-family: var(--font-mono);
+  font-size: var(--text-2xs);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--instr-25);
+}
+.cs-visible footer p {
+  color: var(--instr-25);
+  font-size: var(--text-2xs);
+}
