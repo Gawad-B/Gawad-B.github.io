@@ -8,7 +8,7 @@ const C = PERSONAL.contact;
      npx tsx qa/gen-head.ts   (then regenerate index.html)
    It feeds the canonical link, Open Graph, Twitter card and
    sitemap, so it must match the live origin exactly. */
-const SITE = 'https://gawad.vercel.app';
+const SITE = 'https://gawad-b.github.io';
 
 const description =
   `${PERSONAL.name} — ${PERSONAL.roles[0]} and ${PERSONAL.roles[1]} in ` +
