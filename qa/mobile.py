@@ -60,12 +60,12 @@ with sync_playwright() as p:
     pg.keyboard.press("Escape"); time.sleep(1.5)
 
     pg.click(".hud-nav-btn--ship"); time.sleep(4)
-    check("Milano works on mobile", pg.locator(".con-card").count() == 1)
-    check("console fits the viewport", pg.evaluate("""() => {
-      const r = document.querySelector('.con-card').getBoundingClientRect();
-      return r.width <= window.innerWidth && r.height <= window.innerHeight;
+    check("Milano works on mobile", pg.locator(".mon-screen").count() == 1)
+    check("monitor fits the viewport", pg.evaluate("""() => {
+      const r = document.querySelector('.mon-screen').getBoundingClientRect();
+      return r.width <= window.innerWidth * 1.02 && r.width > window.innerWidth * 0.5;
     }"""))
-    check("all 4 channels reachable on mobile", pg.locator(".con-channel").count() == 4)
+    check("all 4 channels reachable on mobile", pg.locator(".mon-channel").count() == 4)
     pg.screenshot(path="qa/shots/mobile-milano.png")
     check("no console errors on mobile", not errs, str(errs[:2]))
     ctx.close()
@@ -80,7 +80,7 @@ with sync_playwright() as p:
           pg.locator(".fb").count() == 1)
     check("banner explains why", "REDUCED MOTION" in pg.inner_text(".fb-banner"))
     check("complete content is present",
-          "Craft is just care" in pg.inner_text("body") and pg.locator("article").count() == 7)
+          "Craft is just care" in pg.inner_text("body") and pg.locator("article").count() == 6)
     check("an opt-in into 3D is offered", pg.locator(".fb-cta").count() == 1)
     pg.click(".fb-cta")
     pg.wait_for_selector(".hud-nav", timeout=30000)

@@ -443,3 +443,46 @@ type-check clean, build clean, and verified by the checks in §13.
 
 It is done when the answer to *"does this feel like a real interactive universe that
 happens to be a portfolio?"* is yes — and not "a normal portfolio with planets added".
+
+---
+
+# Rev 2 — Heliocentric rebuild (2026-08-28, owner feedback)
+
+Seven changes, from a review of Rev 1 against the reference
+(youtube.com/shorts/_-Eo8G3CYWc — "Spaceedu" scroll-driven space site):
+
+1. **One solar system.** Stephenson 2-18 sits at the origin and everything
+   orbits it (Kepler ω ∝ r^-1.5, glacial). Regions became camera stops in a
+   single always-mounted scene; only the ship's interior remains a separate
+   (lazy) space. `scene/SolarSystem.tsx` owns the orbital plan;
+   `scene/bodies.ts` registers live transforms; camera waypoints became
+   per-frame resolvers that chase moving bodies and stay glued after
+   arrival. Shot framing rides each body's orbital frame (mostly tangential
+   — stand fully sunward of Saturn and you are inside the photosphere).
+2. **Skills readable in-scene.** Moons ~3× larger; every skill name renders
+   as a pill label above its moon — one canvas atlas, one InstancedMesh of
+   billboarded quads, near-constant screen size (distance-scaled in the
+   vertex shader, clamped). Labels fade outside the skills stop.
+3. **Scroll = sections.** Wheel and vertical swipe advance
+   hero → system → about → skills → projects → ship, one stop per gesture
+   (accumulate to threshold, lock through the flight). Reading surfaces
+   (panels, dossier, monitor, form controls) never page-flip under the
+   wheel; the manifest guards only when it genuinely overflows.
+4. **Home unchanged; ENTER zooms out** to the heliocentric overview.
+5. **Projects stall fixed; portfolio delisted.** The black-screen report
+   traced to the lazy projects region compiling a dozen materials
+   mid-flight — everything now compiles once, under the loading screen
+   (whose 'warm' step also stopped requiring sub-50ms frames, which a slow
+   renderer never produces; plus a 14s hard ceiling so nobody is ever
+   stranded). The portfolio itself is no longer listed as a project (6
+   projects; HD 110067 returns to the reserved pool).
+6. **The monitor IS the contact section.** The DOM window is gone; the
+   cockpit's screen carries MILANO OS — channels, boot log, transmitter —
+   CSS-3D-projected onto the monitor mesh (drei Html, scale measured, not
+   derived). Values that don't fit travel start→end and restart (measured
+   marquee). The camera is bolted still inside the hull: camera/monitor
+   parallax was fake and made the screen wobble under the pointer. Phones
+   get a narrower single-column OS build via ordinary media queries.
+7. Counts, head metadata, OG card, and all QA suites updated; full
+   production tour (boot → scroll to every stop → panel → ship → back)
+   passes with zero console errors.

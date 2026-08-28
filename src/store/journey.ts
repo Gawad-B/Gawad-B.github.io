@@ -3,6 +3,7 @@ import type { Tier } from '@/content/useCapabilities';
 
 export type Region =
   | 'hero'
+  | 'system'
   | 'about'
   | 'skills'
   | 'projects'
@@ -15,11 +16,24 @@ export interface Focus {
   id?: string;
 }
 
-/** HUD order, and the order ↑/↓ traverses. */
+/** HUD button order. The overview isn't a button — it's the zoomed-out
+    stop between Home and About that ENTER THE UNIVERSE reveals. */
 export const REGION_ORDER: Region[] = ['hero', 'about', 'skills', 'projects'];
+
+/** What scrolling (and ↑/↓) traverses, in order. One list, one truth:
+    wheel, swipe and arrows all walk this. */
+export const SCROLL_ORDER: Region[] = [
+  'hero',
+  'system',
+  'about',
+  'skills',
+  'projects',
+  'milano-interior',
+];
 
 export const REGION_LABEL: Record<Region, string> = {
   hero: 'Home',
+  system: 'System',
   about: 'About',
   skills: 'Skills',
   projects: 'Projects',
@@ -29,9 +43,10 @@ export const REGION_LABEL: Record<Region, string> = {
 /** Mono designation shown in the HUD readout. */
 export const REGION_DESIGNATION: Record<Region, string> = {
   hero: 'STEPHENSON 2-18',
+  system: 'HELIOCENTRIC SURVEY',
   about: 'HD 189733 b',
   skills: 'SOL VI · SATURN',
-  projects: 'EXOPLANET SURVEY',
+  projects: 'EXOPLANET BELT',
   'milano-interior': 'THE MILANO · INTERIOR',
 };
 
@@ -61,8 +76,8 @@ interface JourneyState {
   setReducedMotion: (v: boolean) => void;
   toggleAudio: () => void;
   finishLoading: () => void;
-  /** Advance/retreat through REGION_ORDER for keyboard traversal. */
-  step: (delta: 1 | -1) => void;
+  /** Advance/retreat through SCROLL_ORDER — wheel, swipe and arrows. */
+  advance: (delta: 1 | -1) => void;
 }
 
 /** The ship is parked in Saturn's rings, so leaving it returns there. */
@@ -122,12 +137,16 @@ export const useJourney = create<JourneyState>((set, get) => ({
   toggleAudio: () => set((s) => ({ audioEnabled: !s.audioEnabled })),
   finishLoading: () => set((s) => (s.phase === 'loading' ? { phase: 'idle' } : {})),
 
-  step: (delta) => {
-    const { region, travelTo } = get();
-    const i = REGION_ORDER.indexOf(region);
-    // From inside the ship, stepping puts you back where it's parked.
-    if (i === -1) return travelTo(MILANO_HOME);
-    const next = REGION_ORDER[Math.min(REGION_ORDER.length - 1, Math.max(0, i + delta))];
-    if (next && next !== region) travelTo(next);
+  advance: (delta) => {
+    const { region, travelTo, enterMilano } = get();
+    const i = SCROLL_ORDER.indexOf(region);
+    const next = SCROLL_ORDER[i + delta];
+    if (!next || next === region) return;
+    // The last stop is inside the ship; entering it is its own action so
+    // the discovery flag and focus state stay correct.
+    if (next === 'milano-interior') return enterMilano();
+    // Scrolling back OUT of the ship reverses the scroll path (projects),
+    // unlike the Exit Vessel button, which returns to where it's parked.
+    travelTo(next);
   },
 }));

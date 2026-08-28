@@ -12,8 +12,12 @@ interface Props {
   /** Scene-space radius override; defaults to the world's own. */
   radius?: number;
   position?: [number, number, number];
-  /** Primary star direction, in world space. */
+  /** Fixed star direction — for lab/staging shots. */
   lightDir?: [number, number, number];
+  /** Heliocentric mode: derive the light direction from the body's own
+      world position each frame, because the sun is at the origin and the
+      body is orbiting it. Overrides lightDir. */
+  sunlit?: boolean;
   children?: React.ReactNode;
 }
 
@@ -22,13 +26,15 @@ interface Props {
  * from `world.shader`, not from a different component — which is why
  * adding project 08 means adding a data entry, not a new file.
  */
-export function Planet({ world, radius, position = [0, 0, 0], lightDir, children }: Props) {
+export function Planet({ world, radius, position = [0, 0, 0], lightDir, sunlit = false, children }: Props) {
   const tier = useJourney((s) => s.tier);
   const reducedMotion = useJourney((s) => s.reducedMotion);
   const budget = QUALITY[tier];
   const r = radius ?? world.radius;
 
   const bodyRef = useRef<THREE.Mesh>(null);
+  const groupRef = useRef<THREE.Group>(null);
+  const sunDir = useMemo(() => new THREE.Vector3(), []);
   const uniforms = useMemo(
     () => planetUniforms(world.shader, budget.octaves),
     [world.shader, budget.octaves],
@@ -49,13 +55,25 @@ export function Planet({ world, radius, position = [0, 0, 0], lightDir, children
   useFrame((_, delta) => {
     uniforms.uTime.value += delta;
     if (!reducedMotion && bodyRef.current) bodyRef.current.rotation.y += world.spin * delta;
+
+    /* The sun sits at the origin, so the light direction is simply the
+       body's own position, negated — recomputed per frame because the
+       body is orbiting. */
+    if (sunlit && groupRef.current) {
+      groupRef.current.getWorldPosition(sunDir);
+      if (sunDir.lengthSq() > 1e-4) {
+        sunDir.multiplyScalar(-1).normalize();
+        uniforms.uLightDir.value.copy(sunDir);
+        atmo.uLightDir.value.copy(sunDir);
+      }
+    }
   });
 
   const segments = budget.planetSegments;
   const hasAtmosphere = world.shader.atmosphereDensity > 0.2;
 
   return (
-    <group position={position}>
+    <group ref={groupRef} position={position}>
       <mesh ref={bodyRef}>
         <sphereGeometry args={[r, segments, segments / 2]} />
         <shaderMaterial

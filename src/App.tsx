@@ -11,9 +11,10 @@ import { HeroOverlay } from './ui/HeroOverlay';
 import { AboutDossier } from './ui/AboutDossier';
 import { SkillPanel } from './ui/SkillPanel';
 import { ProjectPanel } from './ui/ProjectPanel';
-import { ContactConsole } from './ui/ContactConsole';
+import { MilanoPlate } from './ui/MilanoPlate';
 import { HoverLabel } from './ui/HoverLabel';
 import { useKeyboardNav } from './ui/useKeyboardNav';
+import { useScrollNav } from './ui/useScrollNav';
 import { useJourney } from './store/journey';
 
 /** The 3D experience. Split out so the fallback path never mounts any of it. */
@@ -23,6 +24,8 @@ function UniverseApp({ mobile }: { mobile: boolean }) {
   const focus = useJourney((s) => s.focus);
   const finishLoading = useJourney((s) => s.finishLoading);
   useKeyboardNav();
+  // Wheel and swipe step between sections once the universe is live.
+  useScrollNav(phase !== 'loading');
 
   const loading = phase === 'loading';
 
@@ -39,7 +42,7 @@ function UniverseApp({ mobile }: { mobile: boolean }) {
         <>
           {region === 'hero' && <HeroOverlay />}
           {region === 'about' && <AboutDossier />}
-          {region === 'milano-interior' && <ContactConsole />}
+          {region === 'milano-interior' && <MilanoPlate />}
           {focus.kind === 'skill' && focus.id && <SkillPanel skillId={focus.id} />}
           {focus.kind === 'project' && focus.id && <ProjectPanel projectId={focus.id} />}
           <HoverLabel />

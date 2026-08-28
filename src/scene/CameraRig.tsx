@@ -3,63 +3,157 @@ import { useFrame, useThree } from '@react-three/fiber';
 import * as THREE from 'three';
 import { useJourney, type Region } from '@/store/journey';
 import { easeFlight, easeInstrument } from './easing';
-
-export interface Waypoint {
-  position: [number, number, number];
-  target: [number, number, number];
-  fov: number;
-  /** Multiplies the computed flight duration. >1 = weightier arrival. */
-  weight?: number;
-}
+import { getBody, getBodies } from './bodies';
+import { WORLDS, PROJECT_WORLD_IDS, worldForProject } from '@/data/worlds';
 
 /**
- * Where the camera sits for each region, and for each focusable target.
- * Focus keys are `${kind}:${id}`, so a region and a target share one lookup.
+ * Camera stops in a heliocentric scene.
+ *
+ * Static coordinates stopped being meaningful the moment everything began
+ * orbiting the star, so a waypoint is now a resolver: given scratch
+ * vectors, it fills in where the camera should sit and look *right now*.
+ * Flights chase the moving endpoint — lerp(start, end(t), easedT) still
+ * lands exactly, because at t=1 you are wherever the endpoint currently
+ * is — and after arrival the rig stays glued to the resolver, which is
+ * what keeps a focused planet centre-frame while it keeps orbiting.
  */
-export const WAYPOINTS: Record<string, Waypoint> = {
-  // Stephenson 2-18 is radius 60 and sits at [34,-46,12]; this framing
-  // puts its limb off two edges of frame.
-  hero: { position: [0, 8, 165], target: [10, -14, 0], fov: 42, weight: 1.25 },
-  about: { position: [7.5, 1.8, 11], target: [-2.4, -0.3, 0], fov: 40 },
-  skills: { position: [0, 13, 54], target: [0, -1, 0], fov: 42, weight: 1.15 },
-  projects: { position: [20, 5, 60], target: [20, -1, 2], fov: 50, weight: 1.2 },
-  'milano-interior': { position: [0, 0.3, 1.2], target: [0, 0.15, -6], fov: 60, weight: 0.75 },
+
+interface Shot {
+  fov: number;
+  weight?: number;
+  /** Mobile widens the FOV by this much (default 12). The interior sets 0:
+      the monitor is a flat document, and widening just shrinks it. */
+  mobileFovBoost?: number;
+  resolve: (pos: THREE.Vector3, target: THREE.Vector3, mobile: boolean) => void;
+}
+
+const SUN_R = WORLDS['stephenson-2-18'].radius;
+
+const OUT = new THREE.Vector3();
+const SIDE = new THREE.Vector3();
+const UP = new THREE.Vector3(0, 1, 0);
+
+/**
+ * Follow a registered body in ITS OWN orbital frame: `back` units further
+ * from the sun, `up` above the ecliptic, `side` along the orbit.
+ *
+ * A world-fixed offset cannot work here — the body keeps moving, so the
+ * sun would swing anywhere in frame depending on orbital phase, including
+ * straight into the shot. The camera rides the body's own orbital frame:
+ * `side` along the orbit (the main standoff — with the sun ~90° off the
+ * view axis it stays out of frame and the body keeps a real terminator),
+ * `out` radial (negative = sunward; small, because Saturn's frame distance
+ * exceeds its distance to the star — stand fully sunward of it and you are
+ * inside the photosphere), `up` above the ecliptic.
+ */
+function follow(id: string, out: number, up: number, side: number) {
+  return (pos: THREE.Vector3, target: THREE.Vector3) => {
+    const body = getBody(id);
+    if (!body) {
+      pos.set(side, up, Math.abs(out) + 10);
+      target.set(0, 0, 0);
+      return;
+    }
+    body.getWorldPosition(target);
+    OUT.set(target.x, 0, target.z).normalize();
+    SIDE.crossVectors(UP, OUT).normalize();
+    pos.copy(target).addScaledVector(OUT, out).addScaledVector(SIDE, side);
+    pos.y += up;
+  };
+}
+
+const SHOTS: Record<string, Shot> = {
+  /* Home: hard against the photosphere, limb running off frame — the
+     star at the centre of everything, seen from embarrassingly close. */
+  hero: {
+    fov: 42,
+    weight: 1.2,
+    resolve: (pos, target) => {
+      pos.set(-3.4, 1.1, SUN_R * 1.9);
+      target.set(SUN_R * 0.85, -SUN_R * 0.55, 0);
+    },
+  },
+
+  /* ENTER THE UNIVERSE: pull all the way out. The reveal — one star,
+     every orbit, everything moving. */
+  system: {
+    fov: 50,
+    weight: 1.35,
+    resolve: (pos, target) => {
+      pos.set(0, 70, 142);
+      target.set(0, -2, 0);
+    },
+  },
+
+  about: { fov: 42, resolve: follow('hd-189733-b', -3.2, 1.3, 7.8) },
+
+  /* Saturn from above the ring plane, far enough back that all seven
+     moon shells fit in frame. */
+  skills: { fov: 46, weight: 1.1, resolve: follow('saturn', -7, 13, 33) },
+
+  /* The belt: a dynamic three-quarter shot of wherever the six project
+     worlds currently are — they drift, so the framing must too. */
+  projects: {
+    fov: 50,
+    weight: 1.15,
+    resolve: (pos, target) => {
+      const bodies = getBodies(PROJECT_WORLD_IDS);
+      if (bodies.length === 0) {
+        pos.set(0, 30, 110);
+        target.set(0, 0, 0);
+        return;
+      }
+      target.set(0, 0, 0);
+      const tmp = new THREE.Vector3();
+      for (const b of bodies) target.add(b.getWorldPosition(tmp));
+      target.divideScalar(bodies.length);
+      // Stand outside the belt, looking back across it toward the sun.
+      pos.copy(target);
+      const out = tmp.set(target.x, 0, target.z).normalize();
+      pos.addScaledVector(out, 46);
+      pos.y += 22;
+      target.multiplyScalar(0.72); // bias the look toward the sun side
+    },
+  },
+
+  'milano-interior': {
+    fov: 54,
+    weight: 0.75,
+    mobileFovBoost: 0,
+    resolve: (pos, target, mobile) => {
+      // Close enough that the monitor IS the interface; further back on
+      // phones so the whole glass fits a narrow frame.
+      pos.set(0, mobile ? 0.02 : 0.1, mobile ? 0.55 : 0.52);
+      target.set(0, -0.26, -2.08);
+    },
+  },
 };
+
+/** Close approach for one project world, sized by its radius. */
+function projectShot(projectId: string): Shot {
+  const world = worldForProject(projectId);
+  const r = world?.radius ?? 2;
+  return {
+    fov: 44,
+    weight: 0.95,
+    resolve: world
+      ? follow(world.id, -r * 1.9, r * 0.9, r * 5.6)
+      : SHOTS.projects!.resolve,
+  };
+}
 
 const MOBILE_FOV_BOOST = 12;
 
-export function registerWaypoint(key: string, wp: Waypoint) {
-  WAYPOINTS[key] = wp;
+function shotFor(region: Region, focusKind: string, focusId?: string): Shot {
+  if (focusKind === 'project' && focusId) return projectShot(focusId);
+  return SHOTS[region] ?? SHOTS.hero!;
 }
 
-function keyFor(region: Region, focusKind: string, focusId?: string): string {
-  if (focusKind !== 'none' && focusId) {
-    const k = `${focusKind}:${focusId}`;
-    if (WAYPOINTS[k]) return k;
-  }
-  if (focusKind === 'milano' && WAYPOINTS.milano) return 'milano';
-  return region;
-}
-
-/** Flight time scales with distance, but within cinematic bounds. */
+/** Flight time scales with distance, within cinematic bounds. */
 function durationFor(distance: number, weight: number): number {
-  return THREE.MathUtils.clamp(0.85 + distance * 0.011, 0.9, 2.8) * weight;
+  return THREE.MathUtils.clamp(0.85 + distance * 0.011, 0.9, 3.1) * weight;
 }
 
-/**
- * The camera.
- *
- * Duration-based easing rather than exponential damping. Damping looks
- * simpler but is the wrong tool here: its approach is asymptotic, so
- * arrival never definitively happens, and it's framerate-sensitive once
- * you clamp delta to survive hitches — on a slow device the whole flight
- * runs in slow motion and the arrival threshold is never tripped.
- *
- * With an explicit duration, arrival is deterministic and the curve is the
- * same one the DOM transitions use. The look-at target runs on a softer
- * curve so the framing settles a beat after the movement stops — that lag
- * is what reads as a camera operator rather than a lerp.
- */
 export function CameraRig({ mobile }: { mobile: boolean }) {
   const camera = useThree((s) => s.camera) as THREE.PerspectiveCamera;
   const region = useJourney((s) => s.region);
@@ -79,90 +173,88 @@ export function CameraRig({ mobile }: { mobile: boolean }) {
     [],
   );
 
-  /* -1 means "capture the start time on the next frame". The retarget
-     effect has no access to the render clock, so timing starts in the
-     frame loop. */
+  const shot = useRef<Shot>(SHOTS.hero!);
   const startedAt = useRef(-1);
   const duration = useRef(1);
   const startFov = useRef(42);
-  const endFov = useRef(42);
   const arrived = useRef(true);
   const idleTime = useRef(0);
 
-  const activeKey = keyFor(region, focus.kind, focus.id);
+  const focusKey = `${region}|${focus.kind}|${focus.id ?? ''}`;
 
   useEffect(() => {
-    const wp = WAYPOINTS[activeKey] ?? WAYPOINTS.hero!;
+    const next = shotFor(region, focus.kind, focus.id);
+    shot.current = next;
 
     v.startPos.copy(camera.position);
     v.startLook.copy(v.look);
-    v.endPos.set(...wp.position);
-    v.endLook.set(...wp.target);
+    next.resolve(v.endPos, v.endLook, mobile);
 
     startFov.current = camera.fov;
-    endFov.current = mobile ? wp.fov + MOBILE_FOV_BOOST : wp.fov;
-
     const distance = v.startPos.distanceTo(v.endPos);
-    duration.current = reducedMotion ? 0.001 : durationFor(distance, wp.weight ?? 1);
+    duration.current = reducedMotion ? 0.001 : durationFor(distance, next.weight ?? 1);
     startedAt.current = -1;
     arrived.current = false;
     idleTime.current = 0;
-  }, [activeKey, camera, mobile, reducedMotion, v]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [focusKey, camera, reducedMotion, mobile, v]);
 
   useFrame((state, rawDelta) => {
     const now = state.clock.elapsedTime;
     const delta = Math.min(rawDelta, 1 / 20);
+    const active = shot.current;
+    const endFov = mobile ? active.fov + (active.mobileFovBoost ?? MOBILE_FOV_BOOST) : active.fov;
+
+    // The destination moves; re-resolve it every frame.
+    active.resolve(v.endPos, v.endLook, mobile);
 
     if (!arrived.current) {
       if (startedAt.current < 0) startedAt.current = now;
-
-      /* Wall-clock, not accumulated deltas. Accumulating clamped deltas
-         makes a timed flight framerate-dependent: on a device rendering at
-         3fps the clamp means elapsed advances far slower than real time and
-         a 2.6s flight takes 18s. Reading the clock directly means a slow
-         device drops frames — which is correct — instead of entering slow
-         motion. */
       const t = Math.min(1, (now - startedAt.current) / duration.current);
 
       const posT = easeFlight(t);
-      // Trails the position slightly, so framing settles last.
       const lookT = easeInstrument(Math.min(1, t * 0.82));
 
       camera.position.lerpVectors(v.startPos, v.endPos, posT);
       v.look.lerpVectors(v.startLook, v.endLook, lookT);
 
-      /* Warp flare: a brief FOV widening in the first half of a long
-         flight. Reads as acceleration; on short hops it's imperceptible,
-         which is correct. */
+      // Warp flare on genuinely long hauls only.
       const flare =
         v.startPos.distanceTo(v.endPos) > 40 && !reducedMotion
           ? Math.sin(Math.min(1, t * 1.4) * Math.PI) * 13
           : 0;
-      camera.fov = THREE.MathUtils.lerp(startFov.current, endFov.current, posT) + flare;
+      camera.fov = THREE.MathUtils.lerp(startFov.current, endFov, posT) + flare;
       camera.updateProjectionMatrix();
 
       if (t >= 1) {
         arrived.current = true;
-        camera.position.copy(v.endPos);
-        v.look.copy(v.endLook);
-        camera.fov = endFov.current;
+        camera.fov = endFov;
         camera.updateProjectionMatrix();
         endTravel();
       }
-    } else if (!reducedMotion) {
-      /* Idle breathing. A camera that stops dead reads as a screenshot;
-         this is small enough to feel like a held shot, not a drift. */
+    } else {
+      /* Follow mode: glued to the resolver, so an orbiting focus stays
+         framed. The sway is a held shot, not a drift — except inside the
+         ship, where the camera and the monitor are bolted to the same
+         hull: any relative motion between them is fake parallax (and it
+         makes the projected screen wobble under the pointer). */
+      const still = reducedMotion || region === 'milano-interior';
+      const sway = still ? 0 : Math.sin(idleTime.current * 0.21) * 0.05;
+      const rise = still ? 0 : Math.cos(idleTime.current * 0.16) * 0.035;
       idleTime.current += delta;
-      const sway = Math.sin(idleTime.current * 0.21) * 0.055;
-      const rise = Math.cos(idleTime.current * 0.16) * 0.04;
       camera.position.set(v.endPos.x + sway, v.endPos.y + rise, v.endPos.z);
+      v.look.copy(v.endLook);
+      if (Math.abs(camera.fov - endFov) > 0.05) {
+        camera.fov += (endFov - camera.fov) * Math.min(1, delta * 6);
+        camera.updateProjectionMatrix();
+      }
     }
 
     camera.lookAt(v.look);
 
     if ((window as Window & { __rigDebug?: boolean }).__rigDebug) {
       (window as Window & { __rigState?: unknown }).__rigState = {
-        activeKey,
+        region,
         arrived: arrived.current,
         dist: +v.scratch.copy(camera.position).sub(v.endPos).length().toFixed(2),
       };

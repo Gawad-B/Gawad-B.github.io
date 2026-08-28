@@ -55,7 +55,8 @@ export function HeroOverlay() {
           className="hero-cta hit"
           onClick={() => {
             blip('approach');
-            travelTo('about');
+            // The reveal: pull all the way out to the heliocentric survey.
+            travelTo('system');
           }}
         >
           <span>Enter the universe</span>

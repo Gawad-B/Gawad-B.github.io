@@ -1,8 +1,7 @@
 /**
  * Projects. Source of truth: src/components/Projects.tsx @ b35eae0.
- * Descriptions are verbatim, with one exception: `this-portfolio`,
- * which had to be rewritten because it describes the site itself and
- * the site is no longer a Rosé Pine night sky.
+ * Descriptions are verbatim. The portfolio itself is deliberately NOT
+ * listed as a project (owner's call, Rev 2) — you are standing in it.
  *
  * Nothing here is invented. Two repositories are genuinely private.
  */
@@ -108,24 +107,6 @@ export const PROJECTS: Project[] = [
     links: [{ label: 'GitHub', href: 'https://github.com/Gawad-B/CVD', kind: 'repo' }],
     private: false,
     screenshot: '/assets/cvd.png',
-  },
-  {
-    id: 'this-portfolio',
-    index: '07',
-    name: 'This Universe',
-    kind: 'Ambient Web · WebGL',
-    description:
-      'The universe you are currently standing in. Every surface here is a procedural GLSL shader — no textures, no downloaded models. A red hypergiant, a ring system, forty-eight orbiting moons and seven exoplanets, all built from noise functions and a camera that refuses to teleport.',
-    tech: ['React', 'TypeScript', 'Three.js', 'GLSL'],
-    links: [
-      {
-        label: 'GitHub',
-        href: 'https://github.com/Gawad-B/Gawad-B.github.io',
-        kind: 'repo',
-      },
-    ],
-    private: false,
-    screenshot: '/assets/portfolio.png',
   },
 ];
 

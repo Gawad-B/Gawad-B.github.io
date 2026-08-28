@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { useJourney, REGION_ORDER } from '@/store/journey';
+import { useJourney, type Region } from '@/store/journey';
 import { blip } from '@/audio/ambience';
 
 /** Don't hijack keys while someone is typing. */
@@ -15,8 +15,11 @@ function inTextField(target: EventTarget | null): boolean {
  * equivalent, which is the difference between a 3D site that is navigable
  * and one that merely has focusable buttons somewhere.
  */
+/** Digits mirror the five HUD buttons, not the scroll order. */
+const DIGIT_REGIONS: Region[] = ['hero', 'about', 'skills', 'projects'];
+
 export function useKeyboardNav() {
-  const step = useJourney((s) => s.step);
+  const advance = useJourney((s) => s.advance);
   const travelTo = useJourney((s) => s.travelTo);
   const enterMilano = useJourney((s) => s.enterMilano);
   const exitMilano = useJourney((s) => s.exitMilano);
@@ -32,13 +35,13 @@ export function useKeyboardNav() {
         case 'ArrowRight':
           e.preventDefault();
           blip('select');
-          step(1);
+          advance(1);
           return;
         case 'ArrowUp':
         case 'ArrowLeft':
           e.preventDefault();
           blip('select');
-          step(-1);
+          advance(-1);
           return;
         case 'Escape':
           // Back out one level at a time: target → region → ship exit.
@@ -54,7 +57,7 @@ export function useKeyboardNav() {
         case '2':
         case '3':
         case '4': {
-          const target = REGION_ORDER[Number(e.key) - 1];
+          const target = DIGIT_REGIONS[Number(e.key) - 1];
           if (target) {
             blip('select');
             travelTo(target);
@@ -72,5 +75,5 @@ export function useKeyboardNav() {
 
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
-  }, [step, travelTo, enterMilano, exitMilano, clearFocus]);
+  }, [advance, travelTo, enterMilano, exitMilano, clearFocus]);
 }

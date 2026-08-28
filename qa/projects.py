@@ -31,7 +31,7 @@ with sync_playwright() as p:
     time.sleep(4)
 
     print("\nsurvey manifest")
-    check("7 rows", pg.locator(".mf-row").count() == 7)
+    check(f"{len(data)} rows", pg.locator(".mf-row").count() == len(data))
     check("no overlap with the rail", pg.evaluate("""() => {
       const mf = document.querySelector('.mf')?.getBoundingClientRect();
       const nv = document.querySelector('.hud-nav')?.getBoundingClientRect();
@@ -79,5 +79,5 @@ with sync_playwright() as p:
     if errs: fails.append("console errors")
     b.close()
 
-print(f"\n{'✓ all 7 project worlds verified' if not fails else '✗ ' + str(len(fails)) + ' failure(s)'}\n")
+print(f"\n{('✓ all ' + str(len(data)) + ' project worlds verified') if not fails else '✗ ' + str(len(fails)) + ' failure(s)'}\n")
 sys.exit(0 if not fails else 1)

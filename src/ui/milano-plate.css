@@ -1,0 +1,42 @@
+/* The citation. Left column, under the HUD status block — the top-right
+   corner belongs to the audio toggle. */
+.con-plate {
+  position: fixed;
+  z-index: var(--z-hud);
+  top: 8.4rem;
+  left: clamp(0.9rem, 2.5vw, 1.6rem);
+  max-width: 15rem;
+  padding: 0.6rem 0.8rem;
+  border: 1px solid color-mix(in srgb, var(--alert) 30%, transparent);
+  border-radius: 4px;
+  background: color-mix(in srgb, var(--void-0) 78%, transparent);
+  backdrop-filter: blur(10px);
+  transform: rotate(-1.6deg);
+  pointer-events: none;
+}
+.con-plate-title {
+  margin: 0 0 0.4rem;
+  font-family: var(--font-mono);
+  font-size: var(--text-2xs);
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--alert);
+}
+.con-plate ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 0.2rem;
+}
+.con-plate li {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.06em;
+  line-height: 1.45;
+  color: var(--instr-45);
+}
+@media (max-width: 900px) {
+  .con-plate { display: none; }
+}

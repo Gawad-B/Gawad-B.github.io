@@ -51,7 +51,16 @@ export function LoadingScreen({ onDone }: { onDone: () => void }) {
      threshold is crossed (99.7 → 100), and each change runs the cleanup,
      which cancels the timers that were just scheduled. `ready` goes
      false→true and stays there. */
-  const ready = shown >= 99.5;
+  /* Hard ceiling: whatever a device does, nobody gets stranded on a
+     loading screen. If boot telemetry hasn't closed the last few percent
+     after 14s, the universe is running well enough to enter anyway. */
+  const [forced, setForced] = useState(false);
+  useEffect(() => {
+    const id = window.setTimeout(() => setForced(true), 14000);
+    return () => window.clearTimeout(id);
+  }, []);
+
+  const ready = shown >= 99.5 || forced;
   useEffect(() => {
     if (!ready) return;
     setArrived(true);

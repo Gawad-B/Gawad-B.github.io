@@ -92,7 +92,9 @@ export const WORLDS: Record<WorldId, World> = {
     id: 'stephenson-2-18',
     displayName: 'Stephenson 2-18',
     designation: 'ST2-18 · SCUTUM',
-    radius: 60,
+    // Scene radius, not solar radii: the whole system shares one scale
+    // now that everything orbits this star.
+    radius: 9,
     spin: 0.004,
     accent: '#ff7043',
     panelMode: 'dark',
@@ -133,7 +135,7 @@ export const WORLDS: Record<WorldId, World> = {
     id: 'hd-189733-b',
     displayName: 'HD 189733 b',
     designation: 'HD189733b · VULPECULA',
-    radius: 3.2,
+    radius: 2.2,
     spin: 0.05,
     accent: '#2e6fd9',
     panelMode: 'dark',
@@ -173,7 +175,7 @@ export const WORLDS: Record<WorldId, World> = {
     id: 'saturn',
     displayName: 'Saturn',
     designation: 'SOL VI · 9.5 AU',
-    radius: 4.6,
+    radius: 3.0,
     spin: 0.07,
     accent: '#d6c08a',
     panelMode: 'dark',
@@ -215,7 +217,7 @@ export const WORLDS: Record<WorldId, World> = {
     displayName: 'WASP-76 b',
     designation: 'WASP-76b · PISCES',
     project: 'labora',
-    radius: 2.9,
+    radius: 2.3,
     spin: 0.03,
     accent: '#ff7a3d',
     panelMode: 'light',
@@ -256,7 +258,7 @@ export const WORLDS: Record<WorldId, World> = {
     displayName: '55 Cancri e',
     designation: '55 CNC e · CANCER',
     project: 'quizzy',
-    radius: 1.9,
+    radius: 1.7,
     spin: 0.02,
     accent: '#ff5c1f',
     panelMode: 'dark',
@@ -298,7 +300,7 @@ export const WORLDS: Record<WorldId, World> = {
     displayName: 'TrES-2b',
     designation: 'TrES-2b · DRACO',
     project: 'prayer-times',
-    radius: 2.6,
+    radius: 2.0,
     spin: 0.025,
     accent: '#c1352b',
     panelMode: 'light',
@@ -340,7 +342,7 @@ export const WORLDS: Record<WorldId, World> = {
     displayName: 'KELT-9b',
     designation: 'KELT-9b · CYGNUS',
     project: 'rdmid',
-    radius: 3.4,
+    radius: 2.4,
     spin: 0.045,
     accent: '#b8d8ff',
     panelMode: 'dark',
@@ -381,7 +383,7 @@ export const WORLDS: Record<WorldId, World> = {
     displayName: 'Kepler-16b',
     designation: 'KEPLER-16b · CYGNUS',
     project: 'attg',
-    radius: 3.0,
+    radius: 2.2,
     spin: 0.035,
     accent: '#cbb894',
     panelMode: 'dark',
@@ -422,7 +424,7 @@ export const WORLDS: Record<WorldId, World> = {
     displayName: 'K2-18b',
     designation: 'K2-18b · LEO',
     project: 'cvd',
-    radius: 2.7,
+    radius: 2.1,
     spin: 0.04,
     accent: '#4fb8c9',
     panelMode: 'dark',
@@ -455,15 +457,16 @@ export const WORLDS: Record<WorldId, World> = {
   },
 
   /* ---------------------------------------------------------------
-     07 · THIS UNIVERSE — not one planet but six, locked in a perfect
-     resonant chain. A system of parts in harmony, which is either a
-     good metaphor for a portfolio or a very smug one.
+     RESERVED — six sub-Neptunes in a perfect resonant chain. Was the
+     portfolio's world in Rev 1; the portfolio is no longer listed as a
+     project, so the most harmonious system known waits for a project
+     that deserves it.
      --------------------------------------------------------------- */
   'hd-110067': {
     id: 'hd-110067',
     displayName: 'HD 110067',
     designation: 'HD 110067 · COMA BERENICES',
-    project: 'this-portfolio',
+    unused: true,
     radius: 1.15,
     spin: 0.05,
     accent: '#c8d2e0',
@@ -573,7 +576,7 @@ export const WORLDS: Record<WorldId, World> = {
   },
 };
 
-/** The seven project worlds, in nav-manifest order. */
+/** The six project worlds, in nav-manifest order. */
 export const PROJECT_WORLD_IDS: WorldId[] = [
   'wasp-76-b',
   '55-cancri-e',
@@ -581,7 +584,6 @@ export const PROJECT_WORLD_IDS: WorldId[] = [
   'kelt-9b',
   'kepler-16b',
   'k2-18b',
-  'hd-110067',
 ];
 
 export const PROJECT_WORLDS: World[] = PROJECT_WORLD_IDS.map((id) => WORLDS[id]);

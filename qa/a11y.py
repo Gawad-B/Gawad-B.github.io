@@ -36,7 +36,7 @@ CONTRAST_JS = """
     return (hi+0.05)/(lo+0.05); };
 
   const out = [];
-  document.querySelectorAll('main, .pnl, .dos-card, .con-card, .hud-nav, .mf, .hero-inner, .hud-status')
+  document.querySelectorAll('main, .pnl, .dos-card, .mon-screen, .con-plate, .hud-nav, .mf, .hero-inner, .hud-status')
     .forEach(root => {
       root.querySelectorAll('*').forEach(el => {
         if (!el.childNodes.length) return;

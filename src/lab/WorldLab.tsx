@@ -23,6 +23,7 @@ const ROW: World[] = [
   ...PROJECT_WORLDS,
   WORLDS['hd-189733-b'],
   WORLDS.saturn,
+  WORLDS['hd-110067'],
   WORLDS['wasp-193-b'],
   WORLDS['psr-b1257-12-b'],
 ];

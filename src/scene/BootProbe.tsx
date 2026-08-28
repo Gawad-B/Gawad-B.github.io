@@ -10,7 +10,6 @@ import { useJourney } from '@/store/journey';
  */
 export function BootProbe() {
   const frames = useRef(0);
-  const settled = useRef(0);
   const gl = useThree((s) => s.gl);
   const scene = useThree((s) => s.scene);
   const region = useJourney((s) => s.region);
@@ -20,18 +19,17 @@ export function BootProbe() {
     markBoot('sky');
   }, []);
 
-  useFrame((_, delta) => {
+  useFrame(() => {
     frames.current += 1;
     if (frames.current === 2) markBoot('firstFrame');
 
-    // Three consecutive frames under 50ms means the programs are compiled
-    // and we're not about to stall on first-draw of a new material.
-    if (delta < 0.05) {
-      settled.current += 1;
-      if (settled.current === 3) markBoot('warm');
-    } else {
-      settled.current = 0;
-    }
+    /* 'Warm' = ten frames actually rendered. The first version required
+       three consecutive sub-50ms frames — which a slow renderer NEVER
+       produces once the whole system draws from frame one, so the loader
+       soft-locked at 92%. Absolute frame time is a property of the GPU;
+       "the first ten frames exist" is the honest, device-independent
+       signal that every first-view shader has compiled. */
+    if (frames.current === 10) markBoot('warm');
 
     /* Scene complexity, exposed for the perf audit. Draw calls, triangle
        count and program count are hardware-independent and are what

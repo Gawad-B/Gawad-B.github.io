@@ -55,7 +55,7 @@ function group(
 }
 
 export const SKILL_GROUPS: SkillGroup[] = [
-  group('ml-ai', 'Machine Learning / AI', 'ML-AI', '#ffb35c', 2.9, 4, [
+  group('ml-ai', 'Machine Learning / AI', 'ML-AI', '#ffb35c', 2.55, 4, [
     'Machine Learning',
     'Neural Networks',
     'Ensemble Models',
@@ -67,7 +67,7 @@ export const SKILL_GROUPS: SkillGroup[] = [
     'Claude Code',
     'Bioinformatics',
   ]),
-  group('languages', 'Languages', 'LANG', '#7fd4e8', 3.4, -7, [
+  group('languages', 'Languages', 'LANG', '#7fd4e8', 2.9, -7, [
     'Python',
     'JavaScript',
     'TypeScript',
@@ -76,7 +76,7 @@ export const SKILL_GROUPS: SkillGroup[] = [
     'C++',
     'R',
   ]),
-  group('frontend', 'Frontend', 'FE', '#a8c4db', 3.9, 11, [
+  group('frontend', 'Frontend', 'FE', '#a8c4db', 3.25, 11, [
     'React',
     'TypeScript',
     'HTML',
@@ -84,14 +84,14 @@ export const SKILL_GROUPS: SkillGroup[] = [
     'Tailwind CSS',
     'Vite',
   ]),
-  group('backend', 'Backend / APIs', 'API', '#8fa8c4', 4.5, -5, [
+  group('backend', 'Backend / APIs', 'API', '#8fa8c4', 3.6, -5, [
     'Node.js',
     'Flask',
     'FastAPI',
     'REST APIs',
     'JWT Auth',
   ]),
-  group('databases', 'Databases', 'DB', '#c4b79e', 5.1, 8, [
+  group('databases', 'Databases', 'DB', '#c4b79e', 3.95, 8, [
     'PostgreSQL',
     'SQLite',
     'MariaDB',
@@ -99,7 +99,7 @@ export const SKILL_GROUPS: SkillGroup[] = [
     'Neon',
     'MySQL',
   ]),
-  group('linux-devops', 'Linux / DevOps', 'OPS', '#9db8a8', 5.7, -12, [
+  group('linux-devops', 'Linux / DevOps', 'OPS', '#9db8a8', 4.3, -12, [
     'Linux',
     'System Administration',
     'Bash',
@@ -108,7 +108,7 @@ export const SKILL_GROUPS: SkillGroup[] = [
     'GitHub',
     'Cloud Hosting',
   ]),
-  group('cs', 'Computer Science', 'CS', '#b0b6c4', 6.3, 6, [
+  group('cs', 'Computer Science', 'CS', '#b0b6c4', 4.65, 6, [
     'Data Structures',
     'Algorithms',
     'OOP',

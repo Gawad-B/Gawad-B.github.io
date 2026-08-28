@@ -1,6 +1,8 @@
 import { useMemo, useRef } from 'react';
 import { useFrame } from '@react-three/fiber';
+import { Html } from '@react-three/drei';
 import * as THREE from 'three';
+import { MonitorScreen } from '@/ui/MonitorScreen';
 import { SaturnRings } from '@/scene/SaturnRings';
 import { Planet } from '@/scene/Planet';
 import { WORLDS } from '@/data/worlds';
@@ -190,11 +192,82 @@ function InteriorLights() {
   );
 }
 
+/**
+ * The ship's computer: a physical housing bolted above the instrument
+ * shelf, with the contact interface CSS-3D-projected onto its screen.
+ * The visitor reads the machine, not a floating window — that's the
+ * difference between being in a cockpit and being on a website.
+ */
+function Monitor() {
+  const materials = useMemo(
+    () => ({
+      housing: new THREE.MeshStandardMaterial({
+        color: new THREE.Color('#1a2230'),
+        roughness: 0.6,
+        metalness: 0.5,
+      }),
+      trim: new THREE.MeshStandardMaterial({
+        color: new THREE.Color('#b8541f'),
+        roughness: 0.55,
+        metalness: 0.4,
+      }),
+      glass: new THREE.MeshStandardMaterial({
+        color: new THREE.Color('#050a12'),
+        roughness: 0.25,
+        metalness: 0.7,
+        emissive: new THREE.Color('#0a1622'),
+        emissiveIntensity: 0.65,
+      }),
+    }),
+    [],
+  );
+
+  return (
+    <group position={[0, -0.18, -2.1]} rotation={[-0.08, 0, 0]}>
+      {/* Housing shell */}
+      <mesh material={materials.housing}>
+        <boxGeometry args={[2.06, 1.5, 0.12]} />
+      </mesh>
+      {/* Accent trim along the top edge */}
+      <mesh material={materials.trim} position={[0, 0.77, 0]}>
+        <boxGeometry args={[2.06, 0.04, 0.13]} />
+      </mesh>
+      {/* Mounting arm down to the shelf */}
+      <mesh material={materials.housing} position={[0, -0.86, -0.06]}>
+        <boxGeometry args={[0.34, 0.5, 0.08]} />
+      </mesh>
+      {/* Dark glass face the UI sits on */}
+      <mesh material={materials.glass} position={[0, 0, 0.062]}>
+        <planeGeometry args={[1.94, 1.38]} />
+      </mesh>
+
+      {/* The interface, projected onto the glass. The scale constant is
+          MEASURED, not derived: drei's transform mode maps px to world by
+          an internal factor, so we rendered once, read the element's
+          getBoundingClientRect, and solved for the scale that puts the
+          660px document just inside the glass. */}
+      <Html
+        transform
+        position={[0, 0, 0.075]}
+        scale={0.135}
+        zIndexRange={[24, 10]}
+        style={{ pointerEvents: 'auto' }}
+      >
+        <MonitorScreen />
+      </Html>
+
+      {/* Glow the screen casts back into the cabin */}
+      <pointLight position={[0, 0, 0.7]} intensity={2.6} distance={3.2} color="#7fd4e8" />
+    </group>
+  );
+}
+
 export function MilanoInterior() {
   return (
     <group>
       <Cockpit />
       <CanopyView />
+      <Monitor />
       <InteriorLights />
     </group>
   );

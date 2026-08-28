@@ -122,6 +122,8 @@ function RingParticles({ radius, count }: { radius: number; count: number }) {
 export function SaturnRings({ planetRadius }: { planetRadius: number }) {
   const tier = useJourney((s) => s.tier);
   const budget = QUALITY[tier];
+  const group = useRef<THREE.Group>(null);
+  const worldPos = useMemo(() => new THREE.Vector3(), []);
   const uniforms = useMemo(
     () => ringUniforms(budget.octaves, planetRadius),
     [budget.octaves, planetRadius],
@@ -129,10 +131,21 @@ export function SaturnRings({ planetRadius }: { planetRadius: number }) {
 
   useFrame((_, delta) => {
     uniforms.uTime.value += delta;
+    /* The analytic shadow works in world space, and Saturn orbits the sun
+       now — so both the occluder centre and the light direction have to be
+       refreshed from the live transform, or the shadow stays parked where
+       Saturn used to be. Light dir is just -position: the sun is at 0. */
+    if (group.current) {
+      group.current.getWorldPosition(worldPos);
+      uniforms.uPlanetCenter.value.copy(worldPos);
+      if (worldPos.lengthSq() > 1e-4) {
+        uniforms.uLightDir.value.copy(worldPos).multiplyScalar(-1).normalize();
+      }
+    }
   });
 
   return (
-    <group>
+    <group ref={group}>
       <mesh rotation={[-Math.PI / 2, 0, 0]}>
         {/* Radial segments matter more than angular here — the structure
             being resolved is concentric. */}

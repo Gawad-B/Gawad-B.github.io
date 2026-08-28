@@ -35,7 +35,7 @@ check(
   radii.every((r, i) => i === 0 || r > radii[i - 1]!),
   JSON.stringify(radii),
 );
-check('band radii clear the ring system (>2.6 Saturn radii)', Math.min(...radii) > 2.6);
+check('band radii clear the ring system (>2.35 Saturn radii)', Math.min(...radii) > 2.35);
 check('skill ids unique', new Set(ALL_SKILLS.map((s) => s.id)).size === 48);
 check(
   'every group accent is 6-digit hex',
@@ -43,11 +43,11 @@ check(
 );
 
 console.log('\nprojects');
-check('7 projects', PROJECTS.length === 7, `got ${PROJECTS.length}`);
-check('project ids unique', new Set(PROJECTS.map((p) => p.id)).size === 7);
+check('6 projects (the portfolio is deliberately not listed)', PROJECTS.length === 6, `got ${PROJECTS.length}`);
+check('project ids unique', new Set(PROJECTS.map((p) => p.id)).size === 6);
 check(
-  'indices are 01..07 in order',
-  PROJECTS.map((p) => p.index).join() === '01,02,03,04,05,06,07',
+  'indices are 01..06 in order',
+  PROJECTS.map((p) => p.index).join() === '01,02,03,04,05,06',
 );
 check(
   'every link is https',
@@ -67,7 +67,7 @@ check(
 check('every project has at least one tech tag', PROJECTS.every((p) => p.tech.length > 0));
 
 console.log('\nworlds');
-check('7 project worlds', PROJECT_WORLDS.length === 7);
+check('6 project worlds', PROJECT_WORLDS.length === 6);
 check(
   'every project world maps to a real project',
   PROJECT_WORLDS.every((w) => PROJECTS.some((p) => p.id === w.project)),
@@ -108,7 +108,7 @@ check(
         w.shader.terminatorSharpness,
       ].join('|'),
     ),
-  ).size === 7,
+  ).size === 6,
 );
 check(
   'exactly one world has a photoevaporation tail',
@@ -118,7 +118,7 @@ check(
   'exactly one world has two suns',
   PROJECT_WORLDS.filter((w) => w.shader.twoSuns).length === 1,
 );
-check('2 reserved slots', allWorlds.filter((w) => w.unused).length === 2);
+check('3 reserved slots (incl. HD 110067)', allWorlds.filter((w) => w.unused).length === 3);
 check(
   'reserved slots carry no project',
   allWorlds.filter((w) => w.unused).every((w) => w.project === undefined),

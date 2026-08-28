@@ -1,5 +1,5 @@
 /** Journey state machine. Run: npx tsx qa/store.test.ts */
-import { useJourney, REGION_ORDER } from '../src/store/journey';
+import { useJourney, SCROLL_ORDER } from '../src/store/journey';
 import { QUALITY } from '../src/scene/quality';
 
 let failures = 0;
@@ -55,20 +55,30 @@ check('band isolates', s().isolatedBand === 'ml-ai');
 s().travelTo('projects');
 check('leaving skills drops isolation', s().isolatedBand === null);
 
-console.log('\nkeyboard traversal');
+console.log('\nscroll traversal');
 reset();
-s().step(1);
-check('step forward from hero → about', s().region === 'about');
-s().step(-1);
-check('step back → hero', s().region === 'hero');
-s().step(-1);
-check('step back at the start is a no-op', s().region === 'hero');
-useJourney.setState({ region: REGION_ORDER[REGION_ORDER.length - 1]! });
-s().step(1);
-check('step forward at the end is a no-op', s().region === 'projects');
-useJourney.setState({ region: 'milano-interior' });
-s().step(1);
-check('stepping out of the ship returns to Saturn', s().region === 'skills');
+check(
+  'scroll order is hero → system → about → skills → projects → ship',
+  SCROLL_ORDER.join() === 'hero,system,about,skills,projects,milano-interior',
+);
+s().advance(1);
+check('advance from hero reveals the system overview', s().region === 'system');
+s().advance(1);
+check('advance again → about', s().region === 'about');
+s().advance(-1);
+check('advance back → system', s().region === 'system');
+s().advance(-1);
+s().advance(-1);
+check('advancing past the start is a no-op', s().region === 'hero');
+useJourney.setState({ region: 'projects' });
+s().advance(1);
+check('advancing past projects enters the ship', s().region === 'milano-interior');
+check('scroll-entering the ship counts as discovery', s().milanoFound === true);
+s().advance(-1);
+check('scrolling back out of the ship reverses the path (projects)', s().region === 'projects');
+s().advance(1);
+s().advance(1);
+check('advancing past the ship is a no-op', s().region === 'milano-interior');
 
 console.log('\nloading + audio + tier');
 useJourney.setState({ phase: 'loading' });

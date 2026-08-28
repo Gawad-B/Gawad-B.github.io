@@ -21,7 +21,7 @@ export function NavManifest() {
   if (region === 'projects') {
     return (
       <nav className="mf" aria-label="Project worlds">
-        <p className="eyebrow mf-title">Survey targets · 07</p>
+        <p className="eyebrow mf-title">Survey targets · {String(PROJECTS.length).padStart(2, '0')}</p>
         <ul>
           {PROJECTS.map((project, i) => {
             const world = PROJECT_WORLDS[i]!;
@@ -56,7 +56,7 @@ export function NavManifest() {
   if (region === 'skills') {
     return (
       <nav className="mf" aria-label="Skill bands">
-        <p className="eyebrow mf-title">Orbital bands · 07</p>
+        <p className="eyebrow mf-title">Orbital bands · {String(SKILL_GROUPS.length).padStart(2, '0')}</p>
         <ul>
           <li>
             <button

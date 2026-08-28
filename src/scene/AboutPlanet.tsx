@@ -1,8 +1,8 @@
 import { useMemo, useRef } from 'react';
 import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
-import { Planet } from '@/scene/Planet';
-import { QUALITY } from '@/scene/quality';
+import { Planet } from './Planet';
+import { QUALITY } from './quality';
 import { useJourney } from '@/store/journey';
 import { WORLDS } from '@/data/worlds';
 
@@ -10,9 +10,8 @@ const WORLD = WORLDS['hd-189733-b'];
 
 /**
  * The silicate haze layer. HD 189733 b is blue because of particles
- * suspended above the cloud deck, not because of anything below — so the
- * haze belongs on its own slightly larger, slowly counter-rotating shell
- * rather than baked into the surface.
+ * suspended above the cloud deck — so the haze lives on its own slowly
+ * counter-rotating shell rather than baked into the surface.
  */
 function HazeShell({ radius, segments }: { radius: number; segments: number }) {
   const ref = useRef<THREE.Mesh>(null);
@@ -32,7 +31,6 @@ function HazeShell({ radius, segments }: { radius: number; segments: number }) {
   );
 
   useFrame((_, delta) => {
-    // Counter-rotating slower than the body: superrotating haze aloft.
     if (!reducedMotion && ref.current) ref.current.rotation.y -= delta * 0.018;
   });
 
@@ -44,12 +42,8 @@ function HazeShell({ radius, segments }: { radius: number; segments: number }) {
 }
 
 /**
- * Glass rain, as streaks rather than droplets.
- *
- * On this planet the wind (≈8,700 km/h) massively outruns terminal
- * velocity, so condensing silicate travels almost horizontally. Modelling
- * it as short instanced streaks aligned to the wind vector reads correctly;
- * falling particles would read as snow, which is the wrong physics.
+ * Glass rain as streaks, not droplets: at ≈8,700 km/h the wind outruns
+ * terminal velocity, so condensing silicate travels almost horizontally.
  */
 function GlassRain({ radius, count }: { radius: number; count: number }) {
   const ref = useRef<THREE.InstancedMesh>(null);
@@ -58,13 +52,11 @@ function GlassRain({ radius, count }: { radius: number; count: number }) {
   const seeds = useMemo(
     () =>
       Array.from({ length: count }, (_, i) => ({
-        // Distribute over the sphere, biased away from the poles where the
-        // zonal jets are weakest.
-        lat: (Math.sin(i * 2.399) * 0.72) * (Math.PI / 2),
+        lat: Math.sin(i * 2.399) * 0.72 * (Math.PI / 2),
         lon: (i * 2.399) % (Math.PI * 2),
         r: radius * (1.012 + ((i * 37) % 11) / 900),
         speed: 0.5 + ((i * 53) % 40) / 60,
-        len: 0.06 + ((i * 29) % 15) / 260,
+        len: 0.05 + ((i * 29) % 15) / 320,
       })),
     [count, radius],
   );
@@ -84,10 +76,9 @@ function GlassRain({ radius, count }: { radius: number; count: number }) {
         s.r * Math.sin(s.lat),
         s.r * cosLat * Math.sin(lon),
       );
-      // Lay each streak down along the direction of travel.
       dummy.lookAt(0, 0, 0);
       dummy.rotateY(Math.PI / 2);
-      dummy.scale.set(s.len, 0.004, 0.004);
+      dummy.scale.set(s.len, 0.003, 0.003);
       dummy.updateMatrix();
       ref.current!.setMatrixAt(i, dummy.matrix);
     });
@@ -110,22 +101,16 @@ function GlassRain({ radius, count }: { radius: number; count: number }) {
   );
 }
 
-/**
- * HD 189733 b. Framed to one side so the dossier panel has room — the
- * planet is the visual focus, but the text is the point, and neither
- * should be fighting the other for the same pixels.
- */
-export function AboutRegion() {
+/** HD 189733 b, ready to be hung on an orbit. */
+export function AboutPlanet() {
   const tier = useJourney((s) => s.tier);
   const budget = QUALITY[tier];
   const rainCount = tier === 'low' ? 0 : tier === 'medium' ? 90 : 170;
 
   return (
-    <group position={[-2.4, -0.3, 0]}>
-      <Planet world={WORLD} lightDir={[0.85, 0.4, 0.55]}>
-        <HazeShell radius={WORLD.radius} segments={budget.planetSegments} />
-        <GlassRain radius={WORLD.radius} count={rainCount} />
-      </Planet>
-    </group>
+    <Planet world={WORLD} sunlit>
+      <HazeShell radius={WORLD.radius} segments={budget.planetSegments} />
+      <GlassRain radius={WORLD.radius} count={rainCount} />
+    </Planet>
   );
 }
