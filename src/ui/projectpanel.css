@@ -1,0 +1,95 @@
+.prp-section {
+  margin-top: 1.2rem;
+  padding-top: 1rem;
+  border-top: 1px solid color-mix(in srgb, var(--instr-100) 8%, transparent);
+}
+.pnl--light .prp-section { border-top-color: rgb(0 0 0 / 0.12); }
+
+.prp-label {
+  margin: 0 0 0.6rem;
+  color: var(--instr-45);
+}
+.pnl--light .prp-label { color: #5b6472; }
+
+/* --- tech chips --- */
+.prp-tech {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.prp-tech li {
+  padding: 0.24rem 0.55rem;
+  border: 1px solid color-mix(in srgb, var(--accent) 30%, transparent);
+  border-radius: 3px;
+  font-family: var(--font-mono);
+  font-size: var(--text-2xs);
+  letter-spacing: 0.03em;
+  color: var(--instr-70);
+}
+.pnl--light .prp-tech li {
+  border-color: rgb(0 0 0 / 0.18);
+  color: #333b49;
+}
+
+/* --- links --- */
+.prp-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.prp-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.7rem;
+  padding: 0.4rem 0.4rem 0.4rem 0.9rem;
+  border: 1px solid color-mix(in srgb, var(--accent) 45%, transparent);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--accent) 8%, transparent);
+  font-family: var(--font-mono);
+  font-size: var(--text-2xs);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--accent);
+  text-decoration: none;
+  transition: background var(--dur-instrument) var(--ease-instrument),
+    transform 140ms var(--ease-instrument);
+}
+.prp-link:hover { background: color-mix(in srgb, var(--accent) 18%, transparent); }
+.prp-link:active { transform: scale(0.98); }
+.prp-link-icon {
+  display: grid;
+  place-items: center;
+  width: 1.5rem;
+  height: 1.5rem;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--accent) 20%, transparent);
+  transition: transform var(--dur-instrument) var(--ease-instrument);
+}
+.prp-link:hover .prp-link-icon { transform: translate(2px, -2px) scale(1.05); }
+
+/* On the light panel the accent has to darken to keep 4.5:1 on white. */
+.pnl--light .prp-link {
+  border-color: color-mix(in srgb, var(--accent) 55%, #241505);
+  background: color-mix(in srgb, var(--accent) 14%, transparent);
+  color: color-mix(in srgb, var(--accent) 45%, #241505);
+}
+.pnl--light .prp-link:hover { background: color-mix(in srgb, var(--accent) 26%, transparent); }
+
+.prp-private {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  margin: 0.7rem 0 0 !important;
+  font-family: var(--font-mono);
+  font-size: var(--text-2xs) !important;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--instr-45) !important;
+}
+.pnl--light .prp-private { color: #5b6472 !important; }

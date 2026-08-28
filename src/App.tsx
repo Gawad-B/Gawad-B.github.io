@@ -10,6 +10,7 @@ import { NavCluster } from './ui/NavCluster';
 import { HeroOverlay } from './ui/HeroOverlay';
 import { AboutDossier } from './ui/AboutDossier';
 import { SkillPanel } from './ui/SkillPanel';
+import { ProjectPanel } from './ui/ProjectPanel';
 import { HoverLabel } from './ui/HoverLabel';
 import { useKeyboardNav } from './ui/useKeyboardNav';
 import { useJourney } from './store/journey';
@@ -35,6 +36,7 @@ function UniverseApp({ mobile }: { mobile: boolean }) {
           {region === 'hero' && <HeroOverlay />}
           {region === 'about' && <AboutDossier />}
           {focus.kind === 'skill' && focus.id && <SkillPanel skillId={focus.id} />}
+          {focus.kind === 'project' && focus.id && <ProjectPanel projectId={focus.id} />}
           <HoverLabel />
           {/* One column: the manifest stacks above the region selector, so
               layout guarantees they can't overlap regardless of how many

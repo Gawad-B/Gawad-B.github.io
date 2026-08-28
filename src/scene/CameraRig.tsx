@@ -22,7 +22,7 @@ export const WAYPOINTS: Record<string, Waypoint> = {
   hero: { position: [0, 8, 165], target: [10, -14, 0], fov: 42, weight: 1.25 },
   about: { position: [7.5, 1.8, 11], target: [-2.4, -0.3, 0], fov: 40 },
   skills: { position: [0, 13, 54], target: [0, -1, 0], fov: 42, weight: 1.15 },
-  projects: { position: [0, 6, 62], target: [0, 0, 0], fov: 50, weight: 1.2 },
+  projects: { position: [20, 5, 60], target: [20, -1, 2], fov: 50, weight: 1.2 },
   'milano-interior': { position: [0, 0.35, 2.4], target: [0, 0.15, -2], fov: 62, weight: 0.75 },
 };
 
