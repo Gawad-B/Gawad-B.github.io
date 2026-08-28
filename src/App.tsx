@@ -23,6 +23,7 @@ function UniverseApp({ mobile }: { mobile: boolean }) {
   const phase = useJourney((s) => s.phase);
   const region = useJourney((s) => s.region);
   const focus = useJourney((s) => s.focus);
+  const veil = useJourney((s) => s.veil);
   const finishLoading = useJourney((s) => s.finishLoading);
   useKeyboardNav();
   // Wheel and swipe step between sections once the universe is live.
@@ -56,6 +57,11 @@ function UniverseApp({ mobile }: { mobile: boolean }) {
             <NavCluster />
           </div>
           <HUD />
+          {/* Airlock cross-fade: covers the exterior↔interior camera swap
+              when boarding or leaving the ship. Never interactive. */}
+          <div className={veil ? 'dock-veil on' : 'dock-veil'} aria-hidden="true">
+            <span>AIRLOCK · CYCLING</span>
+          </div>
         </>
       )}
 

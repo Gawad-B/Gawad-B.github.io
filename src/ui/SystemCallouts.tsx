@@ -10,7 +10,7 @@ interface Callout {
   eyebrow: string;
   label: string;
   accent: string;
-  target: () => { kind: 'region' | 'project'; value: string };
+  target: () => { kind: 'region' | 'project' | 'milano'; value: string };
 }
 
 /** Everything worth naming on the system map, driven by the data. */
@@ -28,6 +28,15 @@ const CALLOUTS: Callout[] = [
     label: 'Skills',
     accent: WORLDS.saturn.accent,
     target: () => ({ kind: 'region', value: 'skills' }),
+  },
+  {
+    /* The parked ship, named like every other body — an easter egg you
+       can't find isn't an easter egg, it's a maze. */
+    id: 'milano-ship',
+    eyebrow: 'The Milano · parked',
+    label: 'Contact',
+    accent: '#ff5f57',
+    target: () => ({ kind: 'milano', value: '' }),
   },
   ...PROJECTS.map((project) => {
     const world = worldForProject(project.id)!;
@@ -60,6 +69,7 @@ export function SystemCallouts() {
   const phase = useJourney((s) => s.phase);
   const travelTo = useJourney((s) => s.travelTo);
   const focusOn = useJourney((s) => s.focusOn);
+  const enterMilano = useJourney((s) => s.enterMilano);
   const [placed, setPlaced] = useState<Placed[]>([]);
   const raf = useRef(0);
 
@@ -125,6 +135,7 @@ export function SystemCallouts() {
           onClick={() => {
             const t = c.target();
             if (t.kind === 'project') focusOn('project', t.value);
+            else if (t.kind === 'milano') enterMilano();
             else travelTo(t.value as never);
           }}
         >

@@ -129,6 +129,22 @@ const SHOTS: Record<string, Shot> = {
   },
 };
 
+/* Boarding the Milano is two shots, not one: the approach frames the
+   parked ship against the rings and holds there a beat; the ingress
+   pushes to the canopy while the airlock veil rises to cover the moment
+   the camera crosses the hull. Both follow the registered ship body, so
+   they stay correct while Saturn (and the ship with it) keeps orbiting. */
+const MILANO_APPROACH: Shot = {
+  fov: 40,
+  weight: 1.05,
+  resolve: follow('milano-ship', -3.6, 2.2, 8.4),
+};
+const MILANO_INGRESS: Shot = {
+  fov: 46,
+  weight: 0.9,
+  resolve: follow('milano-ship', -0.5, 0.65, 1.6),
+};
+
 /** Close approach for one project world, sized by its radius. */
 function projectShot(projectId: string): Shot {
   const world = worldForProject(projectId);
@@ -144,7 +160,14 @@ function projectShot(projectId: string): Shot {
 
 const MOBILE_FOV_BOOST = 12;
 
-function shotFor(region: Region, focusKind: string, focusId?: string): Shot {
+function shotFor(
+  region: Region,
+  focusKind: string,
+  focusId: string | undefined,
+  docking: string | null,
+): Shot {
+  if (docking === 'approach') return MILANO_APPROACH;
+  if (docking === 'ingress') return MILANO_INGRESS;
   if (focusKind === 'project' && focusId) return projectShot(focusId);
   return SHOTS[region] ?? SHOTS.hero!;
 }
@@ -160,6 +183,7 @@ export function CameraRig({ mobile }: { mobile: boolean }) {
   const focus = useJourney((s) => s.focus);
   const reducedMotion = useJourney((s) => s.reducedMotion);
   const endTravel = useJourney((s) => s.endTravel);
+  const docking = useJourney((s) => s.docking);
 
   const v = useMemo(
     () => ({
@@ -179,23 +203,40 @@ export function CameraRig({ mobile }: { mobile: boolean }) {
   const startFov = useRef(42);
   const arrived = useRef(true);
   const idleTime = useRef(0);
+  /** Wall-clock time to hold on the parked ship before pushing inside. */
+  const holdUntil = useRef(-1);
 
-  const focusKey = `${region}|${focus.kind}|${focus.id ?? ''}`;
+  const focusKey = `${region}|${focus.kind}|${focus.id ?? ''}|${docking ?? ''}`;
 
   useEffect(() => {
-    const next = shotFor(region, focus.kind, focus.id);
+    const next = shotFor(region, focus.kind, focus.id, docking);
     shot.current = next;
 
-    v.startPos.copy(camera.position);
-    v.startLook.copy(v.look);
+    const cue = useJourney.getState().cameraCue;
+    if (cue === 'from-ship') {
+      /* Departing the vessel: the camera was parked at interior
+         coordinates near the origin. Under the veil, restart it just
+         outside the hull so the flight begins where the ship really is. */
+      MILANO_APPROACH.resolve(v.startPos, v.startLook, mobile);
+      camera.position.copy(v.startPos);
+      v.look.copy(v.startLook);
+    } else {
+      v.startPos.copy(camera.position);
+      v.startLook.copy(v.look);
+    }
     next.resolve(v.endPos, v.endLook, mobile);
 
     startFov.current = camera.fov;
     const distance = v.startPos.distanceTo(v.endPos);
-    duration.current = reducedMotion ? 0.001 : durationFor(distance, next.weight ?? 1);
+    duration.current =
+      reducedMotion || cue === 'snap'
+        ? 0.001
+        : durationFor(distance, next.weight ?? 1);
+    if (cue) useJourney.getState().consumeCameraCue();
     startedAt.current = -1;
     arrived.current = false;
     idleTime.current = 0;
+    holdUntil.current = -1;
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [focusKey, camera, reducedMotion, mobile, v]);
 
@@ -226,13 +267,28 @@ export function CameraRig({ mobile }: { mobile: boolean }) {
       camera.fov = THREE.MathUtils.lerp(startFov.current, endFov, posT) + flare;
       camera.updateProjectionMatrix();
 
+      // The veil must be fully up before the camera crosses the hull.
+      if (docking === 'ingress' && t >= 0.4) useJourney.getState().raiseVeil();
+
       if (t >= 1) {
         arrived.current = true;
         camera.fov = endFov;
         camera.updateProjectionMatrix();
-        endTravel();
+        const j = useJourney.getState();
+        if (j.docking === 'approach') {
+          // Hold on the parked ship for a beat before pushing to the canopy.
+          holdUntil.current = now + (reducedMotion ? 0 : 0.8);
+        } else if (j.docking === 'ingress') {
+          j.commitBoard();
+        } else {
+          endTravel();
+        }
       }
     } else {
+      if (docking === 'approach' && holdUntil.current >= 0 && now >= holdUntil.current) {
+        holdUntil.current = -1;
+        useJourney.getState().beginIngress();
+      }
       /* Follow mode: glued to the resolver, so an orbiting focus stays
          framed. The sway is a held shot, not a drift — except inside the
          ship, where the camera and the monitor are bolted to the same

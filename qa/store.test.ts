@@ -11,7 +11,9 @@ const s = () => useJourney.getState();
 const reset = () => useJourney.setState({
   region: 'hero', focus: { kind: 'none' }, phase: 'idle',
   entered: false, milanoFound: false, isolatedBand: null,
+  docking: null, veil: false, cameraCue: null,
 });
+const settle = (ms = 800) => new Promise((r) => setTimeout(r, ms));
 
 console.log('\ntravel');
 reset();
@@ -37,15 +39,39 @@ s().clearFocus();
 check('clearFocus preserves region', s().region === 'skills');
 check('clearFocus clears focus', s().focus.kind === 'none');
 
-console.log('\nmilano');
+console.log('\nmilano boarding sequence');
 reset();
 s().travelTo('projects');
 s().enterMilano();
-check('enterMilano from anywhere', s().region === 'milano-interior');
+check('enterMilano starts the approach, not a teleport', s().docking === 'approach');
+check('the region holds until the airlock cut', s().region === 'projects');
 check('enterMilano records the discovery', s().milanoFound === true);
+check('boarding cannot be scroll-interrupted', (s().advance(1), s().docking === 'approach'));
+s().beginIngress();
+check('ingress follows the approach', s().docking === 'ingress');
+s().commitBoard();
+check('committing the board lands inside', s().region === 'milano-interior');
+check('the sequence ends with docking cleared', s().docking === null);
+check('the veil is up over the cut', s().veil === true);
+check('the rig is told to cut, not fly', s().cameraCue === 'snap');
+s().enterMilano();
+check('enterMilano inside the ship is a no-op', s().region === 'milano-interior');
 s().exitMilano();
+check('exit veils first, swaps later', s().region === 'milano-interior' && s().veil === true);
+await settle();
 check('exitMilano returns to where the ship is parked', s().region === 'skills');
+check('departure restarts the camera at the hull', s().cameraCue === 'from-ship');
 check('milanoFound persists after exit', s().milanoFound === true);
+await settle();
+check('the veil comes back down', s().veil === false);
+
+console.log('\nboarding aborts');
+reset();
+s().travelTo('skills');
+s().enterMilano();
+s().travelTo('about');
+check('direct navigation aborts the approach', s().docking === null && s().region === 'about');
+check('an abort drops the veil with it', s().veil === false);
 
 console.log('\nband isolation');
 reset();
@@ -70,15 +96,19 @@ check('advance back → system', s().region === 'system');
 s().advance(-1);
 s().advance(-1);
 check('advancing past the start is a no-op', s().region === 'hero');
-useJourney.setState({ region: 'projects' });
+useJourney.setState({ region: 'projects', docking: null });
 s().advance(1);
-check('advancing past projects enters the ship', s().region === 'milano-interior');
+check('advancing past projects starts boarding the ship', s().docking === 'approach');
 check('scroll-entering the ship counts as discovery', s().milanoFound === true);
+s().beginIngress();
+s().commitBoard();
+check('the boarding sequence lands inside', s().region === 'milano-interior');
 s().advance(-1);
+await settle();
 check('scrolling back out of the ship reverses the path (projects)', s().region === 'projects');
+useJourney.setState({ region: 'milano-interior', docking: null, veil: false });
 s().advance(1);
-s().advance(1);
-check('advancing past the ship is a no-op', s().region === 'milano-interior');
+check('advancing past the ship is a no-op', s().region === 'milano-interior' && s().docking === null);
 
 console.log('\nloading + audio + tier');
 useJourney.setState({ phase: 'loading' });

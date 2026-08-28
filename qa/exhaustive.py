@@ -102,6 +102,10 @@ with sync_playwright() as p:
     pg.route("https://api.web3forms.com/**", lambda r: r.fulfill(status=500, content_type="application/json", body='{"success":false,"message":"Refused by test"}'))
     pg.evaluate("()=>window.__journey.getState().enterMilano()")
     pg.wait_for_selector(".mon-screen",timeout=20000)
+    # The airlock veil is still dropping when the monitor mounts; a forced
+    # click during the settle can land beside the button. Let it clear.
+    pg.wait_for_function("()=>!document.querySelector('.dock-veil.on')",timeout=20000)
+    time.sleep(0.8)
     for fid,val in [("#con-name","QA"),("#con-email","qa@e.com"),("#con-message","x")]:
         pg.fill(fid,val,force=True)
     pg.click(".mon-send",force=True)

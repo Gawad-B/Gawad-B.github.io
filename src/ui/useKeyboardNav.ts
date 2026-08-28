@@ -28,7 +28,7 @@ export function useKeyboardNav() {
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (inTextField(e.target) || e.metaKey || e.ctrlKey || e.altKey) return;
-      const { region, focus } = useJourney.getState();
+      const { region, focus, docking } = useJourney.getState();
 
       switch (e.key) {
         case 'ArrowDown':
@@ -44,8 +44,11 @@ export function useKeyboardNav() {
           advance(-1);
           return;
         case 'Escape':
-          // Back out one level at a time: target → region → ship exit.
-          if (region === 'milano-interior') {
+          // Changed your mind mid-boarding: abort back to where you were.
+          if (docking) {
+            blip('close');
+            travelTo(region);
+          } else if (region === 'milano-interior') {
             blip('close');
             exitMilano();
           } else if (focus.kind !== 'none') {

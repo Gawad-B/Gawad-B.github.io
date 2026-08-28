@@ -262,9 +262,23 @@ function Monitor() {
   );
 }
 
+/** Lowers the airlock veil once the cockpit has actually been drawn —
+    two frames, so the first (which may include shader compilation) and a
+    clean one after it have both hit the screen. */
+function VeilRelease() {
+  const frames = useRef(0);
+  useFrame(() => {
+    if (frames.current > 2) return;
+    frames.current += 1;
+    if (frames.current === 2) useJourney.getState().lowerVeil();
+  });
+  return null;
+}
+
 export function MilanoInterior() {
   return (
     <group>
+      <VeilRelease />
       <Cockpit />
       <CanopyView />
       <Monitor />

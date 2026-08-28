@@ -59,7 +59,11 @@ with sync_playwright() as p:
     pg.screenshot(path="qa/shots/mobile-panel.png")
     pg.keyboard.press("Escape"); time.sleep(1.5)
 
-    pg.click(".hud-nav-btn--ship"); time.sleep(4)
+    pg.click(".hud-nav-btn--ship")
+    # Boarding is a flown sequence now (approach → hold → ingress), so wait
+    # for the monitor rather than assuming a fixed flight time.
+    pg.wait_for_selector(".mon-screen", timeout=20000)
+    time.sleep(1)
     check("Milano works on mobile", pg.locator(".mon-screen").count() == 1)
     check("monitor fits the viewport", pg.evaluate("""() => {
       const r = document.querySelector('.mon-screen').getBoundingClientRect();

@@ -19,6 +19,15 @@ const MilanoInterior = lazy(() =>
 function Effects() {
   const tier = useJourney((s) => s.tier);
   const region = useJourney((s) => s.region);
+  const docking = useJourney((s) => s.docking);
+
+  /* Fetch the interior's chunk the moment boarding starts, so the code is
+     local by the time the veil covers the swap. Mounting must still wait
+     for the region flip: the monitor is projected DOM, not depth-tested,
+     and would float over the exterior scene. */
+  useEffect(() => {
+    if (docking) void import('@/regions/MilanoInterior');
+  }, [docking]);
   const budget = QUALITY[tier];
 
   if (!budget.post) return null;

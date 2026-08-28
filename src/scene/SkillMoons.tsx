@@ -194,6 +194,7 @@ export function SkillMoons({ planetRadius }: { planetRadius: number }) {
   const focus = useJourney((s) => s.focus);
   const focusOn = useJourney((s) => s.focusOn);
   const region = useJourney((s) => s.region);
+  const docking = useJourney((s) => s.docking);
   const budget = QUALITY[tier];
 
   const camera = useThree((s) => s.camera) as THREE.PerspectiveCamera;
@@ -301,7 +302,9 @@ export function SkillMoons({ planetRadius }: { planetRadius: number }) {
 
       /* Labels belong to the skills view. Elsewhere they'd be 48 pieces of
          text stuck to a distant planet — so they fade with the region. */
-      const target = region === 'skills' ? 1 : 0;
+      // Labels leave the frame during the boarding cinematic — a wall of
+      // skill pills photobombing the approach shot ruins it.
+      const target = region === 'skills' && !docking ? 1 : 0;
       labelGlobal.current += (target - labelGlobal.current) * Math.min(1, delta * 4);
       labelUniforms.uGlobal.value = labelGlobal.current;
       labels.visible = labelGlobal.current > 0.02 && !!atlas;

@@ -20,7 +20,7 @@ with sync_playwright() as p:
     # Never actually post to Web3Forms from a test.
     pg.route("https://api.web3forms.com/**", lambda r: r.fulfill(
         status=200, content_type="application/json", body='{"success":true,"message":"ok"}'))
-    pg.goto("http://localhost:3000", wait_until="networkidle")
+    pg.goto("http://localhost:3000/?qa=1", wait_until="networkidle")
     pg.wait_for_selector(".hud-nav", timeout=25000)
 
     print("\ndiscovery")
@@ -33,7 +33,14 @@ with sync_playwright() as p:
 
     print("\nentry")
     pg.click(".hud-nav-btn--ship")
-    time.sleep(4)
+    time.sleep(0.3)
+    check("entry is a boarding sequence, not a teleport",
+          pg.evaluate("()=>window.__journey.getState().docking") == "approach")
+    veiled = False
+    for _ in range(24):  # approach + hold + ingress from skills ≈ 3s
+        time.sleep(0.35)
+        if pg.locator(".dock-veil.on").count() == 1: veiled = True; break
+    check("airlock veil covers the hull crossing", veiled)
     pg.wait_for_selector(".mon-screen", timeout=20000)
     check("monitor boots", pg.locator(".mon-screen").count() == 1)
     check("HUD reports the interior", "MILANO" in pg.inner_text(".hud-status").upper())
@@ -72,10 +79,31 @@ with sync_playwright() as p:
     check("returned to Saturn, where the ship is parked",
           "SATURN" in pg.inner_text(".hud-status").upper())
     pg.click(".hud-nav-btn--ship")
-    time.sleep(3.5)
+    pg.wait_for_selector(".mon-screen", timeout=20000)
     pg.keyboard.press("Escape")
     time.sleep(3)
     check("Esc also exits the vessel", pg.locator(".mon-screen").count() == 0)
+
+    print("\nsystem map + abort")
+    pg.evaluate("()=>window.__journey.getState().travelTo('system')")
+    named = False
+    for _ in range(30):  # callouts render once the flight settles
+        time.sleep(0.4)
+        if pg.locator(".sc-callout", has_text="The Milano").count() == 1: named = True; break
+    check("the parked ship is named on the system map", named)
+    pg.locator(".sc-callout", has_text="The Milano").click()
+    pg.wait_for_selector(".mon-screen", timeout=25000)
+    check("the map callout boards the ship", pg.locator(".mon-screen").count() == 1)
+    pg.keyboard.press("Escape")
+    time.sleep(3)
+    pg.evaluate("()=>window.__journey.getState().enterMilano()")
+    time.sleep(0.5)
+    pg.keyboard.press("Escape")
+    time.sleep(0.5)
+    aborted = pg.evaluate("()=>{const s=window.__journey.getState();return s.docking===null && s.region!=='milano-interior'}")
+    check("Esc mid-approach aborts the boarding", bool(aborted))
+    time.sleep(2.5)
+    check("an aborted boarding never reaches the interior", pg.locator(".mon-screen").count() == 0)
 
     print(f"\nconsole errors: {errs if errs else 'none'}")
     if errs: fails.append("console errors")

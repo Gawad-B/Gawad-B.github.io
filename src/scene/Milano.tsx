@@ -1,8 +1,9 @@
-import { useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useFrame, useThree } from '@react-three/fiber';
 import * as THREE from 'three';
 import { CASSINI_MID } from './SaturnRings';
 import { Hotspot } from './Hotspot';
+import { registerBody, unregisterBody } from './bodies';
 import { useJourney } from '@/store/journey';
 import { setHoverTarget } from '@/store/hover';
 import { MILANO } from '@/data/milano';
@@ -20,6 +21,11 @@ import { blip } from '@/audio/ambience';
  * rings, and therefore the single worst legal parking space in the solar
  * system.
  */
+
+/* Big enough to read as a vehicle from the skills shot (~35 units out).
+   At 1× it was a 1.4-unit speck lost against the rings — technically
+   present, practically invisible, which defeats a parked easter egg. */
+const SHIP_SCALE = 2.3;
 
 const HULL_BLUE = '#2c4a68';
 const HULL_ORANGE = '#b8541f';
@@ -133,6 +139,33 @@ function ShipBody() {
   );
 }
 
+/** Anchor beacon: a double-flash red strobe, the universal signal for
+    "parked, unattended, please do not tow". Also how the eye finds a
+    dark hull against dark rings from across the system. */
+function Beacon() {
+  const ref = useRef<THREE.Mesh>(null);
+  const reducedMotion = useJourney((s) => s.reducedMotion);
+
+  useFrame((state) => {
+    const mat = ref.current?.material as THREE.MeshBasicMaterial | undefined;
+    if (!mat) return;
+    if (reducedMotion) {
+      mat.opacity = 0.85;
+      return;
+    }
+    const phase = state.clock.elapsedTime % 2.4;
+    const on = phase < 0.12 || (phase > 0.3 && phase < 0.42);
+    mat.opacity = on ? 1 : 0.08;
+  });
+
+  return (
+    <mesh ref={ref} position={[0, 0.42, 0.4]}>
+      <sphereGeometry args={[0.05, 8, 8]} />
+      <meshBasicMaterial color="#ff5f57" transparent toneMapped={false} />
+    </mesh>
+  );
+}
+
 /** The engines are cold; only the standby lamps are lit. */
 function StandbyLamps() {
   const ref = useRef<THREE.PointLight>(null);
@@ -147,7 +180,7 @@ function StandbyLamps() {
       : 0.34 + Math.abs(Math.sin(t * 1.7) * Math.sin(t * 0.43)) * 0.5;
   });
 
-  return <pointLight ref={ref} position={[0, 0.05, 0.4]} color={ENGINE_GLOW} distance={3.5} />;
+  return <pointLight ref={ref} position={[0, 0.05, 0.4]} color={ENGINE_GLOW} distance={6} />;
 }
 
 interface Props {
@@ -174,10 +207,20 @@ export function Milano({ planetRadius }: Props) {
   // planet so it's silhouetted against the gap rather than lost in the ring.
   const orbitRadius = CASSINI_MID * planetRadius;
   const angle = -0.72;
+  /* Hovering just above the gap: high enough that the rolled hull and
+     wingtips clear the ring plane, low enough to still read as parked
+     IN the division (the citation insists on it). */
   const position = useMemo<[number, number, number]>(
-    () => [Math.cos(angle) * orbitRadius, 0.06, Math.sin(angle) * orbitRadius],
+    () => [Math.cos(angle) * orbitRadius, 0.72, Math.sin(angle) * orbitRadius],
     [orbitRadius],
   );
+
+  useEffect(() => {
+    const node = group.current;
+    if (!node) return;
+    registerBody('milano-ship', node);
+    return () => unregisterBody('milano-ship');
+  }, []);
 
   useFrame((state) => {
     if (!group.current) return;
@@ -206,13 +249,14 @@ export function Milano({ planetRadius }: Props) {
 
   return (
     <group ref={group} position={position} rotation={[0.16, 2.1, -0.34]}>
-      <group scale={hovered ? 1.06 : 1}>
+      <group scale={hovered ? SHIP_SCALE * 1.05 : SHIP_SCALE}>
         <ShipBody />
         <StandbyLamps />
+        <Beacon />
       </group>
 
       <Hotspot
-        radius={0.62}
+        radius={1.7}
         minPixels={56}
         label={`${MILANO.name} — open contact console`}
         onHoverChange={(h) => {
