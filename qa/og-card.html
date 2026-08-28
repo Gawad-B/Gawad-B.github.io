@@ -1,0 +1,54 @@
+<!DOCTYPE html><html><head><meta charset="utf-8">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{width:1200px;height:630px;overflow:hidden;background:#04060b;position:relative;
+       font-family:'DM Sans',sans-serif;color:#f2f5fa}
+  /* The hypergiant, bottom-right, limb off two edges — same framing as the hero. */
+  .star{position:absolute;right:-190px;bottom:-300px;width:820px;height:820px;border-radius:50%;
+        background:radial-gradient(circle at 36% 30%, #ff9455 0%, #e2551c 26%, #a82a0c 55%, #5c1305 82%, #2a0803 100%);
+        box-shadow:0 0 260px 90px rgba(226,85,28,.34)}
+  .grain{position:absolute;inset:0;opacity:.05;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23n)'/%3E%3C/svg%3E")}
+  .scrim{position:absolute;inset:0;width:900px;
+         background:linear-gradient(to right,rgba(4,6,11,.94) 0%,rgba(4,6,11,.78) 34%,rgba(4,6,11,.34) 68%,transparent 100%)}
+  .stars span{position:absolute;background:#f2f5fa;border-radius:50%}
+  .wrap{position:absolute;inset:0;padding:76px 80px;display:flex;flex-direction:column;justify-content:center}
+  .eyebrow{font-family:'JetBrains Mono',monospace;font-size:15px;letter-spacing:.22em;
+           text-transform:uppercase;color:#6e7a8d;margin-bottom:14px}
+  h1{font-weight:300;font-size:86px;line-height:.94;letter-spacing:-.045em;margin-bottom:26px}
+  .role{font-family:'JetBrains Mono',monospace;font-size:17px;letter-spacing:.15em;
+        text-transform:uppercase;color:#7fd4e8;margin-bottom:26px}
+  .intro{font-size:23px;line-height:1.55;color:#aeb8c9;max-width:560px}
+  .foot{position:absolute;left:80px;bottom:64px;display:flex;gap:26px;align-items:center;
+        font-family:'JetBrains Mono',monospace;font-size:14px;letter-spacing:.14em;
+        text-transform:uppercase;color:#3d4655}
+  .pill{padding:9px 20px;border:1px solid rgba(255,179,92,.5);border-radius:999px;color:#ffb35c;
+        background:rgba(255,179,92,.09)}
+  .tag{position:absolute;right:64px;top:60px;font-family:'JetBrains Mono',monospace;font-size:13px;
+       letter-spacing:.2em;text-transform:uppercase;color:#8a4a2c;text-align:right;line-height:1.7}
+</style></head><body>
+<div class="star"></div><div class="scrim"></div>
+<div class="stars" id="s"></div><div class="grain"></div>
+<div class="tag">Stephenson 2-18<br>2150 R&#9737;</div>
+<div class="wrap">
+  <div class="eyebrow">Alexandria, Egypt &middot; CS @ E-JUST</div>
+  <h1>Abdelrahman<br>Gawad</h1>
+  <div class="role">Healthcare AI Engineer</div>
+  <div class="intro">I build machine learning that tries to buy people more time, and interfaces worth looking at while it works.</div>
+</div>
+<div class="foot"><span class="pill">Enter the universe</span><span>7 worlds <span>7 worlds &middot; 48 moons &middot; 1 badly parked ship</span>middot; 48 moons</span></div>
+<script>
+  // Deterministic starfield.
+  let seed = 424242;
+  const rnd = () => (seed = (seed*1664525+1013904223)%4294967296)/4294967296;
+  const box = document.getElementById('s');
+  for (let i=0;i<150;i++){
+    const el=document.createElement('span');
+    const sz=rnd()<0.85?1:2;
+    el.style.width=sz+'px'; el.style.height=sz+'px';
+    el.style.left=(rnd()*1200)+'px'; el.style.top=(rnd()*630)+'px';
+    el.style.opacity=(0.15+rnd()*0.7).toFixed(2);
+    box.appendChild(el);
+  }
+</script></body></html>
