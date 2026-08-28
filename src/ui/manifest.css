@@ -1,0 +1,152 @@
+/* ============================================================
+   Target manifest. Top-right rail on desktop; a horizontal
+   scroller above the nav bar on mobile.
+   ============================================================ */
+
+.mf {
+  position: fixed;
+  z-index: var(--z-hud);
+  top: 50%;
+  left: clamp(0.9rem, 2.5vw, 1.8rem);
+  transform: translateY(-50%);
+  width: min(15rem, 26vw);
+  animation: mf-in var(--dur-panel) var(--ease-flight) both;
+}
+@keyframes mf-in {
+  from { opacity: 0; transform: translate(-14px, -50%); }
+  to   { opacity: 1; transform: translate(0, -50%); }
+}
+
+.mf-title {
+  margin: 0 0 0.55rem 0.75rem;
+  color: var(--instr-25);
+}
+
+.mf ul {
+  display: grid;
+  gap: 1px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.mf-row {
+  --accent: var(--instr-45);
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  width: 100%;
+  padding: 0.42rem 0.6rem 0.42rem 0.7rem;
+  border: 1px solid transparent;
+  border-left: 1px solid color-mix(in srgb, var(--instr-100) 9%, transparent);
+  border-radius: 0 3px 3px 0;
+  background: color-mix(in srgb, var(--void-0) 50%, transparent);
+  backdrop-filter: blur(8px);
+  text-align: left;
+  cursor: pointer;
+  transition: border-color var(--dur-instrument) var(--ease-instrument),
+    padding-left var(--dur-instrument) var(--ease-instrument),
+    background var(--dur-instrument) var(--ease-instrument);
+}
+.mf-row:hover {
+  border-left-color: var(--accent);
+  padding-left: 0.95rem;
+}
+.mf-row.is-active {
+  border-left-color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 9%, color-mix(in srgb, var(--void-0) 58%, transparent));
+}
+
+.mf-index {
+  flex-shrink: 0;
+  min-width: 1.6rem;
+  font-family: var(--font-mono);
+  font-size: var(--text-2xs);
+  letter-spacing: 0.1em;
+  color: var(--instr-25);
+  transition: color var(--dur-instrument) var(--ease-instrument);
+}
+.mf-row:hover .mf-index,
+.mf-row.is-active .mf-index { color: var(--accent); }
+
+.mf-body {
+  display: grid;
+  gap: 0.1rem;
+  min-width: 0;
+  flex: 1;
+}
+/* The world name leads; the project name is the payload. */
+.mf-world {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+  color: var(--instr-25);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.mf-name {
+  font-family: var(--font-display);
+  font-size: var(--text-sm);
+  font-weight: 300;
+  letter-spacing: -0.015em;
+  color: var(--instr-70);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  transition: color var(--dur-instrument) var(--ease-instrument);
+}
+.mf-row:hover .mf-name,
+.mf-row.is-active .mf-name { color: var(--instr-100); }
+
+.mf-dot {
+  flex-shrink: 0;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--accent);
+  opacity: 0.25;
+  transition: opacity var(--dur-instrument) var(--ease-instrument);
+}
+.mf-row:hover .mf-dot,
+.mf-row.is-active .mf-dot { opacity: 1; }
+
+.mf-row--all .mf-name { color: var(--instr-45); }
+
+/* ============================================================
+   Mobile: horizontal scroller sitting above the nav bar.
+   ============================================================ */
+@media (max-width: 767px) {
+  .mf {
+    top: auto;
+    bottom: calc(4.2rem + env(safe-area-inset-bottom));
+    left: 0;
+    right: 0;
+    width: auto;
+    transform: none;
+    animation: none;
+  }
+  .mf-title {
+    margin-left: 0.8rem;
+    margin-bottom: 0.35rem;
+  }
+  .mf ul {
+    grid-auto-flow: column;
+    grid-auto-columns: 9.5rem;
+    gap: 0.4rem;
+    padding: 0 0.8rem 0.2rem;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+  }
+  .mf ul::-webkit-scrollbar { display: none; }
+  .mf-row {
+    scroll-snap-align: start;
+    border: 1px solid color-mix(in srgb, var(--instr-100) 9%, transparent);
+    border-radius: 4px;
+    background: color-mix(in srgb, var(--void-0) 78%, transparent);
+  }
+  .mf-row:hover { padding-left: 0.7rem; }
+  .mf-row.is-active { border-color: var(--accent); }
+}

@@ -5,6 +5,8 @@ import * as THREE from 'three';
 import { Sky } from './Sky';
 import { CameraRig } from './CameraRig';
 import { QUALITY, useAutoTier } from './quality';
+import { BootProbe } from './BootProbe';
+import { markBoot } from '@/store/boot';
 import { useJourney } from '@/store/journey';
 
 const HeroRegion = lazy(() => import('@/regions/HeroRegion').then((m) => ({ default: m.HeroRegion })));
@@ -13,11 +15,20 @@ const SkillsRegion = lazy(() => import('@/regions/SkillsRegion').then((m) => ({ 
 const ProjectsRegion = lazy(() => import('@/regions/ProjectsRegion').then((m) => ({ default: m.ProjectsRegion })));
 const MilanoInterior = lazy(() => import('@/regions/MilanoInterior').then((m) => ({ default: m.MilanoInterior })));
 
+/** Marks the boot step once a region module has genuinely resolved. */
+function RegionReady() {
+  useEffect(() => {
+    markBoot('region');
+  }, []);
+  return null;
+}
+
 /** Which region owns the current view. */
 function ActiveRegion() {
   const region = useJourney((s) => s.region);
   return (
     <Suspense fallback={null}>
+      <RegionReady />
       {region === 'hero' && <HeroRegion />}
       {region === 'about' && <AboutRegion />}
       {region === 'skills' && <SkillsRegion />}
@@ -93,6 +104,7 @@ export function Universe({ mobile }: Props) {
       }}
       camera={{ fov: 42, near: 0.1, far: 4000, position: [0, 8, 165] }}
       onCreated={({ gl, scene }) => {
+        markBoot('context');
         gl.setClearColor(new THREE.Color('#04060b'), 1);
         gl.toneMapping = THREE.ACESFilmicToneMapping;
         gl.toneMappingExposure = 1.05;
@@ -100,6 +112,7 @@ export function Universe({ mobile }: Props) {
       }}
       style={{ position: 'fixed', inset: 0, zIndex: 0 }}
     >
+      <BootProbe />
       <Governor mobile={mobile} />
       <CameraRig mobile={mobile} />
       <Sky />

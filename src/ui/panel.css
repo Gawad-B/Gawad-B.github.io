@@ -1,0 +1,182 @@
+/* ============================================================
+   Instrument panel. Side panel ≥768px, bottom sheet below.
+   ============================================================ */
+
+.pnl {
+  position: fixed;
+  z-index: var(--z-panel);
+  animation: pnl-in var(--dur-panel) var(--ease-flight) both;
+}
+
+/* Mobile-first: bottom sheet. */
+@media (max-width: 767px) {
+  .pnl {
+    inset: auto 0.6rem 0.6rem;
+    max-height: 62dvh;
+  }
+}
+
+@media (min-width: 768px) {
+  .pnl {
+    top: 50%;
+    right: clamp(1rem, 3vw, 2.5rem);
+    width: min(30rem, 40vw);
+    max-height: min(78dvh, 44rem);
+    transform: translateY(-50%);
+    animation-name: pnl-in-side;
+  }
+}
+
+@keyframes pnl-in {
+  from { opacity: 0; transform: translateY(24px); filter: blur(6px); }
+  to   { opacity: 1; transform: translateY(0);    filter: blur(0); }
+}
+@keyframes pnl-in-side {
+  from { opacity: 0; transform: translate(20px, -50%); filter: blur(6px); }
+  to   { opacity: 1; transform: translate(0, -50%);    filter: blur(0); }
+}
+
+.pnl-screen {
+  display: flex;
+  flex-direction: column;
+  max-height: inherit;
+  padding: 1.15rem 1.15rem 1.25rem;
+}
+@media (min-width: 768px) {
+  .pnl-screen { padding: 1.4rem 1.5rem 1.6rem; }
+}
+
+/* --- header --- */
+.pnl-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-shrink: 0;
+}
+.pnl-eyebrow { color: var(--accent); }
+.pnl-title {
+  margin: 0.5rem 0 0;
+  font-family: var(--font-display);
+  font-weight: 300;
+  font-size: clamp(1.4rem, 4vw, 1.85rem);
+  line-height: 1.05;
+  letter-spacing: -0.035em;
+  color: var(--instr-100);
+}
+.pnl-desig {
+  margin: 0.45rem 0 0;
+  font-family: var(--font-mono);
+  font-size: var(--text-2xs);
+  letter-spacing: 0.13em;
+  color: var(--instr-45);
+}
+
+.pnl-close {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  margin: -0.5rem -0.4rem 0 0;
+  border: 1px solid transparent;
+  border-radius: 3px;
+  background: none;
+  color: var(--instr-45);
+  cursor: pointer;
+  transition: color var(--dur-blip) var(--ease-instrument),
+    border-color var(--dur-blip) var(--ease-instrument);
+}
+.pnl-close:hover {
+  color: var(--accent);
+  border-color: color-mix(in srgb, var(--accent) 40%, transparent);
+}
+
+.pnl-rule {
+  flex-shrink: 0;
+  height: 1px;
+  margin: 1.1rem 0;
+  background: linear-gradient(
+    90deg,
+    color-mix(in srgb, var(--accent) 55%, transparent),
+    color-mix(in srgb, var(--instr-100) 8%, transparent) 38%,
+    transparent
+  );
+}
+
+/* --- body: the only scrolling region. No backdrop-blur here. --- */
+.pnl-body {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  scrollbar-color: var(--instr-25) transparent;
+}
+.pnl-body p {
+  margin: 0 0 0.9rem;
+  font-size: var(--text-sm);
+  line-height: 1.7;
+  color: var(--instr-70);
+}
+.pnl-body p:last-child { margin-bottom: 0; }
+
+/* --- telemetry sidebar --- */
+.pnl-facts { flex-shrink: 0; }
+.pnl-facts-label { color: var(--instr-45); }
+.pnl-facts ul {
+  margin: 0.7rem 0 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 0.45rem;
+}
+.pnl-facts li {
+  position: relative;
+  padding-left: 0.95rem;
+  font-family: var(--font-mono);
+  font-size: var(--text-2xs);
+  line-height: 1.55;
+  color: var(--instr-70);
+}
+.pnl-facts li::before {
+  content: '';
+  position: absolute;
+  top: 0.5em;
+  left: 0;
+  width: 4px;
+  height: 1px;
+  background: var(--accent);
+}
+
+/* ============================================================
+   Light variant — for worlds that are genuinely near-black.
+   ============================================================ */
+.pnl--light .pnl-screen {
+  background: var(--instr-100);
+  border-color: color-mix(in srgb, var(--void-0) 16%, transparent);
+}
+.pnl--light .pnl-title { color: var(--void-0); }
+.pnl--light .pnl-body p { color: #2a3140; }
+.pnl--light .pnl-desig,
+.pnl--light .pnl-facts-label { color: #5b6472; }
+.pnl--light .pnl-facts li { color: #333b49; }
+.pnl--light .pnl-close { color: #5b6472; }
+.pnl--light .pnl-eyebrow { color: color-mix(in srgb, var(--accent) 78%, #2a1a08); }
+.pnl--light .pnl-rule {
+  background: linear-gradient(
+    90deg,
+    color-mix(in srgb, var(--accent) 70%, transparent),
+    rgb(0 0 0 / 0.14) 38%,
+    transparent
+  );
+}
+.pnl--light .scanlines::after {
+  background: repeating-linear-gradient(
+    0deg,
+    transparent 0 3px,
+    rgb(0 0 0 / 0.022) 3px 4px
+  );
+  mix-blend-mode: normal;
+}
+.pnl--light .brackets::before,
+.pnl--light .brackets::after { border-color: rgb(0 0 0 / 0.22); }
+.pnl--light .pnl-body { scrollbar-color: #b6bdc9 transparent; }
