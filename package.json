@@ -3,12 +3,13 @@
   "version": "1.0.0",
   "private": true,
   "type": "module",
-  "description": "Abdelrahman Gawad — an interactive 3D universe that happens to be a portfolio.",
+  "description": "Abdelrahman Gawad \u2014 an interactive 3D universe that happens to be a portfolio.",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview --port 4173",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "test": "tsx qa/data.test.ts"
   },
   "dependencies": {
     "@react-three/drei": "^9.122.0",
@@ -29,6 +30,7 @@
     "@vitejs/plugin-react-swc": "^3.10.2",
     "tailwindcss": "^4.0.0",
     "typescript": "^5.7.2",
-    "vite": "^6.4.1"
+    "vite": "^6.4.1",
+    "tsx": "^4.23.12"
   }
 }

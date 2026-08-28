@@ -40,7 +40,7 @@ Extracted from `src/components/*.tsx` at commit `b35eae0`.
 - **Location / affiliation:** Alexandria, Egypt · CS @ Egypt-Japan University (E-JUST)
 - **Roles (rotating):** Healthcare AI Engineer · Full-Stack Developer · Linux Enthusiast ·
   Competitive Programmer
-- **Bio:** four paragraphs, preserved verbatim in meaning (Alexandria/Mediterranean;
+- **Bio:** three paragraphs plus the closing quote, preserved verbatim in meaning (Alexandria/Mediterranean;
   CS at E-JUST, AI and bioinformatics; cardiovascular-disease ensemble models by day,
   Linux ricing by night; story-driven games and smuggling that feeling into what he builds).
 - **Quote:** "Craft is just care, made visible."
