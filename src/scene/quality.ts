@@ -63,9 +63,12 @@ const NEXT_TIER_DOWN: Record<Tier, Tier | null> = { high: 'medium', medium: 'low
 
 /**
  * The static probe in useCapabilities is only a guess. This watches real
- * frame times and steps the tier down once if the device can't keep up —
- * measured over a window so a single hitch (a region mounting, a shader
- * compiling) can't trigger it.
+ * frame times and steps the tier down while the device can't keep up —
+ * one step per measurement window (each window re-arms after the drop,
+ * with its own warm-up, so a machine that needs low doesn't get stranded
+ * at medium) — measured over a window so a single hitch (a region
+ * mounting, a shader compiling) can't trigger it. It only ever steps
+ * DOWN, so it cannot oscillate.
  */
 /** An explicit ?tier= override wins over runtime measurement. */
 function tierForced(): boolean {
@@ -77,10 +80,10 @@ export function useAutoTier(enabled = true) {
   const tier = useJourney((s) => s.tier);
   const setTier = useJourney((s) => s.setTier);
   const samples = useRef<number[]>([]);
-  const downgraded = useRef(false);
 
   useEffect(() => {
-    if (!enabled || downgraded.current || tierForced()) return;
+    if (!enabled || tierForced()) return;
+    samples.current = [];
     const next = NEXT_TIER_DOWN[tier];
     if (!next) return;
 
@@ -100,9 +103,9 @@ export function useAutoTier(enabled = true) {
           const sorted = [...samples.current].sort((a, b) => a - b);
           const median = sorted[Math.floor(sorted.length / 2)] ?? 16;
           samples.current = [];
-          // 25ms median ≈ 40fps sustained.
+          // 25ms median ≈ 40fps sustained. Stepping down changes `tier`,
+          // which re-runs this effect with a fresh warm-up window.
           if (median > 25) {
-            downgraded.current = true;
             setTier(next);
             return;
           }

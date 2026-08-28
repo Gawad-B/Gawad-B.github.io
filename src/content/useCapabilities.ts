@@ -36,12 +36,18 @@ function probeWebGL(): { ok: boolean; renderer: string } {
  */
 const SLOW_GPU = /mali-[gt]?[1-5]\d{2}\b|adreno.*(3\d\d|4\d\d|5\d\d)\b|powervr|videocore|swiftshader|llvmpipe|software/i;
 
+/* Integrated desktop/laptop GPUs (Intel UHD/Iris, AMD APUs — the bare
+   "Radeon Graphics" string with no model number is the APU signature).
+   Perfectly capable, but not of the high tier at 1080p+: start them at
+   medium and let the runtime governor take them lower if needed. */
+const INTEGRATED_GPU = /intel(\(r\))?\s*(hd|uhd|iris|graphics)|mesa.*intel|radeon(\(tm\))?\s+graphics(?!\s+\d)/i;
+
 function classify(renderer: string): Tier {
   const cores = navigator.hardwareConcurrency ?? 4;
   const mem = (navigator as Navigator & { deviceMemory?: number }).deviceMemory ?? 4;
 
   if (SLOW_GPU.test(renderer) || cores <= 2 || mem <= 2) return 'low';
-  if (cores <= 4 || mem <= 4) return 'medium';
+  if (INTEGRATED_GPU.test(renderer) || cores <= 4 || mem <= 4) return 'medium';
   return 'high';
 }
 

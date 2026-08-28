@@ -31,6 +31,7 @@ const SUN_R = WORLDS['stephenson-2-18'].radius;
 
 const OUT = new THREE.Vector3();
 const SIDE = new THREE.Vector3();
+const TMP = new THREE.Vector3();
 const UP = new THREE.Vector3(0, 1, 0);
 
 /**
@@ -103,13 +104,13 @@ const SHOTS: Record<string, Shot> = {
         target.set(0, 0, 0);
         return;
       }
+      // Resolvers run every frame — no allocations here.
       target.set(0, 0, 0);
-      const tmp = new THREE.Vector3();
-      for (const b of bodies) target.add(b.getWorldPosition(tmp));
+      for (const b of bodies) target.add(b.getWorldPosition(TMP));
       target.divideScalar(bodies.length);
       // Stand outside the belt, looking back across it toward the sun.
       pos.copy(target);
-      const out = tmp.set(target.x, 0, target.z).normalize();
+      const out = TMP.set(target.x, 0, target.z).normalize();
       pos.addScaledVector(out, 46);
       pos.y += 22;
       target.multiplyScalar(0.72); // bias the look toward the sun side
