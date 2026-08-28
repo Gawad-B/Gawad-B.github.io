@@ -90,8 +90,6 @@ export function Universe({ mobile }: Props) {
 
   return (
     <Canvas
-      // aria-hidden: the canvas is presentation. ContentSpine carries meaning.
-      aria-hidden="true"
       dpr={budget.dpr}
       // antialias off because post-processing is active — double-AA is a
       // pure cost with no visual gain.
@@ -105,6 +103,18 @@ export function Universe({ mobile }: Props) {
       camera={{ fov: 42, near: 0.1, far: 4000, position: [0, 8, 165] }}
       onCreated={({ gl, scene }) => {
         markBoot('context');
+        /* The canvas is presentation — ContentSpine carries the meaning.
+           This has to be set on the DOM element directly: an aria-hidden
+           prop on <Canvas> lands on R3F's wrapper div, not the canvas, so
+           the canvas stayed exposed to the accessibility tree. */
+        gl.domElement.setAttribute('aria-hidden', 'true');
+        gl.domElement.setAttribute('role', 'presentation');
+        gl.domElement.tabIndex = -1;
+        /* Manual reset so renderer.info holds exactly one frame's totals
+           when the probe reads it. With autoReset on, info is cleared at
+           the start of every render, so anything sampled from useFrame —
+           which runs before the render — reads a partially-cleared object. */
+        gl.info.autoReset = false;
         gl.setClearColor(new THREE.Color('#04060b'), 1);
         gl.toneMapping = THREE.ACESFilmicToneMapping;
         gl.toneMappingExposure = 1.05;

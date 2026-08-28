@@ -318,13 +318,21 @@
 .cs-links {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.5rem 1.5rem;
+  gap: 0.6rem 1.5rem;
   margin: 1.4rem 0 0;
   padding: 0;
   list-style: none;
   font-family: var(--font-mono);
   font-size: var(--text-xs);
   color: var(--instr-45);
+}
+/* These are list links, not links inline in a sentence, so the WCAG 2.5.8
+   inline exception does not cover them — they need a real hit area. */
+.cs-links li,
+.cs-links a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 28px;
 }
 .cs-visible a {
   color: var(--signal);
@@ -351,9 +359,9 @@
   font-size: var(--text-2xs);
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: var(--instr-25);
+  color: var(--instr-45);
 }
 .cs-visible footer p {
-  color: var(--instr-25);
+  color: var(--instr-45);
   font-size: var(--text-2xs);
 }

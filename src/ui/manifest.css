@@ -37,7 +37,7 @@
 
 .mf-title {
   margin: 0 0 0.55rem 0.75rem;
-  color: var(--instr-25);
+  color: var(--instr-45);
 }
 
 .mf ul {
@@ -81,7 +81,7 @@
   font-family: var(--font-mono);
   font-size: var(--text-2xs);
   letter-spacing: 0.1em;
-  color: var(--instr-25);
+  color: var(--instr-45);
   transition: color var(--dur-instrument) var(--ease-instrument);
 }
 .mf-row:hover .mf-index,
@@ -99,7 +99,7 @@
   font-size: 9px;
   letter-spacing: 0.11em;
   text-transform: uppercase;
-  color: var(--instr-25);
+  color: var(--instr-45);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -136,13 +136,25 @@
    Mobile: horizontal scroller sitting above the nav bar.
    ============================================================ */
 @media (max-width: 767px) {
-  .mf {
-    top: auto;
-    bottom: calc(4.2rem + env(safe-area-inset-bottom));
+  /* The rail must be pinned to the viewport width. A flex column takes the
+     width of its widest child, and the manifest's horizontal scroller is
+     ~1200px of content — which stretched the rail and pushed the navigation
+     buttons off-screen entirely. The scroll container has to be the thing
+     that's bounded; the list inside it is max-content. */
+  .rail {
+    inset: auto 0 0;
     left: 0;
-    right: 0;
-    width: auto;
-    transform: none;
+    width: 100%;
+    gap: 0;
+    max-height: none;
+  }
+
+  .mf {
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
+    overflow-x: auto;
+    overflow-y: hidden;
     animation: none;
   }
   .mf-title {
@@ -152,13 +164,11 @@
   .mf ul {
     grid-auto-flow: column;
     grid-auto-columns: 9.5rem;
+    width: max-content;
     gap: 0.4rem;
-    padding: 0 0.8rem 0.2rem;
-    overflow-x: auto;
+    padding: 0 0.8rem 0.5rem;
     scroll-snap-type: x mandatory;
-    scrollbar-width: none;
   }
-  .mf ul::-webkit-scrollbar { display: none; }
   .mf-row {
     scroll-snap-align: start;
     border: 1px solid color-mix(in srgb, var(--instr-100) 9%, transparent);

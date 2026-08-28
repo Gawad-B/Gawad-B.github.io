@@ -67,6 +67,12 @@ const NEXT_TIER_DOWN: Record<Tier, Tier | null> = { high: 'medium', medium: 'low
  * measured over a window so a single hitch (a region mounting, a shader
  * compiling) can't trigger it.
  */
+/** An explicit ?tier= override wins over runtime measurement. */
+function tierForced(): boolean {
+  if (typeof location === 'undefined') return false;
+  return new URLSearchParams(location.search).has('tier');
+}
+
 export function useAutoTier(enabled = true) {
   const tier = useJourney((s) => s.tier);
   const setTier = useJourney((s) => s.setTier);
@@ -74,7 +80,7 @@ export function useAutoTier(enabled = true) {
   const downgraded = useRef(false);
 
   useEffect(() => {
-    if (!enabled || downgraded.current) return;
+    if (!enabled || downgraded.current || tierForced()) return;
     const next = NEXT_TIER_DOWN[tier];
     if (!next) return;
 

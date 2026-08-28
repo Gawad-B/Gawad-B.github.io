@@ -18,7 +18,14 @@
   /* --- Instrument light: the readable layer --- */
   --instr-100: #f2f5fa;
   --instr-70:  #aeb8c9;
-  --instr-45:  #6e7a8d;
+  /* Dimmest value permitted for TEXT. 5.5:1 on --void-0 and 5.0:1 on
+     --void-2, so 9-10px mono labels still clear AA on raised surfaces.
+     The previous value (#6e7a8d) was only 4.6:1 on the page ground and
+     dropped below AA on panels. */
+  --instr-45:  #7a8699;
+  /* NON-TEXT ONLY — grid lines, hairlines, ring gaps, disabled fills.
+     2.1:1 against the void, so it fails AA for text by a wide margin.
+     If you need dim text, use --instr-45. */
   --instr-25:  #3d4655;
 
   /* --- Signal: exactly three, each with one job --- */

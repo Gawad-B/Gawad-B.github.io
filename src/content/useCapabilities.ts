@@ -45,13 +45,25 @@ function classify(renderer: string): Tier {
   return 'high';
 }
 
+/**
+ * ?tier=low|medium|high forces a quality tier. Exists so the low-end path
+ * can actually be exercised — without it the reduced budgets only ever run
+ * on hardware nobody testing has, which is how they rot.
+ */
+function tierOverride(): Tier | null {
+  if (typeof location === 'undefined') return null;
+  const t = new URLSearchParams(location.search).get('tier');
+  return t === 'low' || t === 'medium' || t === 'high' ? t : null;
+}
+
 export function useCapabilities(): Capabilities {
   const [caps, setCaps] = useState<Capabilities>(() => {
     const { ok, renderer } = probeWebGL();
+    const forced = tierOverride();
     return {
       webgl: ok,
       renderer,
-      tier: ok ? classify(renderer) : 'low',
+      tier: forced ?? (ok ? classify(renderer) : 'low'),
       reducedMotion:
         typeof window !== 'undefined' &&
         window.matchMedia('(prefers-reduced-motion: reduce)').matches,

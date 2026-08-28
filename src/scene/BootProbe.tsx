@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react';
-import { useFrame } from '@react-three/fiber';
+import { useFrame, useThree } from '@react-three/fiber';
 import { markBoot } from '@/store/boot';
 
 /**
@@ -10,6 +10,8 @@ import { markBoot } from '@/store/boot';
 export function BootProbe() {
   const frames = useRef(0);
   const settled = useRef(0);
+  const gl = useThree((s) => s.gl);
+  const scene = useThree((s) => s.scene);
 
   useEffect(() => {
     markBoot('sky');
@@ -27,6 +29,41 @@ export function BootProbe() {
     } else {
       settled.current = 0;
     }
+
+    /* Scene complexity, exposed for the perf audit. Draw calls, triangle
+       count and program count are hardware-independent and are what
+       actually predicts whether a scene will hold frame rate — unlike a
+       frame time sampled on a software rasteriser. */
+    const w = window as Window & { __perfProbe?: boolean; __perf?: unknown };
+    const info = gl.info;
+    if (!w.__perfProbe) {
+      info.reset();
+      return;
+    }
+    let meshes = 0;
+    let points = 0;
+    let instanced = 0;
+    scene.traverse((o) => {
+      // THREE.InstancedMesh extends Mesh and does not override .type, so it
+      // reports 'Mesh'. The isInstancedMesh flag is the only reliable test.
+      if ((o as { isInstancedMesh?: boolean }).isInstancedMesh) instanced += 1;
+      else if (o.type === 'Mesh') meshes += 1;
+      else if (o.type === 'Points') points += 1;
+    });
+    w.__perf = {
+      calls: info.render.calls,
+      triangles: info.render.triangles,
+      points: info.render.points,
+      programs: info.programs?.length ?? 0,
+      geometries: info.memory.geometries,
+      textures: info.memory.textures,
+      meshes,
+      instancedMeshes: instanced,
+      pointClouds: points,
+      pixelRatio: gl.getPixelRatio(),
+    };
+    // Read, then clear, so the next frame accumulates cleanly.
+    info.reset();
   });
 
   return null;

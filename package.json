@@ -9,7 +9,8 @@
     "build": "vite build",
     "preview": "vite preview --port 4173",
     "typecheck": "tsc --noEmit",
-    "test": "tsx qa/data.test.ts && tsx qa/store.test.ts"
+    "test": "tsx qa/data.test.ts && tsx qa/store.test.ts",
+    "qa": "python3 -c \"print(open('qa/README.md').read())\""
   },
   "dependencies": {
     "@react-three/drei": "^9.122.0",

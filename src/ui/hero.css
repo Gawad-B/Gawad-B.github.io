@@ -38,7 +38,7 @@
 }
 
 .hero-eyebrow {
-  color: color-mix(in srgb, var(--signal) 82%, transparent);
+  color: var(--signal);
   animation: hero-rise 900ms var(--ease-flight) both;
 }
 
