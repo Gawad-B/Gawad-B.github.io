@@ -32,8 +32,6 @@ precision highp float;
 
 uniform float uTime;
 uniform int   uOctaves;
-uniform float uInner;
-uniform float uOuter;
 uniform vec3  uIce;        // bright water-ice particles
 uniform vec3  uDust;       // dirtier, redder material
 uniform vec3  uLightDir;
@@ -65,7 +63,13 @@ float opticalDepth(float r) {
 }
 
 void main() {
-  float r = length(vPosL.xz);
+  /* THREE.RingGeometry lays its vertices out in the LOCAL XY plane; the
+     mesh is then rotated into the world XZ plane. vPosL is local, so the
+     radius lives in .xy — reading .xz here gives length(|x|, 0) and draws
+     vertical bands instead of concentric rings.
+     Normalise to Saturn radii, because opticalDepth() is written against
+     the real 1.24–2.27 R_S boundaries, not scene units. */
+  float r = length(vPosL.xy) / uPlanetRadius;
   float tau = opticalDepth(r);
 
   // Ringlet banding: fine concentric structure from density waves.
@@ -73,8 +77,8 @@ void main() {
   tau *= 0.62 + 0.38 * ringlets;
 
   // Azimuthal clumping — self-gravity wakes, faint but it kills the
-  // "printed CD" look.
-  float theta = atan(vPosL.z, vPosL.x);
+  // "printed CD" look. Same local-plane caveat as above.
+  float theta = atan(vPosL.y, vPosL.x);
   float clump = fbm(vec3(cos(theta) * 7.0, sin(theta) * 7.0, r * 22.0), uOctaves) * 0.5 + 0.5;
   tau *= 0.80 + 0.20 * clump;
 
@@ -95,8 +99,8 @@ void main() {
   vec3 color = mix(uDust, uIce, smoothstep(0.20, 0.85, tau));
 
   // Particle glint — a few percent of particles catch the light directly.
-  float glint = smoothstep(0.985, 1.0, fbm(vec3(r * 620.0, theta * 90.0, uTime * 0.25), uOctaves) * 0.5 + 0.5);
-  color += uIce * glint * 1.6;
+  float glint = smoothstep(0.99, 1.0, fbm(vec3(r * 620.0, theta * 90.0, uTime * 0.25), uOctaves) * 0.5 + 0.5);
+  color += uIce * glint * 0.85;
 
   float alpha = clamp(tau, 0.0, 1.0) * uOpacity;
   gl_FragColor = vec4(color * shade, alpha);
@@ -107,13 +111,11 @@ export function ringUniforms(octaves: number, planetRadius: number) {
   return {
     uTime: { value: 0 },
     uOctaves: { value: Math.min(octaves, 4) },
-    uInner: { value: 1.24 },
-    uOuter: { value: 2.27 },
     uIce: { value: new THREE.Color('#e8ddc4') },
     uDust: { value: new THREE.Color('#8a7150') },
     uLightDir: { value: new THREE.Vector3(1, 0.35, 0.6).normalize() },
     uPlanetRadius: { value: planetRadius },
     uPlanetCenter: { value: new THREE.Vector3(0, 0, 0) },
-    uOpacity: { value: 0.94 },
+    uOpacity: { value: 1.0 },
   };
 }

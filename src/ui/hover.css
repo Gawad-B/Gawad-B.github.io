@@ -1,0 +1,62 @@
+/* Floating target label. Positioned by transform only — never top/left,
+   which would trigger layout on every pointer move. */
+.hvr {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: var(--z-world-label);
+  display: flex;
+  align-items: center;
+  gap: 0;
+  pointer-events: none;
+  will-change: transform;
+}
+
+/* Leader line from the target out to the label — an instrument callout,
+   not a tooltip. */
+.hvr-leader {
+  width: 26px;
+  height: 1px;
+  margin-top: -1px;
+  background: linear-gradient(90deg, var(--accent), color-mix(in srgb, var(--accent) 30%, transparent));
+}
+.hvr-leader::before {
+  content: '';
+  display: block;
+  width: 4px;
+  height: 4px;
+  margin: -2px 0 0 -2px;
+  border-radius: 50%;
+  background: var(--accent);
+}
+
+.hvr-box {
+  display: grid;
+  gap: 0.1rem;
+  padding: 0.35rem 0.65rem;
+  border: 1px solid color-mix(in srgb, var(--accent) 34%, transparent);
+  border-radius: 3px;
+  background: color-mix(in srgb, var(--void-0) 84%, transparent);
+  backdrop-filter: blur(8px);
+  white-space: nowrap;
+  animation: hvr-in 200ms var(--ease-instrument) both;
+}
+@keyframes hvr-in {
+  from { opacity: 0; transform: translateX(-4px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+.hvr-label {
+  font-family: var(--font-display);
+  font-size: var(--text-sm);
+  font-weight: 400;
+  letter-spacing: -0.01em;
+  color: var(--instr-100);
+}
+.hvr-sub {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--accent);
+}

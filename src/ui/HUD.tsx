@@ -1,20 +1,8 @@
 import { useEffect, useState } from 'react';
-import {
-  useJourney,
-  REGION_LABEL,
-  REGION_DESIGNATION,
-  type Region,
-} from '@/store/journey';
+import { useJourney, REGION_LABEL, REGION_DESIGNATION } from '@/store/journey';
 import { MILANO } from '@/data/milano';
-import { audioPreference, startAmbience, stopAmbience, blip } from '@/audio/ambience';
+import { audioPreference, startAmbience, stopAmbience } from '@/audio/ambience';
 import './hud.css';
-
-const NAV: Array<{ region: Region; index: string }> = [
-  { region: 'hero', index: '01' },
-  { region: 'about', index: '02' },
-  { region: 'skills', index: '03' },
-  { region: 'projects', index: '04' },
-];
 
 function AudioToggle() {
   const audioEnabled = useJourney((s) => s.audioEnabled);
@@ -64,8 +52,6 @@ export function HUD() {
   const phase = useJourney((s) => s.phase);
   const entered = useJourney((s) => s.entered);
   const milanoFound = useJourney((s) => s.milanoFound);
-  const travelTo = useJourney((s) => s.travelTo);
-  const enterMilano = useJourney((s) => s.enterMilano);
   const toggleAudio = useJourney((s) => s.toggleAudio);
   const audioEnabled = useJourney((s) => s.audioEnabled);
   const [clock, setClock] = useState('');
@@ -103,8 +89,6 @@ export function HUD() {
     return () => clearInterval(id);
   }, []);
 
-  const inShip = region === 'milano-interior';
-
   return (
     <>
       {/* --- Status readout: where you are, top-left --- */}
@@ -131,49 +115,6 @@ export function HUD() {
           ? `Arrived at ${REGION_LABEL[region]}${focus.id ? `, viewing ${focus.id}` : ''}`
           : ''}
       </p>
-
-      {/* --- Navigation cluster --- */}
-      <nav className="hud-nav" aria-label="Universe navigation">
-        <ul>
-          {NAV.map((item) => {
-            const active = region === item.region;
-            return (
-              <li key={item.region}>
-                <button
-                  type="button"
-                  className={`hud-nav-btn hit${active ? ' is-active' : ''}`}
-                  aria-current={active ? 'true' : undefined}
-                  onClick={() => {
-                    blip('select');
-                    travelTo(item.region);
-                  }}
-                >
-                  <span className="hud-nav-index">{item.index}</span>
-                  <span className="hud-nav-label">{REGION_LABEL[item.region]}</span>
-                  <span className="hud-nav-tick" aria-hidden="true" />
-                </button>
-              </li>
-            );
-          })}
-          <li>
-            <button
-              type="button"
-              className={`hud-nav-btn hud-nav-btn--ship hit${inShip ? ' is-active' : ''}`}
-              aria-current={inShip ? 'true' : undefined}
-              onClick={() => {
-                blip('approach');
-                enterMilano();
-              }}
-            >
-              <span className="hud-nav-index">05</span>
-              <span className="hud-nav-label">
-                {milanoFound ? REGION_LABEL['milano-interior'] : '· · · · ·'}
-              </span>
-              <span className="hud-nav-tick" aria-hidden="true" />
-            </button>
-          </li>
-        </ul>
-      </nav>
 
       {/* --- Right rail: audio + hints --- */}
       <div className="hud-rail">

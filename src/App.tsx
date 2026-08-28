@@ -6,8 +6,11 @@ import { Universe } from './scene/Universe';
 import { LoadingScreen } from './ui/LoadingScreen';
 import { HUD } from './ui/HUD';
 import { NavManifest } from './ui/NavManifest';
+import { NavCluster } from './ui/NavCluster';
 import { HeroOverlay } from './ui/HeroOverlay';
 import { AboutDossier } from './ui/AboutDossier';
+import { SkillPanel } from './ui/SkillPanel';
+import { HoverLabel } from './ui/HoverLabel';
 import { useKeyboardNav } from './ui/useKeyboardNav';
 import { useJourney } from './store/journey';
 
@@ -15,6 +18,7 @@ import { useJourney } from './store/journey';
 function UniverseApp({ mobile }: { mobile: boolean }) {
   const phase = useJourney((s) => s.phase);
   const region = useJourney((s) => s.region);
+  const focus = useJourney((s) => s.focus);
   const finishLoading = useJourney((s) => s.finishLoading);
   useKeyboardNav();
 
@@ -30,7 +34,15 @@ function UniverseApp({ mobile }: { mobile: boolean }) {
         <>
           {region === 'hero' && <HeroOverlay />}
           {region === 'about' && <AboutDossier />}
-          <NavManifest />
+          {focus.kind === 'skill' && focus.id && <SkillPanel skillId={focus.id} />}
+          <HoverLabel />
+          {/* One column: the manifest stacks above the region selector, so
+              layout guarantees they can't overlap regardless of how many
+              rows either one grows to. */}
+          <div className="rail">
+            <NavManifest />
+            <NavCluster />
+          </div>
           <HUD />
         </>
       )}

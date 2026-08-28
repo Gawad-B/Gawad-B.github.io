@@ -1,0 +1,61 @@
+.skp-lede {
+  color: var(--instr-70);
+}
+
+.skp-band {
+  margin-top: 1.15rem;
+  padding-top: 1rem;
+  border-top: 1px solid color-mix(in srgb, var(--instr-100) 8%, transparent);
+}
+.skp-band-label {
+  margin: 0 0 0.65rem;
+  color: var(--instr-45);
+}
+.skp-band ul {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.skp-chip {
+  padding: 0.28rem 0.6rem;
+  border: 1px solid color-mix(in srgb, var(--instr-100) 11%, transparent);
+  border-radius: 3px;
+  background: none;
+  font-family: var(--font-mono);
+  font-size: var(--text-2xs);
+  letter-spacing: 0.03em;
+  color: var(--instr-45);
+  cursor: pointer;
+  transition: color var(--dur-blip) var(--ease-instrument),
+    border-color var(--dur-blip) var(--ease-instrument);
+}
+.skp-chip:hover {
+  color: var(--instr-100);
+  border-color: color-mix(in srgb, var(--accent) 45%, transparent);
+}
+.skp-chip.is-active {
+  color: var(--accent);
+  border-color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 10%, transparent);
+  cursor: default;
+}
+
+.skp-isolate {
+  margin-top: 1.1rem;
+  padding: 0;
+  border: 0;
+  background: none;
+  font-family: var(--font-mono);
+  font-size: var(--text-2xs);
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+  color: var(--accent);
+  cursor: pointer;
+  opacity: 0.75;
+  transition: opacity var(--dur-blip) var(--ease-instrument);
+}
+.skp-isolate:hover { opacity: 1; }
