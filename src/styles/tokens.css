@@ -1,0 +1,80 @@
+/* ============================================================
+   Portfolio Universe — design tokens
+   Cold instrument monochrome + one warm signal.
+   Reference points: JPL/ESA mission control, Interstellar,
+   The Expanse. Colour is scarce and always means something.
+   ============================================================ */
+
+:root {
+  /* --- Void: the ground. Never pure black (dead), never
+         neutral grey (flat). Cold blue-violet, like an actual
+         sky-subtracted deep field. --- */
+  --void-0: #04060b;
+  --void-1: #080b13;
+  --void-2: #0e131d;
+  --void-3: #161c28;
+  --hull:   #1e2532;
+
+  /* --- Instrument light: the readable layer --- */
+  --instr-100: #f2f5fa;
+  --instr-70:  #aeb8c9;
+  --instr-45:  #6e7a8d;
+  --instr-25:  #3d4655;
+
+  /* --- Signal: exactly three, each with one job --- */
+  --signal: #ffb35c; /* mission amber — CTA, active, focus, caution */
+  --data:   #7fd4e8; /* telemetry cyan — readouts, links, hover    */
+  --alert:  #ff5f57; /* signal red — errors, criticals             */
+
+  /* --- Nebula emission (real lines, kept near-neutral) --- */
+  --neb-halpha: #7a1f3d;
+  --neb-oiii:   #0f4a52;
+  --neb-dust:   #4a3a2a;
+
+  /* --- Type --- */
+  --font-display: 'DM Sans', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+  --font-serif: 'Cormorant Garamond', Georgia, serif;
+
+  --text-2xs: 0.625rem;  /* 10px — eyebrows, telemetry keys */
+  --text-xs:  0.75rem;
+  --text-sm:  0.8125rem;
+  --text-base: 0.9375rem;
+  --text-lg:  1.125rem;
+  --text-xl:  1.5rem;
+  --text-2xl: 2rem;
+  --text-3xl: 2.75rem;
+  --text-hero: clamp(2.25rem, 7vw, 5.5rem);
+
+  --track-eyebrow: 0.2em;
+  --track-tight: -0.03em;
+
+  /* --- Motion: custom curves only, never linear/ease-in-out --- */
+  --ease-flight: cubic-bezier(0.32, 0.72, 0, 1);
+  --ease-instrument: cubic-bezier(0.22, 1, 0.36, 1);
+  --dur-blip: 180ms;
+  --dur-instrument: 420ms;
+  --dur-panel: 700ms;
+  --dur-flight: 1400ms;
+
+  /* --- Systemic z-index layers only. No arbitrary values. --- */
+  --z-canvas: 0;
+  --z-world-label: 10;
+  --z-panel: 20;
+  --z-hud: 30;
+  --z-transition: 40;
+  --z-loading: 50;
+  --z-grain: 60;
+}
+
+/* Reduced motion: damp everything, globally. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
