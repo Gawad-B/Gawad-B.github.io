@@ -16,9 +16,9 @@ export interface Capabilities {
 function probeWebGL(): { ok: boolean; renderer: string } {
   if (typeof document === 'undefined') return { ok: false, renderer: '' };
   const canvas = document.createElement('canvas');
-  const gl =
-    (canvas.getContext('webgl2') as WebGL2RenderingContext | null) ??
-    (canvas.getContext('webgl') as WebGLRenderingContext | null);
+  // WebGL2 only: three r163+ dropped WebGL1, so a WebGL1-only browser must
+  // get the document, not a dead canvas.
+  const gl = canvas.getContext('webgl2') as WebGL2RenderingContext | null;
   if (!gl) return { ok: false, renderer: '' };
 
   let renderer = '';

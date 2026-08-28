@@ -29,13 +29,20 @@ export function LoadingScreen({ onDone }: { onDone: () => void }) {
   const [leaving, setLeaving] = useState(false);
   const raf = useRef(0);
 
-  /* Ease the displayed number toward the real one. Asset progress arrives
-     in jumps; a bar that teleports reads as fake even when it's honest. */
+  /* Ease the displayed number toward the real one. Boot steps arrive in
+     jumps; a bar that teleports reads as fake even when it's honest.
+     TIME-based, not frame-based: a per-frame factor ties the easing to the
+     frame rate, and on a slow renderer the display then crawls for seconds
+     after boot has actually finished — long enough to trip the stranding
+     ceiling. */
   useEffect(() => {
-    const tick = () => {
+    let last = performance.now();
+    const tick = (now: number) => {
+      const dt = Math.min(0.25, (now - last) / 1000);
+      last = now;
       setShown((s) => {
         const target = progress;
-        const next = s + (target - s) * 0.12;
+        const next = s + (target - s) * Math.min(1, dt * 5);
         return Math.abs(target - s) < 0.4 ? target : next;
       });
       raf.current = requestAnimationFrame(tick);

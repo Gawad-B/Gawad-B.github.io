@@ -22,6 +22,8 @@ function Effects() {
   const budget = QUALITY[tier];
 
   if (!budget.post) return null;
+  // Escape hatch while diagnosing device-specific issues: ?post=0
+  if (new URLSearchParams(location.search).get('post') === '0') return null;
 
   /* Bloom threshold is per-stop on purpose: the hypergiant should blaze
      up close, the overview should glow gently, and TrES-2b must stay
@@ -36,7 +38,12 @@ function Effects() {
           : 0.34;
 
   return (
-    <EffectComposer enableNormalPass={false}>
+    /* multisampling MUST stay 0. The composer's default (8) routes through
+       a multisample renderbuffer blit that silently renders BLACK on a
+       range of real drivers (notably Intel/Mesa) while everything else —
+       DOM, picking, the render loop — keeps working. We already run
+       antialias:false; bloom needs no MSAA. */
+    <EffectComposer enableNormalPass={false} multisampling={0}>
       <Bloom
         intensity={region === 'hero' ? 1.15 : 0.78}
         luminanceThreshold={threshold}
@@ -81,8 +88,11 @@ export function Universe({ mobile }: Props) {
         depth: true,
       }}
       camera={{ fov: 42, near: 0.1, far: 4000, position: [-3.4, 1.1, 17] }}
-      onCreated={({ gl, scene }) => {
+      onCreated={({ gl, scene, camera }) => {
         markBoot('context');
+        /* DOM-side annotations (system callouts) project world positions
+           themselves; hand them the live camera. */
+        (window as Window & { __camera?: unknown }).__camera = camera;
         /* The canvas is presentation — ContentSpine carries the meaning.
            Set on the DOM element directly: an aria-hidden prop on <Canvas>
            lands on R3F's wrapper div, not the canvas. */

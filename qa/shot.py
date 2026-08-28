@@ -37,7 +37,7 @@ with sync_playwright() as p:
 
     for sel in clicks:
         try:
-            page.click(sel, timeout=8000)
+            page.click(sel, timeout=8000, force=True)
             time.sleep(1.6)
         except Exception as e:
             print(f"!! click {sel} failed: {str(e)[:120]}")

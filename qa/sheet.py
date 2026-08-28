@@ -30,7 +30,7 @@ with sync_playwright() as p:
     for name, clicks in batch:
         for c in clicks:
             try:
-                pg.click(c, timeout=9000); time.sleep(2.4)
+                pg.click(c, timeout=9000, force=True); time.sleep(2.4)
             except Exception as e:
                 print(f"  !! {name}: {c} -> {str(e)[:60]}")
         time.sleep(2.0)

@@ -13,6 +13,7 @@ import { SkillPanel } from './ui/SkillPanel';
 import { ProjectPanel } from './ui/ProjectPanel';
 import { MilanoPlate } from './ui/MilanoPlate';
 import { HoverLabel } from './ui/HoverLabel';
+import { SystemCallouts } from './ui/SystemCallouts';
 import { useKeyboardNav } from './ui/useKeyboardNav';
 import { useScrollNav } from './ui/useScrollNav';
 import { useJourney } from './store/journey';
@@ -46,6 +47,7 @@ function UniverseApp({ mobile }: { mobile: boolean }) {
           {focus.kind === 'skill' && focus.id && <SkillPanel skillId={focus.id} />}
           {focus.kind === 'project' && focus.id && <ProjectPanel projectId={focus.id} />}
           <HoverLabel />
+          <SystemCallouts />
           {/* One column: the manifest stacks above the region selector, so
               layout guarantees they can't overlap regardless of how many
               rows either one grows to. */}
@@ -77,6 +79,15 @@ export function App() {
     setTier(caps.tier);
     setReducedMotion(caps.reducedMotion && !override3D);
   }, [caps.tier, caps.reducedMotion, override3D, setTier, setReducedMotion]);
+
+  // One diagnostic breadcrumb for remote reports: which GPU the browser
+  // exposed and which budget tier was chosen. (?tier=low / ?post=0 override.)
+  useEffect(() => {
+    // eslint-disable-next-line no-console
+    console.info(
+      `[universe] gpu="${caps.renderer || 'unknown'}" tier=${caps.tier} webgl=${caps.webgl}`,
+    );
+  }, [caps.renderer, caps.tier, caps.webgl]);
 
   if (!caps.webgl) return <FallbackSite reason="no-webgl" />;
 

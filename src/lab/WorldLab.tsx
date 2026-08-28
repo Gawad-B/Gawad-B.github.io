@@ -58,7 +58,7 @@ export function WorldLab() {
             lightDir={[1, 0.35, 0.6]}
           />
         ))}
-        <EffectComposer enableNormalPass={false}>
+        <EffectComposer enableNormalPass={false} multisampling={0}>
           <Bloom
             intensity={0.8}
             luminanceThreshold={0.34}

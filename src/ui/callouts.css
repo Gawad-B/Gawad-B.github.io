@@ -1,0 +1,75 @@
+/* System-map callouts. Instrument annotations: fixed size, leader dot,
+   real buttons. They exist only in the overview, where the map needs a
+   legend — everywhere else the bodies speak for themselves. */
+.sc {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-world-label);
+  pointer-events: none;
+}
+
+.sc-callout {
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.28rem 0.6rem 0.28rem 0.45rem;
+  margin: 0;
+  border: 1px solid color-mix(in srgb, var(--accent) 30%, transparent);
+  border-radius: 3px;
+  /* Solid, not backdrop-filtered: these mount mid-session over WebGL, and
+     late-composited blur layers are exactly where capture/driver flakes
+     live. Over the void a solid ground is indistinguishable anyway. */
+  background: color-mix(in srgb, var(--void-0) 94%, var(--instr-100));
+  cursor: pointer;
+  pointer-events: auto;
+  will-change: transform;
+  animation: sc-in 500ms var(--ease-instrument) both;
+  transition: border-color var(--dur-blip) var(--ease-instrument),
+    background var(--dur-blip) var(--ease-instrument);
+}
+.sc-callout:hover {
+  border-color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 12%, color-mix(in srgb, var(--void-0) 82%, transparent));
+}
+@keyframes sc-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+.sc-dot {
+  flex-shrink: 0;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--accent);
+}
+
+.sc-text {
+  display: grid;
+  gap: 0.05rem;
+  text-align: left;
+}
+.sc-eyebrow {
+  font-family: var(--font-mono);
+  font-size: 8.5px;
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+  color: var(--instr-45);
+  white-space: nowrap;
+}
+.sc-label {
+  font-family: var(--font-display);
+  font-size: var(--text-xs);
+  font-weight: 400;
+  color: var(--instr-100);
+  white-space: nowrap;
+}
+
+/* On phones the overview is dense; keep callouts but tighter. */
+@media (max-width: 767px) {
+  .sc-callout { padding: 0.2rem 0.45rem 0.2rem 0.35rem; }
+  .sc-eyebrow { display: none; }
+}
