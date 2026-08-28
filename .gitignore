@@ -4,3 +4,11 @@ dist
 Portfolio review with Rosé Pine/
 Portfolio review with Rosé Pine.zip
 .venv-qa
+
+# Local-only: tool configs, internal planning docs, test screenshot output
+.claude/
+docs/superpowers/
+qa/shots/
+vercel.json
+public/assets/library.png
+public/assets/portfolio.png
