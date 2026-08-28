@@ -7,6 +7,7 @@ import { LoadingScreen } from './ui/LoadingScreen';
 import { HUD } from './ui/HUD';
 import { NavManifest } from './ui/NavManifest';
 import { HeroOverlay } from './ui/HeroOverlay';
+import { AboutDossier } from './ui/AboutDossier';
 import { useKeyboardNav } from './ui/useKeyboardNav';
 import { useJourney } from './store/journey';
 
@@ -28,6 +29,7 @@ function UniverseApp({ mobile }: { mobile: boolean }) {
       {!loading && (
         <>
           {region === 'hero' && <HeroOverlay />}
+          {region === 'about' && <AboutDossier />}
           <NavManifest />
           <HUD />
         </>

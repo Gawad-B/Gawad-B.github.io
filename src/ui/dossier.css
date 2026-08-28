@@ -1,0 +1,248 @@
+/* ============================================================
+   About dossier — a crew file, not a bio card.
+   ============================================================ */
+
+.dos {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-panel);
+  pointer-events: none;
+}
+
+.dos-card {
+  position: absolute;
+  pointer-events: auto;
+  animation: dos-in var(--dur-panel) var(--ease-flight) both;
+}
+
+@media (min-width: 768px) {
+  .dos-card {
+    top: 50%;
+    right: clamp(1.2rem, 5vw, 5rem);
+    width: min(31rem, 42vw);
+    max-height: min(82dvh, 46rem);
+    transform: translateY(-50%);
+  }
+  @keyframes dos-in {
+    from { opacity: 0; transform: translate(22px, -50%); filter: blur(6px); }
+    to   { opacity: 1; transform: translate(0, -50%);    filter: blur(0); }
+  }
+}
+
+@media (max-width: 767px) {
+  .dos-card {
+    inset: auto 0.6rem calc(4.6rem + env(safe-area-inset-bottom));
+    max-height: 60dvh;
+  }
+  @keyframes dos-in {
+    from { opacity: 0; transform: translateY(22px); filter: blur(6px); }
+    to   { opacity: 1; transform: translateY(0);    filter: blur(0); }
+  }
+}
+
+.dos-screen {
+  display: flex;
+  flex-direction: column;
+  max-height: inherit;
+  padding: 1.2rem 1.2rem 1.35rem;
+}
+@media (min-width: 768px) {
+  .dos-screen { padding: 1.5rem 1.6rem 1.7rem; }
+}
+
+/* --- header: portrait + identity --- */
+.dos-head {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-shrink: 0;
+}
+.dos-portrait {
+  flex-shrink: 0;
+  width: 76px;
+  height: 76px;
+  padding: 2px;
+  border-radius: 6px;
+}
+.dos-portrait img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: 4px;
+  object-fit: cover;
+  filter: saturate(0.8) contrast(1.04);
+}
+.dos-eyebrow { color: var(--instr-45); }
+.dos-name {
+  margin: 0.4rem 0 0.3rem;
+  font-family: var(--font-display);
+  font-weight: 300;
+  font-size: clamp(1.25rem, 3.6vw, 1.6rem);
+  line-height: 1.05;
+  letter-spacing: -0.035em;
+  color: var(--instr-100);
+}
+.dos-roles {
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+  line-height: 1.5;
+  color: var(--data);
+}
+
+/* --- telemetry strip --- */
+.dos-telemetry {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1px;
+  flex-shrink: 0;
+  margin: 1.15rem 0 0;
+  padding: 1px;
+  border-radius: 4px;
+  background: color-mix(in srgb, var(--instr-100) 7%, transparent);
+  overflow: hidden;
+}
+.dos-telemetry > div {
+  padding: 0.55rem 0.6rem;
+  background: var(--void-2);
+}
+.dos-telemetry dt {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  color: var(--instr-25);
+}
+.dos-telemetry dd {
+  margin: 0.25rem 0 0;
+  font-size: var(--text-xs);
+  line-height: 1.35;
+  color: var(--instr-100);
+}
+
+.dos-rule {
+  flex-shrink: 0;
+  height: 1px;
+  margin: 1.15rem 0;
+  background: linear-gradient(
+    90deg,
+    color-mix(in srgb, var(--data) 45%, transparent),
+    color-mix(in srgb, var(--instr-100) 8%, transparent) 40%,
+    transparent
+  );
+}
+
+/* --- prose: the only scrolling area --- */
+.dos-body {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  scrollbar-color: var(--instr-25) transparent;
+}
+.dos-body p {
+  margin: 0 0 0.85rem;
+  font-size: var(--text-sm);
+  line-height: 1.72;
+  color: var(--instr-70);
+}
+.dos-body p:last-child { margin-bottom: 0; }
+
+/* The one serif in the build. */
+.dos-quote {
+  flex-shrink: 0;
+  margin: 1.2rem 0 0;
+  padding: 0.15rem 0 0.15rem 1rem;
+  border-left: 1px solid color-mix(in srgb, var(--signal) 45%, transparent);
+  font-family: var(--font-serif);
+  font-size: clamp(1.05rem, 2.6vw, 1.3rem);
+  font-style: italic;
+  line-height: 1.42;
+  color: var(--instr-100);
+}
+
+/* --- forward control --- */
+.dos-next {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.8rem;
+  align-self: flex-start;
+  flex-shrink: 0;
+  margin-top: 1.35rem;
+  padding: 0.45rem 0.45rem 0.45rem 1.05rem;
+  border: 1px solid color-mix(in srgb, var(--instr-100) 12%, transparent);
+  border-radius: 999px;
+  background: none;
+  font-family: var(--font-mono);
+  font-size: var(--text-2xs);
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  color: var(--instr-70);
+  cursor: pointer;
+  transition: color var(--dur-instrument) var(--ease-instrument),
+    border-color var(--dur-instrument) var(--ease-instrument),
+    transform 140ms var(--ease-instrument);
+}
+.dos-next:hover {
+  color: var(--signal);
+  border-color: color-mix(in srgb, var(--signal) 50%, transparent);
+}
+.dos-next:active { transform: scale(0.98); }
+.dos-next-icon {
+  display: grid;
+  place-items: center;
+  width: 1.6rem;
+  height: 1.6rem;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--instr-100) 8%, transparent);
+  transition: transform var(--dur-instrument) var(--ease-instrument);
+}
+.dos-next:hover .dos-next-icon { transform: translateX(2px); }
+
+/* ============================================================
+   Astronomical annotation, anchored to the planet's side.
+   ============================================================ */
+/* Sits directly under the HUD status readout. The lower-left belongs to
+   the navigation cluster, and an annotation that overlaps it is worse
+   than no annotation. */
+.dos-annot {
+  position: absolute;
+  top: 8.4rem;
+  left: clamp(0.9rem, 2.5vw, 1.6rem);
+  max-width: 16rem;
+  pointer-events: none;
+}
+.dos-annot-title { margin: 0 0 0.5rem; }
+.dos-annot ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 0.35rem;
+}
+.dos-annot li {
+  position: relative;
+  padding-left: 0.9rem;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  line-height: 1.55;
+  letter-spacing: 0.04em;
+  color: var(--instr-45);
+}
+.dos-annot li::before {
+  content: '';
+  position: absolute;
+  top: 0.52em;
+  left: 0;
+  width: 5px;
+  height: 1px;
+  background: color-mix(in srgb, var(--data) 60%, transparent);
+}
+
+/* On mobile the panel takes the lower half; the annotation has no room. */
+@media (max-width: 900px) {
+  .dos-annot { display: none; }
+}
