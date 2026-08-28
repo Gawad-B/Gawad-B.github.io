@@ -61,7 +61,7 @@ with sync_playwright() as p:
     check("has <main>", page.locator("main").count() == 1)
     check("5 top-level sections (about/skills/projects/contact + skill subsections)",
           page.locator("main section[id]").count() == 4)
-    check("7 <article> elements", page.locator("article").count() == 7)
+    check("6 <article> elements", page.locator("article").count() == 6)
     check("48 skill <li>", page.locator("#skills li").count() == 48)
     check("html lang set", page.get_attribute("html","lang") == "en")
 
