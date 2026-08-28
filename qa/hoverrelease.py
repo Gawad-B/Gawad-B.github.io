@@ -69,5 +69,35 @@ with sync_playwright() as p:
             released = True; break
     check("banner releases on empty canvas", released)
 
+    # 4. THE reported repro, verbatim: hover the Milano itself, see its
+    #    banner, take the cursor away, banner must disappear. Aim at the
+    #    ship's true projected position (the callout anchor edge-pins).
+    ship = pg.evaluate("()=>window.__bodyScreen && window.__bodyScreen('milano-ship')")
+    check("ship position resolvable", bool(ship))
+    sx, sy = int(ship["x"]), int(ship["y"])
+    acquired = False
+    import math
+    points = [(0, 0)] + [
+        (int(r * math.cos(a * math.pi / 4)), int(r * math.sin(a * math.pi / 4)))
+        for r in (14, 24) for a in range(8)
+    ]
+    for dx, dy in points:
+        px, py = sx + dx, sy + dy
+        if not (0 <= px < 1440 and 0 <= py < 900): continue
+        tag = pg.evaluate(f"()=>{{const e=document.elementFromPoint({px},{py});return e?e.tagName:''}}")
+        if tag != "CANVAS": continue
+        pg.mouse.move(px, py, steps=2)
+        time.sleep(0.35)
+        if pg.locator(".hvr", has_text="UNREGISTERED").count() == 1:
+            acquired = True
+            break
+    check("the Milano's banner appears on hover", acquired)
+    pg.mouse.move(max(sx - 320, 40), min(sy + 200, 880), steps=6)  # clear of ship and callout
+    gone = False
+    for _ in range(12):
+        time.sleep(0.15)
+        if pg.locator(".hvr").count() == 0: gone = True; break
+    check("the Milano's banner disappears when the cursor leaves", gone)
+
 print(f"\n{'✓ hover release verified' if not fails else '✗ '+str(len(fails))+' failure(s)'}\n")
 sys.exit(0 if not fails else 1)

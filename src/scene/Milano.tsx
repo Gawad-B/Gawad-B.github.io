@@ -208,6 +208,12 @@ export function Milano({ position, rotation = [0, 0, 0] }: Props) {
   const enterMilano = useJourney((s) => s.enterMilano);
   const reducedMotion = useJourney((s) => s.reducedMotion);
   const [hovered, setHovered] = useState(false);
+  /* The frame loop must see hover changes SYNCHRONOUSLY: React state
+     lands a render later, and in that gap the loop below would re-pin
+     the banner the release just cleared — the store's null gets
+     overwritten and the label sticks forever. The state still drives
+     the hover-scale effect; the ref drives the loop. */
+  const hoveredNow = useRef(false);
 
   const camera = useThree((s) => s.camera);
   const viewport = useThree((s) => s.size);
@@ -231,7 +237,7 @@ export function Milano({ position, rotation = [0, 0, 0] }: Props) {
     }
 
     // Keep the marker pinned to the ship while it's hovered.
-    if (!hovered) return;
+    if (!hoveredNow.current) return;
     group.current.getWorldPosition(projected);
     projected.project(camera);
     setHoverTarget({
@@ -257,6 +263,7 @@ export function Milano({ position, rotation = [0, 0, 0] }: Props) {
         minPixels={56}
         label={`${MILANO.name} — open contact console`}
         onHoverChange={(h) => {
+          hoveredNow.current = h;
           setHovered(h);
           if (h) blip('select');
           else setHoverTarget(null);
