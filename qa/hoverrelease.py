@@ -99,5 +99,33 @@ with sync_playwright() as p:
         if pg.locator(".hvr").count() == 0: gone = True; break
     check("the Milano's banner disappears when the cursor leaves", gone)
 
+    # 5. The About planet and Saturn are hoverable and clickable bodies
+    #    like everything else (owner report: they weren't).
+    def hover_body(body_id, needle):
+        spot = pg.evaluate(f"()=>window.__bodyScreen && window.__bodyScreen('{body_id}')")
+        if not spot: return False
+        bx, by = int(spot["x"]), int(spot["y"])
+        for dx, dy in [(0, 0), (0, -12), (12, 0), (-12, 0), (0, 12), (0, -22), (22, 0)]:
+            px, py = bx + dx, by + dy
+            if not (0 <= px < 1440 and 0 <= py < 900): continue
+            if pg.evaluate(f"()=>{{const e=document.elementFromPoint({px},{py});return e?e.tagName:''}}") != "CANVAS":
+                continue
+            pg.mouse.move(px, py, steps=2)
+            time.sleep(0.35)
+            if pg.locator(".hvr", has_text=needle).count() == 1: return True
+        return False
+
+    check("the About planet shows its banner on hover", hover_body("hd-189733-b", "HD 189733"))
+    pg.mouse.move(400, 830, steps=4)
+    time.sleep(0.6)
+    check("the About banner releases", pg.locator(".hvr").count() == 0)
+    check("Saturn shows its banner on hover", hover_body("saturn", "SATURN"))
+    pg.mouse.down(); pg.mouse.up()  # click where we hover: travel to skills
+    to_skills = False
+    for _ in range(20):
+        time.sleep(0.4)
+        if pg.evaluate("()=>window.__journey.getState().region") == "skills": to_skills = True; break
+    check("clicking Saturn travels to Skills", to_skills)
+
 print(f"\n{'✓ hover release verified' if not fails else '✗ '+str(len(fails))+' failure(s)'}\n")
 sys.exit(0 if not fails else 1)
