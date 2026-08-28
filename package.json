@@ -9,7 +9,7 @@
     "build": "vite build",
     "preview": "vite preview --port 4173",
     "typecheck": "tsc --noEmit",
-    "test": "tsx qa/data.test.ts"
+    "test": "tsx qa/data.test.ts && tsx qa/store.test.ts"
   },
   "dependencies": {
     "@react-three/drei": "^9.122.0",
