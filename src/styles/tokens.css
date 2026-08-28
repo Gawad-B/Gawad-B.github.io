@@ -66,6 +66,9 @@
 
   /* --- Systemic z-index layers only. No arbitrary values. --- */
   --z-canvas: 0;
+  /* Scene scrim: darkens the render behind the chrome. Must sit above the
+     canvas and BELOW every UI layer. */
+  --z-scrim: 5;
   --z-world-label: 10;
   --z-panel: 20;
   --z-hud: 30;

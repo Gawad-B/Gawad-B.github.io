@@ -196,3 +196,37 @@
   opacity: 0.035;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23n)'/%3E%3C/svg%3E");
 }
+
+/* ============================================================
+   Scene scrim.
+
+   The instrument chrome needs a guaranteed ground: approaching one world
+   can put a neighbouring world's molten dayside directly behind the rail,
+   and per-panel contrast rules do nothing for the chrome.
+
+   This has to be its own layer rather than a pseudo-element on .rail —
+   .rail carries a z-index and therefore creates a stacking context, so a
+   scrim inside it painted OVER the hero overlay (a lower layer) and dimmed
+   the name and CTA. It belongs above the canvas and below all UI.
+   ============================================================ */
+.scene-scrim {
+  position: fixed;
+  inset: 0 auto 0 0;
+  width: 27rem;
+  max-width: 42vw;
+  z-index: var(--z-scrim);
+  pointer-events: none;
+  background: linear-gradient(
+    to right,
+    rgb(4 6 11 / 0.84) 0%,
+    rgb(4 6 11 / 0.62) 38%,
+    rgb(4 6 11 / 0.24) 72%,
+    transparent 100%
+  );
+}
+
+/* Mobile puts the chrome in a solid bottom bar; a left vignette there would
+   just darken the scene for nothing. */
+@media (max-width: 767px) {
+  .scene-scrim { display: none; }
+}

@@ -32,6 +32,9 @@ function UniverseApp({ mobile }: { mobile: boolean }) {
 
       {/* Overlays sit above the canvas. Content spine stays clipped but
           present, so the page is complete to a crawler and a reader. */}
+      {/* Below every UI layer, above the canvas — see .scene-scrim. */}
+      {!loading && <div className="scene-scrim" aria-hidden="true" />}
+
       {!loading && (
         <>
           {region === 'hero' && <HeroOverlay />}

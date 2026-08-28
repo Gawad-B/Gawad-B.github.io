@@ -21,25 +21,6 @@
 }
 .rail > * { pointer-events: auto; }
 
-/* The rail needs its own ground. A neighbouring world can fill the frame
-   behind it — approaching 55 Cancri e puts WASP-76 b's molten dayside
-   directly under the manifest — and per-panel contrast rules do nothing for
-   the chrome. Soft and wide so it reads as vignetting, not a sidebar. */
-.rail::before {
-  content: '';
-  position: fixed;
-  inset: 0 auto 0 0;
-  width: 27rem;
-  z-index: -1;
-  pointer-events: none;
-  background: linear-gradient(
-    to right,
-    rgb(4 6 11 / 0.86) 0%,
-    rgb(4 6 11 / 0.66) 38%,
-    rgb(4 6 11 / 0.26) 72%,
-    transparent 100%
-  );
-}
 
 .mf {
   min-height: 0;
@@ -160,7 +141,6 @@
    Mobile: horizontal scroller sitting above the nav bar.
    ============================================================ */
 @media (max-width: 767px) {
-  .rail::before { display: none; }
 
   /* The rail must be pinned to the viewport width. A flex column takes the
      width of its widest child, and the manifest's horizontal scroller is
