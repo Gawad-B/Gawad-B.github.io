@@ -184,3 +184,9 @@
   .mf-row:hover { padding-left: 0.7rem; }
   .mf-row.is-active { border-color: var(--accent); }
 }
+
+/* Short desktop viewports: tighten the rail's internal gap so the
+   manifest + cluster column costs less of the scarce height. */
+@media (min-width: 768px) and (max-height: 660px) {
+  .rail { gap: 0.9rem; max-height: calc(100dvh - 6rem); }
+}

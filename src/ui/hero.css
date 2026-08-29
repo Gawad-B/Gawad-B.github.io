@@ -158,3 +158,50 @@
     background: linear-gradient(180deg, rgb(4 6 11 / 0.92) 0%, rgb(4 6 11 / 0.55) 60%, transparent 100%);
   }
 }
+
+/* ============================================================
+   Short desktop viewports — which is what OS display scaling at
+   125%–240% actually produces (1920x1080 @150% = a 1280x720 CSS
+   viewport). The hero used to centre across the FULL height while the
+   HUD readout owned the top-left and the rail owned the bottom-left of
+   the same column — so short viewports guaranteed collisions. The fix
+   is geometric: reserve both instrument bands with padding sized to
+   their real heights and centre the hero in what remains, with type
+   compressed in dvh so it scales with whatever height truly exists.
+   ============================================================ */
+@media (min-width: 768px) and (max-height: 880px) {
+  /* Anchor to the top reserve instead of centring: centring
+     redistributes every saved pixel half-upward, so the block's top
+     edge moves every time anything changes size. Anchored, the top
+     edge IS the padding — collisions with the HUD become impossible. */
+  .hero { align-content: start; padding-top: 8.5rem; padding-bottom: 13rem; }
+  /* The locale line duplicates dossier content; it yields first. */
+  .hero-locale { display: none; }
+  .hero-name { font-size: min(var(--text-hero), 8dvh); }
+  .hero-role-slot { margin-top: 0.8rem; }
+  .hero-intro { margin-top: 1rem; }
+  .hero-cta { margin-top: 1.4rem; }
+}
+
+@media (min-width: 768px) and (max-height: 660px) {
+  .hero { padding-top: 6.4rem; padding-bottom: 13rem; }
+  /* The eyebrow duplicates the HUD's location readout — it yields first,
+     and the role slot and intro give up their slack: at these heights
+     every rem is contested. */
+  .hero-eyebrow { display: none; }
+  .hero-name { font-size: min(var(--text-hero), 6.6dvh); margin-top: 0; }
+  .hero-role-slot { margin-top: 0.4rem; min-height: 1em; }
+  .hero-intro { font-size: var(--text-md, 1rem); max-width: 30rem; margin-top: 0.5rem; }
+  .hero-cta { margin-top: 0.6rem; }
+}
+
+@media (min-width: 768px) and (max-height: 520px) {
+  /* Down here the tagline yields too (the About dossier carries it);
+     name, role and the CTA are the hero's irreducible core. The HUD is
+     scaled to ~0.76 at this height, so the top reserve can shrink with it. */
+  .hero { padding-top: 5.3rem; padding-bottom: 13rem; }
+  .hero-name { font-size: min(var(--text-hero), 4.9dvh); }
+  .hero-role-slot { margin-top: 0.2rem; min-height: 1em; }
+  .hero-intro { display: none; }
+  .hero-cta { margin-top: 0.6rem; padding-top: 0.45rem; padding-bottom: 0.45rem; }
+}
