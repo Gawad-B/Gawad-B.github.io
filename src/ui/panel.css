@@ -13,9 +13,10 @@
   .pnl {
     /* Bottom sheet capped below half the screen: the planet you are
        reading about must stay visible above it — the exploring IS the
-       site. The sheet body scrolls for the rest. */
+       site. */
     inset: auto 0.6rem calc(4.6rem + env(safe-area-inset-bottom));
     max-height: 46dvh;
+    overflow: hidden; /* clip to the card — content NEVER bleeds out */
   }
 }
 
@@ -183,3 +184,20 @@
 .pnl--light .brackets::before,
 .pnl--light .brackets::after { border-color: rgb(0 0 0 / 0.22); }
 .pnl--light .pnl-body { scrollbar-color: #b6bdc9 transparent; }
+
+/* On a short screen the sheet's fixed sections alone can exceed the cap,
+   crushing the nested scroll region to zero height. Phones get ONE scroll
+   container instead: the whole sheet scrolls, header to footer. Lives at
+   the END of the file so it outranks the base .pnl-body rules above. */
+@media (max-width: 767px) {
+  .pnl-screen {
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
+  }
+  .pnl-body {
+    flex: none;
+    min-height: auto;
+    overflow: visible;
+  }
+}

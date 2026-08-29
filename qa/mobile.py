@@ -103,6 +103,27 @@ with sync_playwright() as p:
     pg.goto("http://localhost:3000/?qa=1", wait_until="networkidle")
     pg.wait_for_selector(".hud-nav", timeout=30000)
     check("first visit shows the gesture coach", pg.locator(".coach").count() == 1)
+    # Reading surfaces: the whole sheet scrolls on phones (nested scroll
+    # regions get crushed when fixed sections fill the height cap).
+    pg.evaluate("()=>window.__journey.getState().travelTo('about')")
+    for _ in range(50):
+        time.sleep(0.3)
+        if pg.evaluate("()=>window.__journey.getState().phase==='idle'"): break
+    time.sleep(0.5)
+    check("about dossier scrolls as one sheet", pg.evaluate(
+        "()=>{const s=document.querySelector('.dos-screen');return s.scrollHeight>s.clientHeight+4}"))
+    pg.evaluate("()=>{const s=document.querySelector('.dos-screen'); s.scrollTop=s.scrollHeight}")
+    time.sleep(0.4)
+    check("the whole bio is reachable", pg.evaluate("""()=>{
+      const ps=document.querySelectorAll('.dos-body p');
+      const last=ps[ps.length-1]; if(!last) return false;
+      const r=last.getBoundingClientRect();
+      const c=document.querySelector('.dos-card').getBoundingClientRect();
+      return ps.length>=3 && r.bottom <= c.bottom + 2;
+    }"""))
+    check("manifest yields to the dossier", pg.locator(".mf").count() == 0)
+    check("dossier never bleeds past its card", pg.evaluate(
+        "()=>getComputedStyle(document.querySelector('.dos-card')).overflow==='hidden'"))
     def wait_idle():
         for _ in range(50):
             time.sleep(0.3)

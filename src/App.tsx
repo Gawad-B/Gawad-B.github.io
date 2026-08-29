@@ -65,7 +65,12 @@ function UniverseApp({ mobile }: { mobile: boolean }) {
               layout guarantees they can't overlap regardless of how many
               rows either one grows to. */}
           <div className="rail">
-            <NavManifest />
+            {/* On phones the manifest strip and an open sheet fight for
+                the same bottom band — the sheet wins, the strip yields.
+                The region buttons below it stay. */}
+            {!(mobile && (focus.kind === 'skill' || focus.kind === 'project' || region === 'about')) && (
+              <NavManifest />
+            )}
             <NavCluster />
           </div>
           <HUD />

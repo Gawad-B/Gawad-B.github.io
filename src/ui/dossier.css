@@ -34,6 +34,7 @@
     inset: auto 0.6rem calc(4.6rem + env(safe-area-inset-bottom));
     /* Same rule as project sheets: the planet stays on screen. */
     max-height: 48dvh;
+    overflow: hidden;
   }
   @keyframes dos-in {
     from { opacity: 0; transform: translateY(22px); filter: blur(6px); }
@@ -246,4 +247,20 @@
 /* On mobile the panel takes the lower half; the annotation has no room. */
 @media (max-width: 900px) {
   .dos-annot { display: none; }
+}
+
+/* One scroll container on phones — the nested flex-scroll bio gets
+   crushed to a single line when the fixed sections fill the cap. Lives at
+   the END of the file so it outranks the base .dos-body rules above. */
+@media (max-width: 767px) {
+  .dos-screen {
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
+  }
+  .dos-body {
+    flex: none;
+    min-height: auto;
+    overflow: visible;
+  }
 }
