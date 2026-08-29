@@ -334,11 +334,17 @@ function Monitor({ mobile }: { mobile: boolean }) {
         <Html
         transform
         position={[0, 0, 0.075]}
-        scale={0.135}
+        scale={0.0675}
         zIndexRange={[24, 10]}
         style={{ pointerEvents: 'auto' }}
       >
-        <MonitorScreen />
+        {/* Rendered at 2x resolution (zoom) with the projection scale
+            halved: identical size on the glass, double the pixels. At 1x
+            the 660px document was UPSCALED by the projection on large
+            screens, which is exactly what pixelated text looks like. */}
+        <div className="mon-hd">
+          <MonitorScreen />
+        </div>
       </Html>
       )}
 

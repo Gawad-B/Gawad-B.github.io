@@ -4,6 +4,11 @@
    — it must read as the machine's own display, not a web page.
    ============================================================ */
 
+/* 2x supersampling wrapper for the projected (desktop) console. */
+.mon-hd {
+  zoom: 2;
+}
+
 .mon-screen {
   position: relative;
   width: 660px;
