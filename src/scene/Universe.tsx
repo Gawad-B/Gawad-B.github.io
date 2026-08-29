@@ -9,6 +9,8 @@ import { QUALITY, useAutoTier } from './quality';
 import { BootProbe } from './BootProbe';
 import { markBoot } from '@/store/boot';
 import { useJourney } from '@/store/journey';
+import { useHover } from '@/store/hover';
+import { blip } from '@/audio/ambience';
 
 /* The one place that still lazy-loads: the ship's interior is a genuinely
    separate space, and nobody pays for it until they find the ship. */
@@ -74,6 +76,36 @@ interface Props {
   mobile: boolean;
 }
 
+/**
+ * Touch equivalent of Escape: a tap on empty space walks back one layer —
+ * close the open panel, else zoom out to the system map. Deferred a beat
+ * so a tap that actually selected something (the screen-space moon picker
+ * runs outside the raycaster) is never mistaken for a miss.
+ */
+function missedTap() {
+  const before = useJourney.getState();
+  if (before.docking || before.phase !== 'idle') return;
+  const focusBefore = `${before.focus.kind}|${before.focus.id ?? ''}`;
+  window.setTimeout(() => {
+    const s = useJourney.getState();
+    if (s.docking || s.region !== before.region) return;
+    if (`${s.focus.kind}|${s.focus.id ?? ''}` !== focusBefore) return;
+    if (useHover.getState().target) return; // the finger is on a body
+    // Inside the ship, leaving is the EXIT button's job — an accidental
+    // tap must not eject anyone mid-message.
+    if (s.region === 'milano-interior') return;
+    if (s.focus.kind !== 'none') {
+      blip('close');
+      s.clearFocus();
+      return;
+    }
+    if (s.region !== 'system') {
+      blip('close');
+      s.travelTo('system');
+    }
+  }, 170);
+}
+
 export function Universe({ mobile }: Props) {
   const tier = useJourney((s) => s.tier);
   const region = useJourney((s) => s.region);
@@ -88,6 +120,7 @@ export function Universe({ mobile }: Props) {
 
   return (
     <Canvas
+      onPointerMissed={mobile ? missedTap : undefined}
       dpr={budget.dpr}
       gl={{
         antialias: false,
@@ -125,7 +158,7 @@ export function Universe({ mobile }: Props) {
       <SolarSystem />
       {region === 'milano-interior' && (
         <Suspense fallback={null}>
-          <MilanoInterior />
+          <MilanoInterior mobile={mobile} />
         </Suspense>
       )}
       <Effects />

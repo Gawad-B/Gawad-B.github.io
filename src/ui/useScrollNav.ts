@@ -17,7 +17,8 @@ import { blip } from '@/audio/ambience';
  */
 
 const SCROLLABLE_SELECTOR = '.mf';
-const ALWAYS_GUARDED = 'input, textarea, select, .mon-screen, .pnl, .dos-card';
+const ALWAYS_GUARDED =
+  'input, textarea, select, .mon-screen, .mon-overlay, .pnl, .dos-card, .coach';
 
 const WHEEL_THRESHOLD = 110;
 const SWIPE_THRESHOLD = 64;
@@ -93,10 +94,16 @@ export function useScrollNav(enabled = true) {
       if (!start || !t) return;
       const dx = t.clientX - start.x;
       const dy = t.clientY - start.y;
-      // Vertical intent only — the mobile manifest scrolls horizontally.
-      if (Math.abs(dy) < SWIPE_THRESHOLD || Math.abs(dy) < Math.abs(dx) * 1.4) return;
-      // Swipe up = move forward, matching page-scroll instinct.
-      fire(dy < 0 ? 1 : -1);
+      // Vertical intent: swipe up = forward, matching page-scroll instinct.
+      if (Math.abs(dy) >= SWIPE_THRESHOLD && Math.abs(dy) > Math.abs(dx) * 1.4) {
+        return fire(dy < 0 ? 1 : -1);
+      }
+      // Horizontal intent: swipe right (the universal back gesture) =
+      // previous stop, swipe left = next. The mobile manifest scrolls
+      // horizontally, but it guards itself above when it overflows.
+      if (Math.abs(dx) >= SWIPE_THRESHOLD && Math.abs(dx) > Math.abs(dy) * 1.4) {
+        return fire(dx < 0 ? 1 : -1);
+      }
     };
 
     window.addEventListener('wheel', onWheel, { passive: true });

@@ -86,7 +86,16 @@ const SHOTS: Record<string, Shot> = {
     },
   },
 
-  about: { fov: 42, resolve: follow('hd-189733-b', -3.2, 1.3, 7.8) },
+  about: {
+    fov: 42,
+    resolve: (pos, target, mobile) => {
+      follow('hd-189733-b', -3.2, 1.3, 7.8)(pos, target);
+      // Phones open the dossier as a bottom sheet — drop the look target
+      // so the planet rides the top half of the frame instead of hiding
+      // behind the card.
+      if (mobile) target.y -= 2.4;
+    },
+  },
 
   /* Saturn from above the ring plane, far enough back that all seven
      moon shells fit in frame. */
@@ -169,12 +178,17 @@ const MILANO_INGRESS: Shot = {
 function projectShot(projectId: string): Shot {
   const world = worldForProject(projectId);
   const r = world?.radius ?? 2;
+  const base = world
+    ? follow(world.id, -r * 1.9, r * 0.9, r * 5.6)
+    : SHOTS.projects!.resolve;
   return {
     fov: 44,
     weight: 0.95,
-    resolve: world
-      ? follow(world.id, -r * 1.9, r * 0.9, r * 5.6)
-      : SHOTS.projects!.resolve,
+    resolve: (pos, target, mobile) => {
+      base(pos, target, mobile);
+      // Same bottom-sheet rule as the about shot: subject in the top half.
+      if (mobile) target.y -= r * 1.45;
+    },
   };
 }
 

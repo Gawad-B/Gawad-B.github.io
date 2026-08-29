@@ -70,8 +70,80 @@ with sync_playwright() as p:
       return r.width <= window.innerWidth * 1.02 && r.width > window.innerWidth * 0.5;
     }"""))
     check("all 4 channels reachable on mobile", pg.locator(".mon-channel").count() == 4)
+    check("phone console is the scrollable overlay, not projected glass",
+          pg.locator(".mon-overlay .mon-screen").count() == 1)
     pg.screenshot(path="qa/shots/mobile-milano.png")
     check("no console errors on mobile", not errs, str(errs[:2]))
+    ctx.close()
+
+    # ---------------- small phone: TRANSMIT must be reachable ----------------
+    print("\nsmall phone (360x640)")
+    ctx = b.new_context(viewport={"width":360,"height":640}, is_mobile=True, has_touch=True)
+    pg = ctx.new_page()
+    pg.route("https://api.web3forms.com/**", lambda r: r.fulfill(
+        status=200, content_type="application/json", body='{"success":true,"message":"ok"}'))
+    pg.goto("http://localhost:3000/?qa=1", wait_until="networkidle")
+    pg.wait_for_selector(".hud-nav", timeout=30000)
+    pg.evaluate("()=>window.__journey.getState().enterMilano()")
+    pg.wait_for_selector(".mon-overlay .mon-screen", timeout=30000)
+    pg.wait_for_function("()=>!document.querySelector('.dock-veil.on')", timeout=20000)
+    check("console overlay scrolls", pg.evaluate(
+        "()=>{const o=document.querySelector('.mon-overlay');return o.scrollHeight>o.clientHeight}"))
+    pg.evaluate("()=>document.querySelector('.mon-send').scrollIntoView({block:'center'})")
+    time.sleep(0.5)
+    box = pg.locator(".mon-send").bounding_box()
+    check("TRANSMIT button reachable on a small phone",
+          bool(box and 0 <= box["y"] and box["y"] + box["height"] <= 640))
+    ctx.close()
+
+    # ---------------- touch gestures ----------------
+    print("\ntouch gestures")
+    ctx = b.new_context(viewport={"width":375,"height":812}, is_mobile=True, has_touch=True)
+    pg = ctx.new_page()
+    pg.goto("http://localhost:3000/?qa=1", wait_until="networkidle")
+    pg.wait_for_selector(".hud-nav", timeout=30000)
+    check("first visit shows the gesture coach", pg.locator(".coach").count() == 1)
+    def wait_idle():
+        for _ in range(50):
+            time.sleep(0.3)
+            if pg.evaluate("()=>window.__journey.getState().phase==='idle'"): return
+    def swipe(x0, y0, x1, y1):
+        pg.evaluate(f'''()=>{{
+          const t0=new Touch({{identifier:1,target:document.body,clientX:{x0},clientY:{y0}}});
+          const t1=new Touch({{identifier:1,target:document.body,clientX:{x1},clientY:{y1}}});
+          window.dispatchEvent(new TouchEvent('touchstart',{{touches:[t0],changedTouches:[t0],bubbles:true}}));
+          window.dispatchEvent(new TouchEvent('touchend',{{touches:[],changedTouches:[t1],bubbles:true}}));
+        }}''')
+    pg.evaluate("()=>window.__journey.getState().focusOn('project','rdmid')")
+    wait_idle(); time.sleep(0.4)
+    check("navigating dismisses the coach", pg.locator(".coach").count() == 0)
+    pg.touchscreen.tap(14, 352)
+    got = False
+    for _ in range(12):
+        time.sleep(0.25)
+        if pg.evaluate("()=>window.__journey.getState().focus.kind") == "none": got = True; break
+    check("tap on empty space closes the panel", got)
+    wait_idle(); time.sleep(0.4)
+    pg.touchscreen.tap(14, 352)
+    got = False
+    for _ in range(20):
+        time.sleep(0.4)
+        if pg.evaluate("()=>window.__journey.getState().region") == "system": got = True; break
+    check("tap again zooms out to the system map", got)
+    wait_idle(); time.sleep(0.4)
+    swipe(300, 400, 110, 405)
+    got = False
+    for _ in range(20):
+        time.sleep(0.4)
+        if pg.evaluate("()=>window.__journey.getState().region") == "about": got = True; break
+    check("swipe left travels forward", got)
+    wait_idle(); time.sleep(0.4)
+    swipe(110, 400, 300, 396)
+    got = False
+    for _ in range(20):
+        time.sleep(0.4)
+        if pg.evaluate("()=>window.__journey.getState().region") == "system": got = True; break
+    check("swipe right travels back", got)
     ctx.close()
 
     # ---------------- reduced motion ----------------

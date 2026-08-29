@@ -12,6 +12,8 @@ import { AboutDossier } from './ui/AboutDossier';
 import { SkillPanel } from './ui/SkillPanel';
 import { ProjectPanel } from './ui/ProjectPanel';
 import { MilanoPlate } from './ui/MilanoPlate';
+import { MonitorScreen } from './ui/MonitorScreen';
+import { TouchCoach } from './ui/TouchCoach';
 import { HoverLabel } from './ui/HoverLabel';
 import { SystemCallouts } from './ui/SystemCallouts';
 import { useKeyboardNav } from './ui/useKeyboardNav';
@@ -45,6 +47,16 @@ function UniverseApp({ mobile }: { mobile: boolean }) {
           {region === 'hero' && <HeroOverlay />}
           {region === 'about' && <AboutDossier />}
           {region === 'milano-interior' && <MilanoPlate />}
+          {/* Phones read the ship's console as a real, scrollable overlay:
+              a 3D-projected document can't guarantee the TRANSMIT button
+              exists inside a small viewport, and an unreachable send
+              button is a broken contact page. */}
+          {region === 'milano-interior' && mobile && (
+            <div className="mon-overlay">
+              <MonitorScreen />
+            </div>
+          )}
+          {mobile && <TouchCoach />}
           {focus.kind === 'skill' && focus.id && <SkillPanel skillId={focus.id} />}
           {focus.kind === 'project' && focus.id && <ProjectPanel projectId={focus.id} />}
           <HoverLabel />

@@ -32,7 +32,8 @@
 @media (max-width: 767px) {
   .dos-card {
     inset: auto 0.6rem calc(4.6rem + env(safe-area-inset-bottom));
-    max-height: 60dvh;
+    /* Same rule as project sheets: the planet stays on screen. */
+    max-height: 48dvh;
   }
   @keyframes dos-in {
     from { opacity: 0; transform: translateY(22px); filter: blur(6px); }

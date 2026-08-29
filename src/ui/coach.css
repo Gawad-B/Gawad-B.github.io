@@ -1,0 +1,65 @@
+/* One-time touch primer. Instrument-panel register, bottom-centred above
+   the nav cluster, gone forever after the first gesture or tap. */
+.coach {
+  position: fixed;
+  left: 50%;
+  bottom: calc(6.4rem + env(safe-area-inset-bottom));
+  transform: translateX(-50%);
+  z-index: var(--z-hud);
+  width: min(21rem, calc(100vw - 2rem));
+  padding: 0.9rem 1rem 0.95rem;
+  background: color-mix(in srgb, var(--void-0) 92%, var(--instr-100));
+  border: 1px solid var(--instr-25, #3d4655);
+  border-radius: 10px;
+  animation: coach-in 0.5s var(--ease-flight, ease) 0.4s both;
+}
+
+.coach-title {
+  margin: 0 0 0.55rem;
+  font-family: var(--font-mono);
+  font-size: 0.625rem;
+  letter-spacing: 0.3em;
+  color: var(--signal, #ffb35c);
+}
+
+.coach-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 0.4rem;
+}
+
+.coach-list li {
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  color: var(--instr-70, #aeb8c9);
+  display: flex;
+  justify-content: space-between;
+  gap: 0.8rem;
+}
+
+.coach-g {
+  color: var(--data, #7fd4e8);
+  letter-spacing: 0.08em;
+  white-space: nowrap;
+}
+
+.coach-btn {
+  margin-top: 0.75rem;
+  width: 100%;
+  min-height: 44px;
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  letter-spacing: 0.24em;
+  color: var(--signal, #ffb35c);
+  background: transparent;
+  border: 1px solid var(--signal, #ffb35c);
+  border-radius: 999px;
+  cursor: pointer;
+}
+
+@keyframes coach-in {
+  from { opacity: 0; transform: translate(-50%, 14px); }
+  to   { opacity: 1; transform: translate(-50%, 0); }
+}

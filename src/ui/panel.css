@@ -11,8 +11,11 @@
 /* Mobile-first: bottom sheet. */
 @media (max-width: 767px) {
   .pnl {
-    inset: auto 0.6rem 0.6rem;
-    max-height: 62dvh;
+    /* Bottom sheet capped below half the screen: the planet you are
+       reading about must stay visible above it — the exploring IS the
+       site. The sheet body scrolls for the rest. */
+    inset: auto 0.6rem calc(4.6rem + env(safe-area-inset-bottom));
+    max-height: 46dvh;
   }
 }
 

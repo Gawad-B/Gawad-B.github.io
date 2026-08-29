@@ -282,7 +282,7 @@ function InteriorLights() {
  * The visitor reads the machine, not a floating window — that's the
  * difference between being in a cockpit and being on a website.
  */
-function Monitor() {
+function Monitor({ mobile }: { mobile: boolean }) {
   const materials = useMemo(
     () => ({
       housing: new THREE.MeshStandardMaterial({
@@ -330,7 +330,8 @@ function Monitor() {
           an internal factor, so we rendered once, read the element's
           getBoundingClientRect, and solved for the scale that puts the
           660px document just inside the glass. */}
-      <Html
+{!mobile && (
+        <Html
         transform
         position={[0, 0, 0.075]}
         scale={0.135}
@@ -339,6 +340,7 @@ function Monitor() {
       >
         <MonitorScreen />
       </Html>
+      )}
 
       {/* Glow the screen casts back into the cabin */}
       <pointLight position={[0, 0, 0.7]} intensity={2.6} distance={3.2} color="#7fd4e8" />
@@ -359,13 +361,13 @@ function VeilRelease() {
   return null;
 }
 
-export function MilanoInterior() {
+export function MilanoInterior({ mobile = false }: { mobile?: boolean }) {
   return (
     <group>
       <VeilRelease />
       <Cockpit />
       <CanopyView />
-      <Monitor />
+      <Monitor mobile={mobile} />
       <InteriorLights />
     </group>
   );

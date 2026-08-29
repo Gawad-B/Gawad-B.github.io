@@ -248,11 +248,33 @@
    the REAL viewport, so the ship's computer simply runs a
    narrower OS build on a phone: one column, same machine.
    ============================================================ */
+/* Full-viewport scrollable console for phones — the projected-glass
+   version is desktop-only. Top inset clears the HUD; bottom clears the
+   nav cluster; everything between scrolls, so TRANSMIT is always
+   reachable no matter how short the screen. */
+.mon-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-panel);
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding: 3.6rem 0.7rem calc(5.6rem + env(safe-area-inset-bottom));
+  display: flex;
+  flex-direction: column;
+}
+
+.mon-overlay .mon-screen {
+  width: 100%;
+  max-width: 26rem;
+  margin: auto;
+}
+
 @media (max-width: 767px) {
   .mon-screen {
     width: 320px;
     padding: 12px 12px 14px;
   }
+  .mon-overlay .mon-screen { width: 100%; }
   .mon-bar { gap: 8px; }
   .mon-bar-loc { display: none; } /* the marquee strip is chrome, not content */
   .mon-channels ul { grid-template-columns: 1fr; }
