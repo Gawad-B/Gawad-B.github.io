@@ -1,6 +1,7 @@
 """Mobile matrix + reduced motion + performance sampling."""
 import sys, time
 from playwright.sync_api import sync_playwright
+from _launch import UNIVERSE_URL, launch
 
 fails = []
 def check(name, cond, detail=""):
@@ -10,7 +11,7 @@ def check(name, cond, detail=""):
 ARGS = ["--use-gl=angle","--use-angle=swiftshader","--enable-unsafe-swiftshader"]
 
 with sync_playwright() as p:
-    b = p.chromium.launch(headless=True, args=ARGS)
+    b = launch(p)
 
     # ---------------- mobile ----------------
     print("\nmobile 375x812")
@@ -21,7 +22,7 @@ with sync_playwright() as p:
     errs = []
     pg.on("console", lambda m: errs.append(m.text) if m.type == "error" else None)
     pg.on("pageerror", lambda e: errs.append(str(e)))
-    pg.goto("http://localhost:3000", wait_until="networkidle")
+    pg.goto(UNIVERSE_URL, wait_until="networkidle")
     pg.wait_for_selector(".hud-nav", timeout=30000)
     time.sleep(2)
 
@@ -82,7 +83,7 @@ with sync_playwright() as p:
     pg = ctx.new_page()
     pg.route("https://api.web3forms.com/**", lambda r: r.fulfill(
         status=200, content_type="application/json", body='{"success":true,"message":"ok"}'))
-    pg.goto("http://localhost:3000/?qa=1", wait_until="networkidle")
+    pg.goto(UNIVERSE_URL + "?qa=1", wait_until="networkidle")
     pg.wait_for_selector(".hud-nav", timeout=30000)
     pg.evaluate("()=>window.__journey.getState().enterMilano()")
     pg.wait_for_selector(".mon-overlay .mon-screen", timeout=30000)
@@ -100,7 +101,7 @@ with sync_playwright() as p:
     print("\ntouch gestures")
     ctx = b.new_context(viewport={"width":375,"height":812}, is_mobile=True, has_touch=True)
     pg = ctx.new_page()
-    pg.goto("http://localhost:3000/?qa=1", wait_until="networkidle")
+    pg.goto(UNIVERSE_URL + "?qa=1", wait_until="networkidle")
     pg.wait_for_selector(".hud-nav", timeout=30000)
     check("first visit shows the gesture coach", pg.locator(".coach").count() == 1)
     # Reading surfaces: the whole sheet scrolls on phones (nested scroll
@@ -171,7 +172,7 @@ with sync_playwright() as p:
     print("\nprefers-reduced-motion")
     ctx = b.new_context(viewport={"width":1280,"height":800}, reduced_motion="reduce")
     pg = ctx.new_page()
-    pg.goto("http://localhost:3000", wait_until="networkidle")
+    pg.goto(UNIVERSE_URL, wait_until="networkidle")
     time.sleep(2)
     check("offers the document instead of imposing the flight",
           pg.locator(".fb").count() == 1)
@@ -190,7 +191,7 @@ with sync_playwright() as p:
     print("\nframe timing per region (software renderer — hardware will differ)")
     ctx = b.new_context(viewport={"width":1280,"height":800})
     pg = ctx.new_page()
-    pg.goto("http://localhost:3000", wait_until="networkidle")
+    pg.goto(UNIVERSE_URL, wait_until="networkidle")
     pg.wait_for_selector(".hud-nav", timeout=30000)
     pg.evaluate("""() => {
       window.__ft = [];

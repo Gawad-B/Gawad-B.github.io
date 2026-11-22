@@ -3,6 +3,7 @@ events, so hover must release without waiting for a pointer event that
 will never come (per-frame re-verification in Hotspot)."""
 import sys, time, re
 from playwright.sync_api import sync_playwright
+from _launch import UNIVERSE_URL, launch
 
 fails = []
 def check(name, cond, detail=""):
@@ -15,9 +16,9 @@ def anchor_of(pg, text):
     return int(m.group(1)), int(m.group(2))
 
 with sync_playwright() as p:
-    b = p.chromium.launch(headless=True, args=["--use-gl=angle","--use-angle=swiftshader","--enable-unsafe-swiftshader"])
+    b = launch(p)
     pg = b.new_page(viewport={"width":1440,"height":900})
-    pg.goto("http://localhost:3000/?qa=1", wait_until="networkidle")
+    pg.goto(UNIVERSE_URL + "?qa=1", wait_until="networkidle")
     pg.wait_for_selector(".hud-nav", timeout=30000)
     pg.evaluate("()=>window.__journey.getState().travelTo('system')")
     for _ in range(40):

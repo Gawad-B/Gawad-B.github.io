@@ -1,0 +1,690 @@
+/* Shared primitives for the professional view. Tokens live in tokens.css. */
+
+/* ---- reset -------------------------------------------------------------- */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+h1, h2, h3, h4, h5, h6, p, blockquote, figure, ul, ol, dl, dd {
+  margin: 0;
+}
+
+ul, ol {
+  padding: 0;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font: inherit;
+}
+
+img, svg, video, canvas {
+  max-width: 100%;
+}
+
+img {
+  height: auto;
+  display: block;
+}
+
+button, input, textarea, select {
+  font: inherit;
+  color: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+a {
+  color: inherit;
+}
+
+/* ---- document ----------------------------------------------------------- */
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 6rem;
+  background: var(--pv-bg);
+  color-scheme: light;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: var(--pv-bg);
+  color: var(--pv-text);
+  font-family: var(--pv-font);
+  font-size: var(--pv-fs-body);
+  font-weight: 400;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+::selection {
+  background: var(--pv-red);
+  color: #fff;
+}
+
+/* Black ring on light surfaces. --pv-focus flips to white on red / black / image backgrounds. */
+:focus-visible {
+  outline: 2px solid var(--pv-focus, var(--pv-text));
+  outline-offset: 2px;
+}
+
+/* Helper for red / black / image blocks: descendants get white links and a white focus ring. */
+.pv-on-dark {
+  --pv-focus: var(--pv-on-red);
+
+  color: var(--pv-on-red);
+}
+
+.pv-on-dark a {
+  color: inherit;
+}
+
+.pv-on-dark ::selection {
+  background: var(--pv-on-red);
+  color: var(--pv-red);
+}
+
+/* ---- layout and headings ------------------------------------------------ */
+.pv-container {
+  width: min(100% - 2 * var(--pv-gutter), var(--pv-maxw));
+  margin-inline: auto;
+}
+
+.pv-section {
+  position: relative;
+  padding-block: var(--pv-section-y);
+}
+
+/* Grey label box with a red asterisk: <span class="pv-label"><IconAsterisk size={12} /> Text</span> */
+.pv-label {
+  --pv-label-star: var(--pv-red-deep);
+
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-bottom: 1.1rem;
+  padding: 0.3rem 0.5rem;
+  border-radius: var(--pv-r-sm);
+  background: var(--pv-chip);
+  color: var(--pv-text);
+  font-size: var(--pv-fs-label);
+  font-weight: 600;
+  line-height: 1.3;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+.pv-label > svg {
+  flex: none;
+  width: 1.05em;
+  height: 1.05em;
+  color: var(--pv-label-star);
+}
+
+.pv-label--on-dark {
+  --pv-focus: var(--pv-on-red);
+  --pv-label-star: var(--pv-on-red);
+
+  background: rgb(255 255 255 / 0.12);
+  color: var(--pv-on-red);
+}
+
+.pv-h2 {
+  font-size: var(--pv-fs-h2);
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: var(--pv-track-tight);
+  line-height: 0.95;
+  color: var(--pv-text);
+  text-wrap: balance;
+}
+
+.pv-h2__muted {
+  color: var(--pv-muted-display);
+}
+
+.pv-h2--center {
+  text-align: center;
+}
+
+.pv-h2--on-dark {
+  color: var(--pv-on-red);
+}
+
+.pv-h2--on-dark .pv-h2__muted {
+  color: rgb(255 255 255 / 0.62);
+}
+
+.pv-lead {
+  max-width: 34rem;
+  font-size: var(--pv-fs-body);
+  font-weight: 400;
+  line-height: 1.55;
+  color: var(--pv-text-2);
+}
+
+.pv-blurb {
+  font-size: var(--pv-fs-blurb);
+  font-weight: 600;
+  line-height: 1.5;
+  text-transform: uppercase;
+  letter-spacing: 0;
+}
+
+/* ---- controls ----------------------------------------------------------- */
+/* <a class="pv-btn"><span>Label</span><span class="pv-btn__icon"><IconArrowUpRight size={14} /></span></a> */
+.pv-btn {
+  --pv-btn-bg: var(--pv-chip);
+  --pv-btn-bg-hover: var(--pv-chip-2);
+  --pv-btn-fg: var(--pv-text);
+  --pv-btn-edge: var(--pv-red);
+  --pv-btn-icon-bg: var(--pv-red);
+  --pv-btn-icon-fg: #fff;
+  --pv-btn-icon-size: 2rem;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.9rem;
+  min-height: 2.75rem;
+  padding: 0 0.35rem 0 0.9rem;
+  border: 0;
+  border-left: 2px solid var(--pv-btn-edge);
+  border-radius: var(--pv-r-sm);
+  background: var(--pv-btn-bg);
+  color: var(--pv-btn-fg);
+  font-size: 0.75rem;
+  font-weight: 600;
+  line-height: 1;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  text-decoration: none;
+  white-space: nowrap;
+  cursor: pointer;
+  transition:
+    background-color 300ms var(--pv-ease),
+    color 300ms var(--pv-ease),
+    transform var(--pv-dur-fast) var(--pv-ease-out);
+}
+
+.pv-btn:hover {
+  background: var(--pv-btn-bg-hover);
+}
+
+.pv-btn:active {
+  transform: scale(0.97);
+}
+
+.pv-btn--primary {
+  --pv-btn-bg: var(--pv-black);
+  --pv-btn-bg-hover: color-mix(in srgb, var(--pv-black) 80%, #fff);
+  --pv-btn-fg: #fff;
+}
+
+/* On the red hero (and other red/black blocks): white body, black edge and icon square. */
+.pv-btn--on-red {
+  --pv-focus: var(--pv-on-red);
+  --pv-btn-bg: #fff;
+  --pv-btn-bg-hover: var(--pv-chip);
+  --pv-btn-fg: var(--pv-text);
+  --pv-btn-edge: var(--pv-black);
+  --pv-btn-icon-bg: var(--pv-black);
+  --pv-btn-icon-fg: #fff;
+}
+
+/* Combine with --on-red: transparent body, white 1px outline and white text (second hero CTA). */
+.pv-btn--on-red.pv-btn--outline {
+  --pv-btn-bg: transparent;
+  --pv-btn-bg-hover: rgb(255 255 255 / 0.14);
+  --pv-btn-fg: var(--pv-on-red);
+  --pv-btn-edge: var(--pv-on-red);
+  --pv-btn-icon-bg: var(--pv-on-red);
+  --pv-btn-icon-fg: var(--pv-red-deep);
+
+  box-shadow: inset 0 0 0 1px var(--pv-on-red);
+}
+
+/* Full width, label centred (the icon square stays at the right end). */
+.pv-btn--block {
+  display: flex;
+  width: 100%;
+  padding-left: calc(var(--pv-btn-icon-size) + 0.35rem);
+}
+
+.pv-btn--block > :first-child {
+  flex: 1;
+  text-align: center;
+}
+
+.pv-btn--sm {
+  --pv-btn-icon-size: 1.5rem;
+
+  min-height: 2.25rem;
+  gap: 0.7rem;
+  padding-left: 0.75rem;
+}
+
+/* Touch screens and narrow layouts: full 44px target. */
+@media (pointer: coarse), (max-width: 1023px) {
+  .pv-btn--sm {
+    min-height: 44px;
+  }
+}
+
+.pv-btn__icon {
+  display: inline-grid;
+  place-items: center;
+  flex: none;
+  width: var(--pv-btn-icon-size);
+  height: var(--pv-btn-icon-size);
+  border-radius: 2px;
+  background: var(--pv-btn-icon-bg);
+  color: var(--pv-btn-icon-fg);
+  transition: transform 400ms var(--pv-ease-out);
+}
+
+.pv-btn:hover .pv-btn__icon {
+  transform: translate(2px, -2px);
+}
+
+.pv-tag {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.3rem 0.55rem;
+  border-radius: var(--pv-r-sm);
+  background: var(--pv-chip);
+  color: var(--pv-text);
+  font-size: 0.75rem;
+  font-weight: 500;
+  line-height: 1.25;
+  transition: translate var(--pv-dur-fast) var(--pv-ease-out);
+}
+
+.pv-tag:hover {
+  translate: 0 -1px;
+}
+
+/* Underline is drawn with backgrounds so it can animate: a dim line always, and a full-colour one
+   that draws in from the left on hover. Colour inherits (white inside .pv-on-dark). */
+.pv-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  min-height: 44px;
+  color: inherit;
+  text-decoration: none;
+  background-image:
+    linear-gradient(currentColor, currentColor),
+    linear-gradient(color-mix(in srgb, currentColor 35%, transparent), color-mix(in srgb, currentColor 35%, transparent));
+  background-repeat: no-repeat;
+  background-position: 0 calc(50% + 0.62em);
+  background-size: 0 1px, 100% 1px;
+  transition:
+    color 400ms var(--pv-ease),
+    background-size 450ms var(--pv-ease-out);
+}
+
+.pv-link:hover,
+.pv-link:focus-visible {
+  background-size: 100% 1px, 100% 1px;
+}
+
+.pv-link > svg {
+  flex: none;
+  transition: transform 450ms var(--pv-ease-out);
+}
+
+.pv-link:hover > svg {
+  transform: translate(2px, -2px);
+}
+
+/* Picture card: <figure class="pv-frame"><div class="pv-frame__media"><img/></div>
+   <figcaption class="pv-frame__cap"><span><IconAsterisk size={12} /> Name</span><span>/Kind</span></figcaption></figure>
+   (any wrapper works; the media wrapper clips a hover zoom). */
+.pv-frame {
+  display: block;
+  padding: 0.5rem;
+  border-radius: var(--pv-r-md);
+  background: var(--pv-surface);
+}
+
+.pv-frame__media {
+  overflow: hidden;
+  border-radius: 3px;
+}
+
+.pv-frame__media > img {
+  width: 100%;
+}
+
+.pv-frame__cap {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-top: 0.5rem;
+  padding: 0.45rem 0.6rem;
+  border-radius: var(--pv-r-sm);
+  background: var(--pv-chip);
+  color: var(--pv-text);
+  font-size: 0.75rem;
+  font-weight: 500;
+  line-height: 1.3;
+  text-transform: uppercase;
+}
+
+.pv-frame__cap > span {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  min-width: 0;
+}
+
+.pv-frame__cap svg {
+  flex: none;
+  width: 1.05em;
+  height: 1.05em;
+  color: var(--pv-red-deep);
+}
+
+.pv-skip {
+  position: fixed;
+  top: 0.75rem;
+  left: 0.75rem;
+  z-index: calc(var(--pv-z-menu) + 10);
+  padding: 0.85rem 1.2rem;
+  border-radius: var(--pv-r-sm);
+  background: var(--pv-black);
+  color: #fff;
+  font-size: var(--pv-fs-small);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  text-decoration: none;
+  transform: translateY(-250%);
+  transition: transform 400ms var(--pv-ease-out);
+}
+
+.pv-skip:focus,
+.pv-skip:focus-visible {
+  --pv-focus: #fff;
+
+  transform: translateY(0);
+  outline-offset: -4px;
+}
+
+.pv-vh {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  border: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* ---- reveal system -----------------------------------------------------
+   Everything that hides content is gated on html.pv-js (set by an inline head script), so the
+   prerendered page is fully readable without JavaScript. useReveal toggles .is-in as the element
+   enters / leaves through the bottom. --pv-i is the stagger index. A transition takes the timing
+   of the state it goes TO: hidden-state rules carry the quick, un-staggered exit; .is-in rules the
+   long entrance and the stagger. */
+.pv-js .pv-rv {
+  opacity: 0;
+  filter: blur(var(--pv-blur));
+  transform: translateY(var(--pv-rise));
+  transition:
+    opacity 280ms var(--pv-ease-out),
+    transform 280ms var(--pv-ease-out),
+    filter 280ms var(--pv-ease-out);
+  transition-delay: 0s;
+}
+
+.pv-js .pv-rv.is-in {
+  opacity: 1;
+  filter: none;
+  transform: none;
+  transition-duration: var(--pv-dur);
+  transition-delay: calc(var(--pv-i, 0) * var(--pv-stagger));
+}
+
+/* Pictures and large blocks: no blur, blur on big layers is slow. */
+.pv-js .pv-rv.pv-rv--img {
+  filter: none;
+  transform: scale(1.04);
+  transition-property: opacity, transform;
+  transition-duration: 280ms;
+}
+
+.pv-js .pv-rv.pv-rv--img.is-in {
+  transform: none;
+  transition-duration: var(--pv-dur), 900ms;
+}
+
+/* Large text blocks: opacity and rise only. On a --words element it drops the per-word blur. */
+.pv-js .pv-rv.pv-rv--soft {
+  filter: none;
+  transition-property: opacity, transform;
+}
+
+.pv-js .pv-rv--words.pv-rv--soft .pv-w {
+  filter: none;
+  transition-property: opacity, transform;
+}
+
+/* Word by word: the element stays visible, its .pv-w words reveal. --pv-w-step overrides the 55ms
+   per-word delay (e.g. for long paragraphs). */
+.pv-js .pv-rv.pv-rv--words {
+  opacity: 1;
+  filter: none;
+  transform: none;
+  transition: none;
+}
+
+.pv-words {
+  display: inline;
+}
+
+.pv-w {
+  display: inline-block;
+}
+
+.pv-js .pv-rv--words .pv-w {
+  opacity: 0;
+  filter: blur(10px);
+  transform: translateY(0.35em);
+  transition:
+    opacity 280ms var(--pv-ease-out),
+    transform 280ms var(--pv-ease-out),
+    filter 280ms var(--pv-ease-out);
+  transition-delay: 0s;
+}
+
+.pv-js .pv-rv--words.is-in .pv-w {
+  opacity: 1;
+  filter: none;
+  transform: none;
+  transition-duration: 600ms;
+  transition-delay: calc(var(--pv-i, 0) * var(--pv-w-step, 55ms));
+}
+
+/* Chips: the .pv-tag descendants pop in one after another (--pv-c-step overrides 25ms). The
+   hover lift keeps its own, undelayed, transition. */
+.pv-js .pv-rv.pv-rv--chips {
+  opacity: 1;
+  filter: none;
+  transform: none;
+  transition: none;
+}
+
+.pv-js .pv-rv--chips .pv-tag {
+  opacity: 0;
+  transform: translateY(6px) scale(0.96);
+  transition:
+    opacity 280ms var(--pv-ease-out) 0s,
+    transform 280ms var(--pv-ease-out) 0s,
+    translate var(--pv-dur-fast) var(--pv-ease-out) 0s;
+}
+
+.pv-js .pv-rv--chips.is-in .pv-tag {
+  opacity: 1;
+  transform: none;
+  transition-duration: 360ms, 360ms, var(--pv-dur-fast);
+  transition-delay:
+    calc(var(--pv-i, 0) * var(--pv-c-step, 25ms)),
+    calc(var(--pv-i, 0) * var(--pv-c-step, 25ms)),
+    0s;
+}
+
+/* Load-time entrances (hero, nav). --pv-d is the delay in ms. The keyframes only declare the
+   hidden start, so the element lands on its own computed style. */
+.pv-js .pv-enter {
+  animation: pv-blur-in 800ms var(--pv-ease-out) both;
+  animation-delay: calc(var(--pv-d, 0) * 1ms);
+}
+
+.pv-js .pv-enter--fade {
+  animation-name: pv-fade-in;
+}
+
+.pv-js .pv-enter--drop {
+  animation-name: pv-drop-in;
+}
+
+/* Entry intro (html.pv-intro, see src/pro/hooks/wipe.ts): the static wipe columns cover the page
+   and everything waits at its hidden start until they open (html.pv-open), then runs 250ms later.
+   pv-entered keeps that offset after the intro classes are cleared, so nothing jumps mid-animation. */
+.pv-js.pv-intro:not(.pv-open) .pv-enter {
+  animation-play-state: paused;
+}
+
+.pv-js.pv-open .pv-enter,
+.pv-js.pv-entered .pv-enter {
+  animation-delay: calc(var(--pv-d, 0) * 1ms + 250ms);
+}
+
+@keyframes pv-blur-in {
+  from {
+    opacity: 0;
+    filter: blur(var(--pv-blur));
+    transform: translateY(var(--pv-rise));
+  }
+}
+
+@keyframes pv-fade-in {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes pv-drop-in {
+  from {
+    opacity: 0;
+    transform: translateY(-120%);
+  }
+}
+
+@keyframes pv-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.pv-spin {
+  animation: pv-spin 14s linear infinite;
+}
+
+/* Count-up numbers (see CountUp.tsx): hidden until counting starts so the final value never
+   flashes. The component adds .is-on in every path, animated or not. */
+.pv-count {
+  position: relative;
+  display: inline-block;
+}
+
+.pv-count__n {
+  display: inline-block;
+  font-variant-numeric: tabular-nums;
+}
+
+.pv-js .pv-count__n:not(.is-on) {
+  opacity: 0;
+}
+
+.pv-js .pv-count__n {
+  transition: opacity var(--pv-dur-fast) linear;
+}
+
+/* ---- reduced motion ----------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0.01ms !important;
+    transition-delay: 0s !important;
+    animation-duration: 0.01ms !important;
+    animation-delay: 0s !important;
+    animation-iteration-count: 1 !important;
+  }
+
+  .pv-js .pv-rv,
+  .pv-js .pv-rv.pv-rv--img,
+  .pv-js .pv-rv.pv-rv--words,
+  .pv-js .pv-rv.pv-rv--chips,
+  .pv-js .pv-rv--words .pv-w,
+  .pv-js .pv-rv--chips .pv-tag,
+  .pv-js .pv-count__n:not(.is-on) {
+    opacity: 1;
+    transform: none;
+    filter: none;
+    transition: none;
+  }
+
+  .pv-js .pv-enter,
+  .pv-js.pv-open .pv-enter,
+  .pv-js.pv-entered .pv-enter,
+  .pv-spin {
+    animation: none;
+  }
+}
+
+/* ---- print -------------------------------------------------------------- */
+/* Nothing prints hidden or blurred, whatever has or has not revealed yet; screen-only chrome goes. */
+@media print {
+  .pv-js .pv-rv,
+  .pv-js .pv-rv.pv-rv--img,
+  .pv-js .pv-rv--words .pv-w,
+  .pv-js .pv-rv--chips .pv-tag,
+  .pv-js .pv-count__n,
+  .pv-js .pv-enter,
+  .pv-rv,
+  .pv-w,
+  .pv-tag,
+  .pv-count__n,
+  .pv-enter {
+    opacity: 1 !important;
+    filter: none !important;
+    transform: none !important;
+    transition: none !important;
+    animation: none !important;
+  }
+
+  .pv-wipe,
+  .pv-nav,
+  .pv-skip {
+    display: none !important;
+  }
+}

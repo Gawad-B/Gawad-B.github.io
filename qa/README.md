@@ -16,10 +16,31 @@ python3 -m venv .venv-qa
 .venv-qa/bin/python -m playwright install chromium
 ```
 
+The suites prefer a system Chromium when one is installed (see `_launch.py`
+below); the `playwright install` step is only needed on machines without one.
+
+## Two pages, two URLs
+
+| URL | What | Suites |
+|---|---|---|
+| `/` | professional view (React, no WebGL) | `qa/pro.py` |
+| `/universe/` | the 3D universe | every other suite |
+
+`qa/_launch.py` is shared by all suites (they run as `python qa/<name>.py`, so
+`from _launch import ...` resolves). It exports `BASE`, `PRO_URL` (`BASE + "/"`),
+`UNIVERSE_URL` (`BASE + "/universe/"`) and `launch(p, **kwargs)`, which starts
+headless Chromium with the SwiftShader WebGL flags. Environment variables:
+
+- `QA_BASE` — server origin, default `http://localhost:3000`. Point it at a
+  production preview to test the built site.
+- `QA_CHROMIUM` — path to the Chromium binary. Default: `/usr/bin/chromium-browser`
+  when that file exists, otherwise Playwright's own browser.
+
 Then:
 
 ```bash
-.venv-qa/bin/python qa/fallback.py   # no-WebGL path renders the whole portfolio
+.venv-qa/bin/python qa/pro.py        # professional view: structure, nav, hero, intro, reveals, links, no-3D, layout, a11y
+.venv-qa/bin/python qa/fallback.py   # universe: no-WebGL path renders the whole portfolio
 .venv-qa/bin/python qa/skills.py     # Saturn: hover, select, panel, band isolation
 .venv-qa/bin/python qa/projects.py   # all 7 worlds vs. the data, incl. panel contrast mode
 .venv-qa/bin/python qa/milano.py     # discovery → entry → channels → transmit → exit
@@ -28,6 +49,12 @@ Then:
 .venv-qa/bin/python qa/perf.py       # scene complexity vs. budget, tier scaling
 .venv-qa/bin/python qa/shot.py URL OUT [W H WAIT WAIT_FOR CLICK...]
 ```
+
+`qa/pro.py` skips one check on the dev server: with JavaScript disabled the dev
+page is an empty `#root`. Against a production build (`npm run build`, then serve
+`dist/` and set `QA_BASE`) also open `/` in a context created with
+`java_script_enabled=False` and confirm the prerendered page shows the name,
+all five sections and no hidden `.pv-rv` content.
 
 ## On performance numbers
 
@@ -43,7 +70,9 @@ image textures anywhere in the build.
 
 ## Regenerating the document head
 
-`index.html`, `sitemap.xml` and `robots.txt` are generated from `src/data`:
+`index.html`, `universe/index.html`, `sitemap.xml` and `robots.txt` are generated
+from `src/data` and `src/pro/content.ts` — meta tags, JSON-LD, the share-card
+tags, and (professional page only) the inline intro cover and its boot snippet:
 
 ```bash
 bash qa/build-head.sh
@@ -51,3 +80,19 @@ bash qa/build-head.sh
 
 Change `SITE` in `qa/gen-head.ts` first if the deploy domain changes — it
 feeds the canonical link, Open Graph, Twitter card and sitemap.
+
+## Regenerating the pictures
+
+The share cards are plain HTML rendered at 1200x630:
+
+```bash
+chromium --headless=new --hide-scrollbars --window-size=1200,630 \
+  --virtual-time-budget=9000 --screenshot=public/og.png     "file://$PWD/qa/og-card.html"
+chromium --headless=new --hide-scrollbars --window-size=1200,630 \
+  --virtual-time-budget=9000 --screenshot=public/og-pro.png "file://$PWD/qa/og-pro.html"
+```
+
+`.github/preview.png` is the universe's system map at 1440x900 (enter, press
+Esc, let the labels settle); `public/assets/pro/universe-thumb.webp` is the same
+capture at 960x600. `.github/preview-pro.jpg` is the professional view's hero.
+Re-capture them when project order, labels or the hero change.

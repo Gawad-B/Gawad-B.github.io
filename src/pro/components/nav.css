@@ -1,0 +1,198 @@
+/* Nav row: transparent over the red hero at the very top, a solid red bar once the page is scrolled. */
+
+.pv-nav {
+  position: fixed;
+  inset: 0 0 auto;
+  z-index: var(--pv-z-nav);
+  border-bottom: 1px solid transparent;
+  background-color: transparent;
+  transition:
+    background-color 200ms var(--pv-ease),
+    border-color 200ms var(--pv-ease),
+    box-shadow 200ms var(--pv-ease);
+}
+
+.pv-nav.is-scrolled,
+.pv-nav.is-open {
+  border-bottom-color: var(--pv-on-red-line);
+  background-color: var(--pv-red);
+  box-shadow: 0 6px 18px rgb(17 17 17 / 0.12);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pv-nav {
+    transition: none;
+  }
+}
+
+.pv-nav__bar {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 1.5rem;
+  height: 3.5rem;
+}
+
+.pv-nav__brand {
+  justify-self: start;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.15rem;
+  min-height: 44px;
+  font-size: 1.125rem;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  text-decoration: none;
+  color: inherit;
+}
+
+.pv-nav__brand > svg {
+  flex: none;
+  align-self: flex-start;
+  margin-top: 0.7rem;
+  color: var(--pv-on-red);
+}
+
+/* ---- section links ------------------------------------------------------ */
+.pv-nav__list {
+  display: flex;
+  justify-content: space-evenly;
+  list-style: none;
+}
+
+.pv-nav__link {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding-inline: 0.35rem;
+  font-size: var(--pv-fs-small);
+  font-weight: 500;
+  text-decoration: none;
+  color: inherit;
+}
+
+.pv-nav__link::after {
+  content: '';
+  position: absolute;
+  inset: auto 0.35rem 0.6rem;
+  height: 1px;
+  background: currentColor;
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 400ms var(--pv-ease-out);
+}
+
+.pv-nav__link:hover::after,
+.pv-nav__link[aria-current='true']::after {
+  transform: scaleX(1);
+}
+
+/* ---- end: résumé, view switch, menu button ------------------------------- */
+/* `.pv-on-dark a` forces white links; the résumé button and the active switch segment keep their own text colour. */
+.pv-nav .pv-nav__resume {
+  color: var(--pv-btn-fg);
+}
+
+.pv-nav .pv-gate__seg.is-active {
+  color: var(--pv-text);
+}
+
+.pv-nav__end {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.pv-nav__menu {
+  display: none;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  margin-right: -0.4rem;
+  padding: 0;
+  border: 0;
+  border-radius: var(--pv-r-sm);
+  background: transparent;
+  color: inherit;
+}
+
+/* ---- dropdown sheet (below 860px) --------------------------------------- */
+.pv-nav__sheet {
+  display: none;
+}
+
+@media (max-width: 859px) {
+  .pv-nav__links,
+  .pv-nav__switch {
+    display: none;
+  }
+
+  .pv-nav__bar {
+    grid-template-columns: 1fr auto;
+  }
+
+  .pv-nav__menu {
+    display: inline-grid;
+  }
+
+  .pv-nav__sheet {
+    position: absolute;
+    inset: 100% 0 auto;
+    display: block;
+    padding: 0.5rem var(--pv-gutter) 1.25rem;
+    border-bottom: 1px solid var(--pv-on-red-line);
+    background: var(--pv-red);
+    box-shadow: 0 10px 18px rgb(17 17 17 / 0.12);
+    color: var(--pv-on-red);
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-0.5rem);
+    transition:
+      opacity 250ms var(--pv-ease),
+      transform 250ms var(--pv-ease),
+      visibility 0s linear 250ms;
+  }
+
+  .pv-nav__sheet.is-open {
+    opacity: 1;
+    visibility: visible;
+    transform: none;
+    transition:
+      opacity 250ms var(--pv-ease),
+      transform 250ms var(--pv-ease),
+      visibility 0s;
+  }
+
+  .pv-nav__sheet-list {
+    list-style: none;
+  }
+
+  .pv-nav__sheet-list > li + li {
+    border-top: 1px solid var(--pv-on-red-line);
+  }
+
+  .pv-nav__sheet-link {
+    display: flex;
+    align-items: center;
+    min-height: 48px;
+    font-size: var(--pv-fs-body);
+    font-weight: 600;
+    text-transform: uppercase;
+    text-decoration: none;
+    color: var(--pv-on-red);
+  }
+
+  .pv-nav__sheet-link[aria-current='true'] {
+    text-decoration: underline;
+    text-underline-offset: 0.3em;
+  }
+
+  .pv-nav__sheet-switch {
+    margin-top: 0.75rem;
+  }
+
+  .pv-nav__sheet-switch .pv-gate__seg {
+    min-height: 44px;
+  }
+}

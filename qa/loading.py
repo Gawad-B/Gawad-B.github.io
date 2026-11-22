@@ -1,6 +1,7 @@
 """Loading: appears immediately, reports real progress, never strands."""
 import sys, time
 from playwright.sync_api import sync_playwright
+from _launch import UNIVERSE_URL, launch
 
 fails=[]
 def check(n,c,d=""):
@@ -8,10 +9,10 @@ def check(n,c,d=""):
     if not c: fails.append(n)
 
 with sync_playwright() as p:
-    b=p.chromium.launch(headless=True,args=["--use-gl=angle","--use-angle=swiftshader","--enable-unsafe-swiftshader"])
+    b=launch(p)
     pg=b.new_page(viewport={"width":1440,"height":900})
     t0=time.time()
-    pg.goto("http://localhost:3000")
+    pg.goto(UNIVERSE_URL)
     try:
         pg.wait_for_selector(".ld",timeout=8000)
         check("loading screen appears", True)

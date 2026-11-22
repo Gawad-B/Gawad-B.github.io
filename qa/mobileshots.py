@@ -1,7 +1,8 @@
 import sys, time
 from playwright.sync_api import sync_playwright
+from _launch import launch
 with sync_playwright() as p:
-    b=p.chromium.launch(headless=True,args=["--use-gl=angle","--use-angle=swiftshader","--enable-unsafe-swiftshader"])
+    b=launch(p)
     ctx=b.new_context(viewport={"width":375,"height":812},is_mobile=True,has_touch=True,device_scale_factor=2)
     pg=ctx.new_page()
     pg.goto(sys.argv[1],wait_until="networkidle")

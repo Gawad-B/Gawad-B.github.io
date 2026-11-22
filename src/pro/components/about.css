@@ -1,0 +1,38 @@
+.pv-about__grid {
+  display: grid;
+  gap: 1.5rem;
+}
+
+.pv-about__text {
+  max-width: 46rem;
+  font-size: var(--pv-fs-statement);
+  font-weight: 500;
+  line-height: 1.45;
+  color: var(--pv-text-2);
+}
+
+.pv-about__first {
+  color: var(--pv-text);
+}
+
+.pv-about__quote {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 1.5rem;
+  color: var(--pv-text);
+}
+
+.pv-about__quote > svg {
+  flex: none;
+  width: 1.05em;
+  height: 1.05em;
+  color: var(--pv-red-deep);
+}
+
+@media (min-width: 860px) {
+  .pv-about__grid {
+    grid-template-columns: minmax(12rem, 1fr) 2.6fr;
+    gap: 2.5rem;
+  }
+}

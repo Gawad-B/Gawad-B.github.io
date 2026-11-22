@@ -1,0 +1,600 @@
+/* Red hero and the proof strip under it. */
+
+.pv-hero {
+  position: relative;
+}
+
+/* ---- the red block ------------------------------------------------------ */
+.pv-hero__red {
+  --hero-nav: 3.5rem;
+  --hero-h: clamp(36rem, 100svh, 52rem);
+  --hero-w: min(100cqi - 2 * var(--pv-gutter), var(--pv-maxw));
+  /* Giant word: as wide as the container, but short enough that the text column fits under it. */
+  --giant-fs: min(var(--pv-fs-giant), calc(var(--hero-w) * 0.262), calc((var(--hero-h) - 29rem) * 1.25));
+  --hero-top: calc(var(--hero-nav) + var(--giant-fs) * 0.8 + 1.25rem);
+  --hero-line-2: calc(var(--hero-h) - 11rem);
+  --hero-pad-b: 1.5rem;
+
+  position: relative;
+  isolation: isolate;
+  container-type: inline-size;
+  height: var(--hero-h);
+  overflow: hidden;
+  background:
+    linear-gradient(var(--pv-on-red-line), var(--pv-on-red-line)) 0 var(--hero-nav) / 100% 1px no-repeat,
+    linear-gradient(var(--pv-on-red-line), var(--pv-on-red-line)) 0 calc(var(--hero-top) - 0.75rem) / 100% 1px no-repeat,
+    linear-gradient(var(--pv-on-red-line), var(--pv-on-red-line)) 0 var(--hero-line-2) / 100% 1px no-repeat,
+    var(--pv-red);
+}
+
+/* Soft dark fade along the bottom. */
+.pv-hero__red::after {
+  content: '';
+  position: absolute;
+  inset: auto 0 0;
+  z-index: 3;
+  height: 30%;
+  background: linear-gradient(rgb(0 0 0 / 0), rgb(0 0 0 / 0.22));
+  pointer-events: none;
+}
+
+/* Leaves the viewport as the red block's bottom edge reaches the nav. */
+.pv-hero__sentinel {
+  position: absolute;
+  left: 0;
+  bottom: var(--hero-nav);
+  width: 1px;
+  height: 1px;
+  pointer-events: none;
+}
+
+/* Construction grid: four column edges of the container, "+" marks on the two inner rows. */
+.pv-hero__grid {
+  position: absolute;
+  inset: 0 auto 0 50%;
+  z-index: 0;
+  width: var(--hero-w);
+  translate: -50% 0;
+  background:
+    linear-gradient(var(--pv-on-red-line), var(--pv-on-red-line)) 0 0 / 1px 100% no-repeat,
+    linear-gradient(var(--pv-on-red-line), var(--pv-on-red-line)) 33.333% 0 / 1px 100% no-repeat,
+    linear-gradient(var(--pv-on-red-line), var(--pv-on-red-line)) 66.667% 0 / 1px 100% no-repeat,
+    linear-gradient(var(--pv-on-red-line), var(--pv-on-red-line)) 100% 0 / 1px 100% no-repeat;
+  pointer-events: none;
+}
+
+.pv-hero__plus {
+  position: absolute;
+  left: calc(var(--col) * (100% - 1px) / 3 + 0.5px);
+  top: calc(var(--hero-top) - 0.75rem + var(--row) * (var(--hero-line-2) - var(--hero-top) + 0.75rem));
+  width: 9px;
+  height: 9px;
+  translate: -50% -50%;
+  background:
+    linear-gradient(rgb(255 255 255 / 0.6), rgb(255 255 255 / 0.6)) center / 100% 1px no-repeat,
+    linear-gradient(rgb(255 255 255 / 0.6), rgb(255 255 255 / 0.6)) center / 1px 100% no-repeat;
+}
+
+/* ---- stage: every layer is placed against the container ------------------ */
+.pv-hero__stage {
+  position: relative;
+  height: 100%;
+}
+
+.pv-hero__back {
+  position: absolute;
+  inset: var(--hero-nav) 0 auto;
+  z-index: 1;
+  display: flex;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.pv-hero__giant {
+  display: block;
+  font-size: var(--giant-fs);
+  font-weight: 800;
+  line-height: 0.8;
+  letter-spacing: var(--pv-track-tight);
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: rgb(255 255 255 / 0.13);
+  user-select: none;
+}
+
+.pv-hero__figure {
+  position: absolute;
+  bottom: 0;
+  left: 54%;
+  z-index: 2;
+  height: min(84svh, 43rem);
+  translate: -50% 0;
+  transform-origin: 50% 100%;
+  pointer-events: none;
+}
+
+.pv-hero__portrait {
+  width: auto;
+  max-width: none;
+  height: 100%;
+  transform-origin: 50% 100%;
+  /* The hoodie runs off the image's left and right edges: fade both sides so no straight edge shows. */
+  -webkit-mask-image:
+    linear-gradient(to right, transparent 0, #000 16%, #000 84%, transparent 100%),
+    linear-gradient(#000, #000);
+  -webkit-mask-composite: source-in;
+  mask-image:
+    linear-gradient(to right, transparent 0, #000 16%, #000 84%, transparent 100%),
+    linear-gradient(#000, #000);
+  mask-composite: intersect;
+}
+
+.pv-js .pv-hero__portrait.pv-enter {
+  animation-name: pv-hero-portrait-in;
+  animation-duration: 900ms;
+}
+
+/* Replay (useHeroReplay.ts): while the hero is out of view above, its entrance pieces have no
+   animation and are held invisible; dropping the class makes every one start over with its own
+   delay. Only the .pv-enter elements are touched: the scroll-driven animations sit on their
+   parents (.pv-hero__back, .pv-hero__figure) and keep running. */
+@media (prefers-reduced-motion: no-preference) {
+  .pv-js .pv-hero__red.pv-hero--reset .pv-enter {
+    animation: none;
+    opacity: 0;
+  }
+}
+
+@keyframes pv-hero-portrait-in {
+  from {
+    opacity: 0;
+    transform: scale(1.04);
+  }
+}
+
+/* ---- left column -------------------------------------------------------- */
+.pv-hero__upper {
+  position: absolute;
+  top: var(--hero-top);
+  left: 0;
+  z-index: 4;
+  width: min(23rem, 34%);
+}
+
+/* Pure white on the red (AA); the accent phrase stands out by weight (700 against the blurb's 600). */
+.pv-hero__blurb {
+  color: var(--pv-on-red);
+}
+
+.pv-hero__accent {
+  font-weight: 700;
+}
+
+.pv-hero__sub.pv-lead {
+  max-width: none;
+  margin-top: 0.75rem;
+  font-size: 0.875rem;
+  line-height: 1.5;
+  color: var(--pv-on-red);
+}
+
+/* .pv-on-dark's inherited link colour would otherwise beat the button's own. */
+.pv-hero .pv-btn {
+  color: var(--pv-btn-fg);
+}
+
+.pv-hero__ctas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  margin-top: 1.1rem;
+}
+
+.pv-hero__lower {
+  position: absolute;
+  bottom: var(--hero-pad-b);
+  left: 0;
+  z-index: 4;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.pv-hero__status {
+  order: -1;
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  line-height: 1.3;
+  text-transform: uppercase;
+  color: var(--pv-on-red);
+}
+
+.pv-hero__status > svg {
+  flex: none;
+}
+
+.pv-hero__name {
+  font-size: var(--pv-fs-name);
+  font-weight: 800;
+  line-height: 0.9;
+  letter-spacing: var(--pv-track-tight);
+  text-transform: uppercase;
+  color: var(--pv-on-red);
+}
+
+.pv-hero__name > span {
+  display: block;
+}
+
+/* ---- right column ------------------------------------------------------- */
+.pv-hero__card {
+  position: absolute;
+  top: var(--hero-top);
+  right: 0;
+  z-index: 4;
+  width: 11rem;
+}
+
+.pv-hero__side {
+  position: absolute;
+  right: 0;
+  bottom: var(--hero-pad-b);
+  z-index: 4;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.25rem;
+  width: 17.5rem;
+}
+
+.pv-hero__mini {
+  display: grid;
+  grid-template-columns: 3rem 1fr 2rem;
+  align-items: center;
+  gap: 0.6rem;
+  width: 100%;
+  padding: 0.5rem;
+  border-radius: var(--pv-r-md);
+  background: var(--pv-black);
+  color: var(--pv-on-black);
+  text-decoration: none;
+}
+
+.pv-hero__mono {
+  display: grid;
+  place-items: center;
+  width: 3rem;
+  height: 3rem;
+  border-radius: 3px;
+  background: var(--pv-red);
+  color: var(--pv-on-red);
+  font-size: 0.9375rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.pv-hero__mini-text {
+  display: grid;
+  min-width: 0;
+  line-height: 1.3;
+}
+
+.pv-hero__mini-talk,
+.pv-hero__mini-title {
+  overflow: hidden;
+  font-size: 0.6875rem;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  color: var(--pv-on-black-2);
+}
+
+.pv-hero__mini-title {
+  font-size: 0.75rem;
+}
+
+.pv-hero__mini-name {
+  overflow: hidden;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  color: var(--pv-on-black);
+}
+
+.pv-hero__mini-arrow {
+  display: grid;
+  place-items: center;
+  align-self: end;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 2px;
+  background: #fff;
+  color: var(--pv-black);
+  transition: transform 400ms var(--pv-ease-out);
+}
+
+.pv-hero__mini:hover .pv-hero__mini-arrow {
+  transform: translate(2px, -2px);
+}
+
+.pv-hero__socials {
+  display: flex;
+  gap: 0.9rem;
+  list-style: none;
+}
+
+.pv-hero__social {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  min-height: 44px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  text-decoration: none;
+  color: var(--pv-on-red);
+  background: linear-gradient(currentColor, currentColor) 0 calc(50% + 0.75em) / 0 1px no-repeat;
+  transition: background-size 400ms var(--pv-ease-out);
+}
+
+.pv-hero__social:hover,
+.pv-hero__social:focus-visible {
+  background-size: 100% 1px;
+}
+
+.pv-hero__social > svg {
+  flex: none;
+}
+
+/* ---- without a portrait: the giant word sits lower and carries the centre ---- */
+.pv-hero--bare .pv-hero__red {
+  --hero-top: calc(var(--hero-h) * 0.5 - 4rem);
+}
+
+.pv-hero--bare .pv-hero__back {
+  inset: calc(var(--hero-nav) + (var(--hero-top) - var(--hero-nav) - var(--giant-fs) * 0.8) / 2) 0 auto;
+}
+
+/* ---- proof strip -------------------------------------------------------- */
+.pv-hero__strip {
+  border-bottom: 1px solid var(--pv-line);
+  background: var(--pv-bg);
+}
+
+.pv-hero__strip-in {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: center;
+  gap: 1.75rem;
+  padding-block: 1.25rem;
+}
+
+.pv-hero__strip-label.pv-label {
+  justify-self: start;
+  margin-bottom: 0;
+  white-space: nowrap;
+}
+
+.pv-hero__proofs {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  list-style: none;
+}
+
+.pv-hero__proof {
+  display: grid;
+  align-content: start;
+  gap: 0.35rem;
+  padding: 0.15rem 0 0.15rem 1rem;
+  border-left: 1px solid var(--pv-line-2);
+}
+
+.pv-hero__proof-n {
+  font-size: var(--pv-fs-stat);
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: var(--pv-track-tight);
+  color: var(--pv-text);
+}
+
+.pv-hero__proof-label {
+  display: -webkit-box;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  font-size: 0.75rem;
+  line-height: 1.35;
+  color: var(--pv-text-3);
+}
+
+/* ---- narrower desktops: the portrait steps right so the text column keeps both CTAs on one row ---- */
+@media (max-width: 1279px) {
+  .pv-hero__figure {
+    left: 56.5%;
+  }
+
+  .pv-hero__upper {
+    width: min(23rem, 37%);
+  }
+}
+
+@media (max-width: 1099px) {
+  .pv-hero__card {
+    display: none;
+  }
+}
+
+/* Desktop layout: the CTA row is sized to fit the column and must never stack into the status
+   line (e.g. for a moment with a wider fallback font before Inter Tight loads). */
+@media (min-width: 1024px) {
+  .pv-hero__ctas {
+    flex-wrap: nowrap;
+  }
+}
+
+/* 1024–1099px: tighter CTAs so both stay on one row and clear the status line on short screens. */
+@media (min-width: 1024px) and (max-width: 1099px) {
+  .pv-hero__ctas {
+    gap: 0.45rem;
+  }
+
+  .pv-hero__ctas .pv-btn {
+    gap: 0.55rem;
+    padding-left: 0.7rem;
+  }
+}
+
+/* ---- single column below 1024px ------------------------------------------ */
+@media (max-width: 1023px) {
+  .pv-hero__red {
+    --hero-h: 100svh;
+    --giant-fs: min(var(--pv-fs-giant), calc(var(--hero-w) * 0.262));
+
+    height: auto;
+    min-height: 36rem;
+    background: var(--pv-red);
+  }
+
+  .pv-hero__grid {
+    display: none;
+  }
+
+  .pv-hero__stage {
+    display: flex;
+    flex-direction: column;
+    padding-top: calc(var(--hero-nav) + var(--giant-fs) * 0.35);
+    padding-bottom: 2rem;
+  }
+
+  .pv-hero__back {
+    inset: calc(var(--hero-nav) + 0.5rem) 0 auto;
+  }
+
+  .pv-hero__upper,
+  .pv-hero__lower,
+  .pv-hero__side {
+    position: relative;
+    inset: auto;
+    width: auto;
+  }
+
+  .pv-hero__figure {
+    position: relative;
+    left: auto;
+    bottom: auto;
+    order: 0;
+    flex: none;
+    align-self: center;
+    height: min(46svh, 22rem);
+    translate: none;
+  }
+
+  .pv-hero__portrait {
+    -webkit-mask-image:
+      linear-gradient(to right, transparent 0, #000 16%, #000 84%, transparent 100%),
+      linear-gradient(#000 70%, transparent 98%);
+    mask-image:
+      linear-gradient(to right, transparent 0, #000 16%, #000 84%, transparent 100%),
+      linear-gradient(#000 70%, transparent 98%);
+  }
+
+  .pv-hero__lower {
+    order: 1;
+    margin-top: -3rem;
+  }
+
+  .pv-hero--bare .pv-hero__lower {
+    margin-top: calc(var(--giant-fs) * 0.6);
+  }
+
+  .pv-hero--bare .pv-hero__back {
+    inset: calc(var(--hero-nav) + 0.5rem) 0 auto;
+  }
+
+  .pv-hero__upper {
+    order: 2;
+    max-width: 34rem;
+    margin-top: 1rem;
+  }
+
+  .pv-hero__side {
+    order: 3;
+    flex-direction: row-reverse;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem 1.5rem;
+    margin-top: 0.75rem;
+  }
+
+  .pv-hero__mini {
+    width: 17.5rem;
+  }
+
+  .pv-hero__strip-in {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .pv-hero__proofs {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    row-gap: 1rem;
+  }
+}
+
+@media (max-width: 759px) {
+  .pv-hero__mini {
+    display: none;
+  }
+
+  .pv-hero__side {
+    flex-direction: row;
+  }
+}
+
+@media (max-width: 519px) {
+  .pv-hero__ctas .pv-btn {
+    flex: 1 1 auto;
+  }
+
+  .pv-hero__proofs {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* ---- scroll-driven: the giant word drifts down, the portrait grows as the hero leaves ---- */
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .pv-hero__back {
+      animation: pv-hero-drift linear both;
+      animation-timeline: view();
+      animation-range: exit 0% exit 100%;
+    }
+
+    .pv-hero__figure {
+      animation: pv-hero-grow linear both;
+      animation-timeline: view();
+      animation-range: exit 0% exit 100%;
+    }
+  }
+}
+
+@keyframes pv-hero-drift {
+  to {
+    transform: translateY(10%);
+  }
+}
+
+@keyframes pv-hero-grow {
+  to {
+    transform: scale(1.03);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pv-js .pv-hero__portrait.pv-enter {
+    animation: none;
+  }
+}

@@ -8,6 +8,7 @@ import { Hotspot } from './Hotspot';
 import { useJourney } from '@/store/journey';
 import { setHoverTarget } from '@/store/hover';
 import { WORLDS } from '@/data/worlds';
+import { SKILL_COUNT } from '@/data/skills';
 import { blip } from '@/audio/ambience';
 
 const SATURN = WORLDS.saturn;
@@ -16,7 +17,7 @@ const SATURN = WORLDS.saturn;
 const AXIAL_TILT = THREE.MathUtils.degToRad(26.73);
 
 /**
- * Saturn and everything it carries: rings, the 48 skill moons on their
+ * Saturn and everything it carries: rings, the 49 skill moons on their
  * seven bands, and one badly parked ship in the Cassini Division.
  * Ready to be hung on an orbit around the star.
  */
@@ -42,7 +43,7 @@ export function SaturnSystem() {
     projected.project(camera);
     setHoverTarget({
       id: 'saturn',
-      label: 'Skills · 48 moons',
+      label: `Skills · ${SKILL_COUNT} moons`,
       sub: `SOL VI · ${SATURN.displayName}`,
       accent: SATURN.accent,
       x: ((projected.x + 1) / 2) * viewport.width,

@@ -1,0 +1,96 @@
+/* Page footer (Footer.tsx), outside <main>. */
+.pv-foot {
+  overflow-x: clip;
+  padding-top: clamp(2rem, 5vw, 3.5rem);
+}
+
+.pv-foot__row {
+  display: grid;
+  gap: 1.5rem;
+  align-items: end;
+}
+
+.pv-foot__cols {
+  display: flex;
+  gap: clamp(2rem, 6vw, 4.5rem);
+  padding-bottom: 0.5rem;
+}
+
+.pv-foot__head {
+  margin-bottom: 0.4rem;
+  font-size: 0.75rem;
+  color: var(--pv-text-3);
+}
+
+.pv-foot__list {
+  margin: 0;
+  list-style: none;
+}
+
+.pv-foot__link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-height: 44px;
+  font-size: var(--pv-fs-small);
+  font-weight: 500;
+  text-decoration: none;
+}
+
+.pv-foot__link:hover {
+  color: var(--pv-red-deep);
+}
+
+.pv-foot__mark {
+  justify-self: start;
+  font-size: min(20vw, 15rem);
+  font-weight: 700;
+  line-height: 0.85;
+  letter-spacing: -0.05em;
+  color: var(--pv-text);
+  user-select: none;
+}
+
+.pv-foot__bar {
+  margin-top: 1.5rem;
+  padding: 1rem var(--pv-gutter);
+  background: var(--pv-black);
+  color: var(--pv-on-black);
+  font-size: 0.75rem;
+  text-align: center;
+}
+
+@media (min-width: 860px) {
+  .pv-foot__row {
+    grid-template-columns: auto 1fr;
+    gap: 2rem;
+  }
+
+  .pv-foot__mark {
+    justify-self: end;
+  }
+}
+
+@supports (animation-timeline: view()) {
+  .pv-foot__mark {
+    animation: pv-foot-slide linear both;
+    animation-timeline: view();
+    animation-range: entry 0% cover 45%;
+  }
+}
+
+@keyframes pv-foot-slide {
+  from {
+    translate: 6% 0;
+  }
+
+  to {
+    translate: 0 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pv-foot__mark {
+    animation: none;
+  }
+}

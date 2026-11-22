@@ -1,0 +1,54 @@
+:root {
+  --pv-red: #cf3b24;            /* hero background, accent blocks. White on it: 4.9:1 */
+  --pv-red-deep: #b8321c;       /* red TEXT and small icons on light surfaces: 5.5:1 on --pv-bg */
+  --pv-bg: #f5f5f5;             /* page */
+  --pv-surface: #ffffff;        /* cards */
+  --pv-chip: #ececec;           /* chips, label boxes, caption strips, button body */
+  --pv-chip-2: #e2e2e2;         /* hover of the above */
+  --pv-black: #111111;          /* black cards, footer bar, wipe columns */
+  --pv-text: #111111;
+  --pv-text-2: #454545;
+  --pv-text-3: #666666;         /* dimmest text allowed on --pv-bg / --pv-surface / --pv-chip (>= 4.8:1) */
+  --pv-muted-display: #8a8a8a;  /* grey half of headings — LARGE text only (>= 24px bold) */
+  --pv-line: rgb(17 17 17 / 0.1);
+  --pv-line-2: rgb(17 17 17 / 0.18);
+  --pv-on-red: #ffffff;
+  --pv-on-red-2: rgb(255 255 255 / 0.86);
+  --pv-on-red-line: rgb(255 255 255 / 0.16);
+  --pv-on-black: #f5f5f5;
+  --pv-on-black-2: #b4b4b4;     /* 8.8:1 on --pv-black */
+
+  --pv-font: 'Inter Tight', 'Helvetica Neue', Arial, system-ui, sans-serif;
+  --pv-track-tight: -0.04em;
+
+  --pv-fs-giant: min(27vw, 19.5rem);                          /* hero word */
+  --pv-fs-name: clamp(2.25rem, 1rem + 3.4vw, 4rem);           /* hero name, 64px max */
+  --pv-fs-h2: clamp(1.75rem, 1.1rem + 2.1vw, 3rem);           /* section headings, 48px max */
+  --pv-fs-h3: clamp(1.15rem, 1rem + 0.6vw, 1.5rem);           /* row / card titles, 24px max */
+  --pv-fs-stat: clamp(1.5rem, 1.1rem + 1vw, 2rem);            /* numbers */
+  --pv-fs-statement: clamp(1.1rem, 0.98rem + 0.5vw, 1.375rem);
+  --pv-fs-body: 0.9375rem;      /* 15px */
+  --pv-fs-small: 0.8125rem;     /* 13px */
+  --pv-fs-blurb: 0.78125rem;    /* 12.5px uppercase 600 blurbs */
+  --pv-fs-label: 0.6875rem;     /* 11px */
+
+  --pv-gutter: clamp(1.1rem, 4vw, 3rem);
+  --pv-section-y: clamp(3.5rem, 6.5vw, 6rem);
+  --pv-maxw: 70rem;
+
+  --pv-r-sm: 4px;
+  --pv-r-md: 6px;
+  --pv-r-lg: 8px;
+
+  --pv-ease: cubic-bezier(0.32, 0.72, 0, 1);
+  --pv-ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --pv-dur: 700ms;
+  --pv-dur-fast: 180ms;
+  --pv-blur: 12px;
+  --pv-rise: 18px;
+  --pv-stagger: 70ms;
+
+  --pv-z-nav: 50;
+  --pv-z-menu: 60;
+  --pv-z-wipe: 90;
+}

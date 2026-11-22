@@ -116,8 +116,15 @@ export function HUD() {
           : ''}
       </p>
 
-      {/* --- Right rail: audio + hints --- */}
+      {/* --- Right rail: exit to the professional view, audio, hints --- */}
       <div className="hud-rail">
+        <a className="hud-exit hit" href="/" aria-label="Professional view" title="Professional view">
+          <svg width="15" height="15" viewBox="0 0 15 15" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="1.2">
+            <path d="M9 2.5h3.5V6M12.5 2.5L7 8" />
+            <path d="M10.5 9v3.5h-8v-8H6" />
+          </svg>
+          <span className="hud-exit-label">Professional view</span>
+        </a>
         <AudioToggle />
         {entered && !milanoFound && region === 'projects' && (
           <p className="hud-hint" role="note">

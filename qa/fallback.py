@@ -1,6 +1,7 @@
 """Verify the no-WebGL fallback renders the COMPLETE portfolio."""
 import json, re, subprocess, sys, time
 from playwright.sync_api import sync_playwright
+from _launch import UNIVERSE_URL, launch
 
 skills = json.loads(subprocess.run(
     ["npx","tsx","-e","import {ALL_SKILLS} from './src/data/skills';console.log(JSON.stringify(ALL_SKILLS.map(s=>s.name)))"],
@@ -16,7 +17,7 @@ def check(name, cond, detail=""):
 
 with sync_playwright() as p:
     # Block WebGL entirely to force the fallback path.
-    browser = p.chromium.launch(headless=True)
+    browser = launch(p)
     page = browser.new_page(viewport={"width":1280,"height":900})
     errors = []
     page.on("console", lambda m: errors.append(m.text) if m.type=="error" else None)
@@ -28,7 +29,7 @@ with sync_playwright() as p:
         return orig.call(this, t, ...a);
       };
     """)
-    page.goto("http://localhost:3000", wait_until="networkidle")
+    page.goto(UNIVERSE_URL, wait_until="networkidle")
     time.sleep(0.6)
     text = page.inner_text("body")
 
@@ -62,7 +63,7 @@ with sync_playwright() as p:
     check("5 top-level sections (about/skills/projects/contact + skill subsections)",
           page.locator("main section[id]").count() == 4)
     check("6 <article> elements", page.locator("article").count() == 6)
-    check("48 skill <li>", page.locator("#skills li").count() == 48)
+    check("49 skill <li>", page.locator("#skills li").count() == 49)
     check("html lang set", page.get_attribute("html","lang") == "en")
 
     page.screenshot(path="qa/shots/fallback-desktop.png", full_page=True)

@@ -43,6 +43,10 @@ export function FallbackSite({ reason, onEnter3D }: Props) {
       <div className="fb-horizon" aria-hidden="true" />
 
       <div className="fb-shell">
+        <a className="fb-pro hit" href="/">
+          <span aria-hidden="true">←</span> Professional view
+        </a>
+
         <aside className="fb-banner bezel" role="note">
           <div className="bezel-screen brackets fb-banner-inner">
             <p className="eyebrow" style={{ color: 'var(--signal)' }}>

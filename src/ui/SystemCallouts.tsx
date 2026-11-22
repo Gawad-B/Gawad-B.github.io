@@ -4,6 +4,7 @@ import { getBody } from '@/scene/bodies';
 import { PROJECTS } from '@/data/projects';
 import { worldForProject, WORLDS } from '@/data/worlds';
 import { STATION } from '@/data/milano';
+import { SKILL_COUNT } from '@/data/skills';
 import './callouts.css';
 
 interface Callout {
@@ -25,7 +26,7 @@ const CALLOUTS: Callout[] = [
   },
   {
     id: 'saturn',
-    eyebrow: 'Saturn · 48 moons',
+    eyebrow: `Saturn · ${SKILL_COUNT} moons`,
     label: 'Skills',
     accent: WORLDS.saturn.accent,
     target: () => ({ kind: 'region', value: 'skills' }),

@@ -1,6 +1,7 @@
 """Wheel/swipe section navigation: the scroll IS the page flow now."""
 import sys, time
 from playwright.sync_api import sync_playwright
+from _launch import UNIVERSE_URL, launch
 
 fails = []
 def check(name, cond, detail=""):
@@ -23,12 +24,12 @@ def wheel_until(pg, dy, want, tries=6):
     return False
 
 with sync_playwright() as p:
-    b = p.chromium.launch(headless=True, args=["--use-gl=angle","--use-angle=swiftshader","--enable-unsafe-swiftshader"])
+    b = launch(p)
     pg = b.new_page(viewport={"width":1440,"height":900})
     errs = []
     pg.on("console", lambda m: errs.append(m.text) if m.type == "error" else None)
     pg.on("pageerror", lambda e: errs.append(str(e)))
-    pg.goto("http://localhost:3000", wait_until="networkidle")
+    pg.goto(UNIVERSE_URL, wait_until="networkidle")
     pg.wait_for_selector(".hero-cta", timeout=30000)
     pg.mouse.move(720, 450)
 

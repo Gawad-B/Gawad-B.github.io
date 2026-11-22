@@ -208,7 +208,7 @@ export const WORLDS: Record<WorldId, World> = {
   },
 
   /* ---------------------------------------------------------------
-     01 · LABORA — a world whose invisible chemistry was measured from
+     02 · LABORA — a world whose invisible chemistry was measured from
      640 light years away. Iron boils on the dayside and rains on the
      nightside. Fitting for a laboratory system.
      --------------------------------------------------------------- */
@@ -250,7 +250,7 @@ export const WORLDS: Record<WorldId, World> = {
   },
 
   /* ---------------------------------------------------------------
-     02 · QUIZZY — still molten, still being rebuilt. A super-Earth
+     01 · QUIZZY — still molten, still being rebuilt. A super-Earth
      with a magma ocean and a year that lasts under 18 hours.
      --------------------------------------------------------------- */
   '55-cancri-e': {
@@ -458,7 +458,7 @@ export const WORLDS: Record<WorldId, World> = {
 
   /* ---------------------------------------------------------------
      RESERVED — six sub-Neptunes in a perfect resonant chain. Was the
-     portfolio's world in Rev 1; the portfolio is no longer listed as a
+     portfolio's world once; the portfolio is no longer listed as a
      project, so the most harmonious system known waits for a project
      that deserves it.
      --------------------------------------------------------------- */
@@ -578,8 +578,8 @@ export const WORLDS: Record<WorldId, World> = {
 
 /** The six project worlds, in nav-manifest order. */
 export const PROJECT_WORLD_IDS: WorldId[] = [
-  'wasp-76-b',
   '55-cancri-e',
+  'wasp-76-b',
   'tres-2b',
   'kelt-9b',
   'kepler-16b',

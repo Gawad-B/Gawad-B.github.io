@@ -6,7 +6,7 @@
   "description": "Abdelrahman Gawad — an interactive 3D universe that happens to be a portfolio.",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build": "vite build && node scripts/prerender.mjs",
     "preview": "vite preview --port 4173",
     "typecheck": "tsc --noEmit",
     "test": "tsx qa/data.test.ts && tsx qa/store.test.ts",

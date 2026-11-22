@@ -1,6 +1,6 @@
 import { useJourney } from '@/store/journey';
 import { PROJECTS } from '@/data/projects';
-import { PROJECT_WORLDS } from '@/data/worlds';
+import { worldForProject } from '@/data/worlds';
 import { SKILL_GROUPS } from '@/data/skills';
 import { blip } from '@/audio/ambience';
 import './manifest.css';
@@ -23,8 +23,8 @@ export function NavManifest() {
       <nav className="mf" aria-label="Project worlds">
         <p className="eyebrow mf-title">Survey targets · {String(PROJECTS.length).padStart(2, '0')}</p>
         <ul>
-          {PROJECTS.map((project, i) => {
-            const world = PROJECT_WORLDS[i]!;
+          {PROJECTS.map((project) => {
+            const world = worldForProject(project.id)!;
             const active = focus.kind === 'project' && focus.id === project.id;
             return (
               <li key={project.id}>

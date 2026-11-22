@@ -75,6 +75,23 @@
   padding: clamp(2rem, 6vw, 6rem) clamp(1rem, 5vw, 3rem) 6rem;
 }
 
+/* --- Link back to the professional view --- */
+.fb-pro {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  text-decoration: none;
+  color: var(--signal);
+}
+.fb-pro:hover {
+  color: var(--instr-100);
+}
+
 /* --- Banner --- */
 .fb-banner {
   margin-bottom: clamp(3rem, 8vw, 6rem);

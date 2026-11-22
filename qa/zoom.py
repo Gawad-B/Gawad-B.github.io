@@ -3,6 +3,7 @@
 the hero must clear both the HUD readout above and the nav rail below."""
 import sys, time
 from playwright.sync_api import sync_playwright
+from _launch import UNIVERSE_URL, launch
 
 fails = []
 def check(name, cond, detail=""):
@@ -13,10 +14,10 @@ SIZES = {"125%": (1536, 864), "150%": (1280, 720), "175%": (1097, 617),
          "200%": (960, 540), "225%": (853, 480), "240%": (800, 450), "250%-edge": (770, 432)}
 
 with sync_playwright() as p:
-    b = p.chromium.launch(headless=True, args=["--use-gl=angle","--use-angle=swiftshader","--enable-unsafe-swiftshader"])
+    b = launch(p)
     for name, (w, h) in SIZES.items():
         pg = b.new_page(viewport={"width": w, "height": h})
-        pg.goto("http://localhost:3000/?qa=1", wait_until="networkidle")
+        pg.goto(UNIVERSE_URL + "?qa=1", wait_until="networkidle")
         pg.wait_for_selector(".hero-cta", timeout=40000)
         time.sleep(2.4)  # entrance animations are one-shot <=1.2s; rects must be settled
         probe = pg.evaluate("""()=>{

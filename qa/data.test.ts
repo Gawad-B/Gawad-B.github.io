@@ -21,11 +21,11 @@ function check(name: string, cond: boolean, detail = '') {
 
 console.log('\nskills');
 check('7 groups', SKILL_GROUPS.length === 7, `got ${SKILL_GROUPS.length}`);
-check('48 skills', ALL_SKILLS.length === 48, `got ${ALL_SKILLS.length}`);
+check('49 skills', ALL_SKILLS.length === 49, `got ${ALL_SKILLS.length}`);
 const counts = SKILL_GROUPS.map((g) => g.skills.length);
 check(
-  'group sizes match the original portfolio',
-  JSON.stringify([...counts].sort((a, b) => a - b)) === JSON.stringify([5, 6, 6, 7, 7, 7, 10]),
+  'group sizes: the original portfolio plus Rust in Languages',
+  JSON.stringify([...counts].sort((a, b) => a - b)) === JSON.stringify([5, 6, 6, 7, 7, 8, 10]),
   JSON.stringify(counts),
 );
 const radii = SKILL_GROUPS.map((g) => g.bandRadius);
@@ -36,7 +36,7 @@ check(
   JSON.stringify(radii),
 );
 check('band radii clear the ring system (>2.35 Saturn radii)', Math.min(...radii) > 2.35);
-check('skill ids unique', new Set(ALL_SKILLS.map((s) => s.id)).size === 48);
+check('skill ids unique', new Set(ALL_SKILLS.map((s) => s.id)).size === 49);
 check(
   'every group accent is 6-digit hex',
   SKILL_GROUPS.every((g) => /^#[0-9a-f]{6}$/i.test(g.accent)),
@@ -61,8 +61,7 @@ check(
   'private projects are exactly labora and quizzy',
   PROJECTS.filter((p) => p.private)
     .map((p) => p.id)
-    .sort()
-    .join() === 'labora,quizzy',
+    .join() === 'quizzy,labora',
 );
 check('every project has at least one tech tag', PROJECTS.every((p) => p.tech.length > 0));
 

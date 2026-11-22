@@ -10,6 +10,7 @@ Those are what this asserts, against the budget in scene/quality.ts.
 """
 import sys, time
 from playwright.sync_api import sync_playwright
+from _launch import UNIVERSE_URL, launch
 
 # Ceilings chosen so the scene stays comfortable on integrated mobile GPUs.
 # Ceilings chosen so the scene stays comfortable on integrated mobile GPUs.
@@ -27,12 +28,12 @@ def check(name, cond, detail=""):
     if not cond: fails.append(name)
 
 with sync_playwright() as p:
-    b = p.chromium.launch(headless=True, args=["--use-gl=angle","--use-angle=swiftshader","--enable-unsafe-swiftshader"])
+    b = launch(p)
     for tier_label in ("high", "low"):
         ctx = b.new_context(viewport={"width":1280,"height":800})
         pg = ctx.new_page()
         pg.add_init_script("window.__perfProbe = true")
-        pg.goto(f"http://localhost:3000/?tier={tier_label}", wait_until="networkidle")
+        pg.goto(f"{UNIVERSE_URL}?tier={tier_label}", wait_until="networkidle")
         pg.wait_for_selector(".hud-nav", timeout=30000)
         print(f"\n{tier_label} tier")
         worst = {}
@@ -99,7 +100,7 @@ print("\nprocedural + instancing")
 check("low tier holds only the runtime label atlas (<= 1 texture)",
       ctxs.get("low", {}).get("textures", 99) <= 1,
       f"got {ctxs.get('low', {}).get('textures')}")
-check("Saturn's 48 moons are one InstancedMesh",
+check("Saturn's 49 moons are one InstancedMesh",
       per_region.get("high", {}).get("skills", {}).get("instancedMeshes", 0) >= 1,
       f"got {per_region.get('high', {}).get('skills', {}).get('instancedMeshes')}")
 

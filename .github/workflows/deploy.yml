@@ -1,4 +1,4 @@
-# Build the universe and publish it to GitHub Pages on every push to main.
+# Build the site (professional view + universe) and publish it to GitHub Pages on every push to main.
 name: deploy
 on:
   push:

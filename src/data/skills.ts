@@ -1,6 +1,6 @@
 /**
  * Skills. Source of truth: src/components/Skills.tsx @ b35eae0.
- * 7 groups, 48 skills — each group becomes an orbital band around
+ * 7 groups, 49 skills — each group becomes an orbital band around
  * Saturn, each skill becomes a moon on its band.
  *
  * Accents stay inside the cold instrument family: the two headline
@@ -74,6 +74,7 @@ export const SKILL_GROUPS: SkillGroup[] = [
     'SQL',
     'Bash',
     'C++',
+    'Rust',
     'R',
   ]),
   group('frontend', 'Frontend', 'FE', '#a8c4db', 3.25, 11, [

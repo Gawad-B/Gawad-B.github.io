@@ -3,6 +3,7 @@ cat > qa/sheet.py <<'PY'
 """Capture region shots for the polish review. Reuses one page per batch."""
 import sys, time
 from playwright.sync_api import sync_playwright
+from _launch import UNIVERSE_URL, launch
 
 BATCHES = {
   "a": [("hero", []),
@@ -22,9 +23,9 @@ BATCHES = {
 
 batch = BATCHES[sys.argv[1]]
 with sync_playwright() as p:
-    b = p.chromium.launch(headless=True, args=["--use-gl=angle","--use-angle=swiftshader","--enable-unsafe-swiftshader"])
+    b = launch(p)
     pg = b.new_page(viewport={"width":1440,"height":900})
-    pg.goto("http://localhost:3000", wait_until="networkidle")
+    pg.goto(UNIVERSE_URL, wait_until="networkidle")
     pg.wait_for_selector(".hud-nav", timeout=30000)
     time.sleep(2)
     for name, clicks in batch:
@@ -40,5 +41,3 @@ with sync_playwright() as p:
             pg.keyboard.press("Escape"); time.sleep(1.4)
         except Exception: pass
     b.close()
-PY
-for g in a b; do .venv-qa/bin/python qa/sheet.py $g; done 2>&1 | tail -10

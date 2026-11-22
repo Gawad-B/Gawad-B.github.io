@@ -1,6 +1,7 @@
 """Accessibility audit: keyboard traversal, focus, contrast, targets, ARIA."""
 import sys, time, json
 from playwright.sync_api import sync_playwright
+from _launch import UNIVERSE_URL, launch
 
 fails, warns = [], []
 def check(name, cond, detail=""):
@@ -64,9 +65,9 @@ CONTRAST_JS = """
 """
 
 with sync_playwright() as p:
-    b = p.chromium.launch(headless=True, args=["--use-gl=angle","--use-angle=swiftshader","--enable-unsafe-swiftshader"])
+    b = launch(p)
     pg = b.new_page(viewport={"width":1440,"height":900})
-    pg.goto("http://localhost:3000", wait_until="networkidle")
+    pg.goto(UNIVERSE_URL, wait_until="networkidle")
     pg.wait_for_selector(".hud-nav", timeout=25000)
     time.sleep(1.5)
 
@@ -89,7 +90,7 @@ with sync_playwright() as p:
     projects = json.loads(subprocess.run(["npx","tsx","-e",
         "import {PROJECTS} from './src/data/projects';console.log(JSON.stringify(PROJECTS.map(p=>p.name)))"],
         capture_output=True,text=True).stdout.strip().splitlines()[-1])
-    check("all 48 skills in the spine", all(s in txt for s in skills),
+    check("all 49 skills in the spine", all(s in txt for s in skills),
           str([s for s in skills if s not in txt][:5]))
     check("all 7 projects in the spine", all(x in txt for x in projects))
 

@@ -5,7 +5,7 @@ import './styles/index.css';
 const root = createRoot(document.getElementById('root')!);
 
 // Test harness handle: lets the QA suites drive navigation directly so an
-// exhaustive sweep (all 48 moons, all 6 worlds) doesn't take an hour on a
+// exhaustive sweep (all 49 moons, all 6 worlds) doesn't take an hour on a
 // software rasteriser. Only attached when explicitly requested.
 if (new URLSearchParams(location.search).has('qa')) {
   void import('./store/journey').then(({ useJourney }) => {

@@ -10,6 +10,7 @@ scene is live.
 """
 import sys, time
 from playwright.sync_api import sync_playwright
+from _launch import launch
 
 url, out = sys.argv[1], sys.argv[2]
 w = int(sys.argv[3]) if len(sys.argv) > 3 else 1440
@@ -19,10 +20,7 @@ wait_for = sys.argv[6] if len(sys.argv) > 6 and sys.argv[6] != "-" else ".hud-na
 clicks = sys.argv[7:] if len(sys.argv) > 7 else []
 
 with sync_playwright() as p:
-    b = p.chromium.launch(headless=True, args=[
-        "--use-gl=angle", "--use-angle=swiftshader",
-        "--enable-unsafe-swiftshader", "--ignore-gpu-blocklist",
-    ])
+    b = launch(p, args=["--ignore-gpu-blocklist"])
     page = b.new_page(viewport={"width": w, "height": h}, device_scale_factor=1)
     errs = []
     page.on("console", lambda m: errs.append(f"[{m.type}] {m.text}") if m.type in ("error", "warning") else None)

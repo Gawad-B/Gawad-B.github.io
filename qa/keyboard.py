@@ -1,6 +1,7 @@
 """Arrows, digits, Esc — the full keyboard model, post-Rev-2."""
 import sys, time
 from playwright.sync_api import sync_playwright
+from _launch import UNIVERSE_URL, launch
 
 fails=[]
 def check(n,c,d=""):
@@ -15,9 +16,9 @@ def wait_pos(pg, want, timeout=16):
     return False
 
 with sync_playwright() as p:
-    b=p.chromium.launch(headless=True,args=["--use-gl=angle","--use-angle=swiftshader","--enable-unsafe-swiftshader"])
+    b=launch(p)
     pg=b.new_page(viewport={"width":1440,"height":900})
-    pg.goto("http://localhost:3000",wait_until="networkidle")
+    pg.goto(UNIVERSE_URL,wait_until="networkidle")
     pg.wait_for_selector(".hero-cta",timeout=40000)
 
     print("\narrow keys walk the scroll order")

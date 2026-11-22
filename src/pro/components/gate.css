@@ -1,0 +1,116 @@
+/* The ways into the 3D universe: hero card, nav switch, closing line. */
+
+/* ---- card: a white picture frame on the red hero --------------------------- */
+.pv-gate--card {
+  --pv-focus: var(--pv-on-red);
+
+  display: block;
+  color: var(--pv-text);
+  text-decoration: none;
+}
+
+.pv-gate--card .pv-frame__media {
+  display: block;
+  aspect-ratio: 4 / 3;
+}
+
+.pv-gate__thumb {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 700ms var(--pv-ease-out);
+}
+
+.pv-gate--card:hover .pv-gate__thumb {
+  transform: scale(1.05);
+}
+
+.pv-gate--card .pv-frame__cap {
+  margin-top: 0.4rem;
+  padding: 0.35rem 0.5rem;
+  font-size: 0.6875rem;
+}
+
+.pv-gate__cta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.4rem;
+  padding: 0.5rem 0.15rem 0.1rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  line-height: 1.2;
+  text-transform: uppercase;
+  color: var(--pv-text);
+}
+
+.pv-gate__cta > svg {
+  flex: none;
+  color: var(--pv-red-deep);
+  transition: transform 400ms var(--pv-ease-out);
+}
+
+.pv-gate--card:hover .pv-gate__cta > svg {
+  transform: translate(2px, -2px);
+}
+
+/* ---- switch: Professional | Universe, two square segments, always on red -------- */
+.pv-gate--switch {
+  display: inline-flex;
+  border-radius: var(--pv-r-sm);
+  box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.5);
+}
+
+.pv-gate__seg {
+  display: inline-flex;
+  align-items: center;
+  min-height: 2.25rem;
+  padding: 0 0.7rem;
+  border-radius: var(--pv-r-sm);
+  font-size: 0.6875rem;
+  font-weight: 600;
+  line-height: 1;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+  text-decoration: none;
+  color: inherit;
+  transition: background-color 300ms var(--pv-ease);
+}
+
+.pv-gate__seg.is-active {
+  background: #fff;
+  color: var(--pv-text);
+}
+
+a.pv-gate__seg:hover {
+  background: rgb(255 255 255 / 0.14);
+}
+
+/* ---- line: closing sentence on a dark image ------------------------------ */
+.pv-gate--line {
+  font-size: var(--pv-fs-body);
+  line-height: 1.55;
+  color: var(--pv-on-red);
+}
+
+.pv-gate__line-text {
+  color: var(--pv-on-red-2);
+}
+
+.pv-gate__link {
+  --pv-focus: var(--pv-on-red);
+
+  min-height: 44px;
+  font-weight: 600;
+  color: var(--pv-on-red);
+  background-size: 0 1px, 100% 1px;
+  background-image:
+    linear-gradient(currentColor, currentColor),
+    linear-gradient(rgb(255 255 255 / 0.6), rgb(255 255 255 / 0.6));
+}
+
+.pv-gate__link:hover,
+.pv-gate__link:focus-visible {
+  background-size: 100% 1px, 100% 1px;
+}

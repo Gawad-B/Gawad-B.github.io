@@ -1,7 +1,7 @@
 /**
  * Projects. Source of truth: src/components/Projects.tsx @ b35eae0.
  * Descriptions are verbatim. The portfolio itself is deliberately NOT
- * listed as a project (owner's call, Rev 2) — you are standing in it.
+ * listed as a project — you are standing in it.
  *
  * Nothing here is invented. Two repositories are genuinely private.
  */
@@ -9,7 +9,7 @@
 export interface ProjectLink {
   label: string;
   href: string;
-  kind: 'repo' | 'demo';
+  kind: 'repo' | 'demo' | 'official page';
 }
 
 export interface Project {
@@ -29,8 +29,20 @@ export interface Project {
 
 export const PROJECTS: Project[] = [
   {
-    id: 'labora',
+    id: 'quizzy',
     index: '01',
+    name: 'Quizzy',
+    kind: 'Ed-Tech Platform',
+    description:
+      'A quiz platform for Egyptian high-school students: a Gemini-powered RAG pipeline turns uploaded course material into human-reviewed, curriculum-grounded questions with LaTeX support. Students get classrooms, leaderboards, streaks and ~110 achievements; teachers get a weighted gradebook and mastery analytics; parents get read-only progress. Ships as an installable PWA with Capacitor Android and iOS apps. Repo is private — landing page below.',
+    tech: ['React', 'TypeScript', 'Express', 'PostgreSQL', 'Gemini RAG', 'Capacitor'],
+    links: [{ label: 'Landing Page', href: 'https://quizzyacademy.com', kind: 'official page' }],
+    private: true,
+    screenshot: '/assets/quizzy.png',
+  },
+  {
+    id: 'labora',
+    index: '02',
     name: 'Labora',
     kind: 'Healthcare · LIS',
     description:
@@ -38,18 +50,6 @@ export const PROJECTS: Project[] = [
     tech: ['TypeScript', 'React', 'Express', 'PostgreSQL', 'Prisma', 'Docker'],
     links: [{ label: 'Landing Page', href: 'https://laboralanding.freeddns.org', kind: 'demo' }],
     private: true,
-  },
-  {
-    id: 'quizzy',
-    index: '02',
-    name: 'Quizzy',
-    kind: 'Ed-Tech Platform',
-    description:
-      'A quiz platform for Egyptian high-school students: a Gemini-powered RAG pipeline turns uploaded course material into human-reviewed, curriculum-grounded questions with LaTeX support. Students get classrooms, leaderboards, streaks and ~110 achievements; teachers get a weighted gradebook and mastery analytics; parents get read-only progress. Ships as an installable PWA with Capacitor Android and iOS apps. Repo is private — landing page below.',
-    tech: ['React', 'TypeScript', 'Express', 'PostgreSQL', 'Gemini RAG', 'Capacitor'],
-    links: [{ label: 'Landing Page', href: 'https://quizzy-woad-seven.vercel.app', kind: 'demo' }],
-    private: true,
-    screenshot: '/assets/quizzy.png',
   },
   {
     id: 'prayer-times',

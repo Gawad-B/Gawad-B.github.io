@@ -44,7 +44,7 @@ function buildMoons(planetRadius: number): MoonSpec[] {
         omega,
         phase,
         inclination: THREE.MathUtils.degToRad(group.inclination),
-        /* Rev 2: the moons are the skill display now, not dots — sized to
+        /* The moons are the skill display, not dots — sized to
            be individually visible from the skills camera. */
         size: 0.30 + ((i * 37) % 7) / 45,
       });
@@ -56,7 +56,7 @@ function buildMoons(planetRadius: number): MoonSpec[] {
 /* ------------------------------------------------------------------
    Label atlas.
 
-   All 48 skill names drawn once into a single canvas, rendered as one
+   All 49 skill names drawn once into a single canvas, rendered as one
    InstancedMesh of billboarded quads — one draw call and one texture for
    the entire labelling system. The names must be readable IN the scene,
    not recovered from the manifest.
@@ -182,7 +182,7 @@ void main() {
 const RAYCAST_HZ = 1 / 30;
 
 /**
- * All 48 skill moons in one InstancedMesh, their labels in another —
+ * All 49 skill moons in one InstancedMesh, their labels in another —
  * two draw calls for the whole system. Picking stays screen-space
  * (project the positions, compare in CSS pixels) because that's the unit
  * the 44px target-size requirement is written in.
@@ -300,7 +300,7 @@ export function SkillMoons({ planetRadius }: { planetRadius: number }) {
       labels.instanceMatrix.needsUpdate = true;
       if (opacityAttr) opacityAttr.needsUpdate = true;
 
-      /* Labels belong to the skills view. Elsewhere they'd be 48 pieces of
+      /* Labels belong to the skills view. Elsewhere they'd be 49 pieces of
          text stuck to a distant planet — so they fade with the region. */
       // Labels leave the frame during the boarding cinematic — a wall of
       // skill pills photobombing the approach shot ruins it.
