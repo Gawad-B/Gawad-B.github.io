@@ -42,7 +42,7 @@
 }
 
 .pv-foot__mark {
-  justify-self: start;
+  justify-self: end;
   font-size: min(20vw, 15rem);
   font-weight: 700;
   line-height: 0.85;
@@ -65,17 +65,13 @@
     grid-template-columns: auto 1fr;
     gap: 2rem;
   }
-
-  .pv-foot__mark {
-    justify-self: end;
-  }
 }
 
 @supports (animation-timeline: view()) {
   .pv-foot__mark {
     animation: pv-foot-slide linear both;
     animation-timeline: view();
-    animation-range: entry 0% cover 45%;
+    animation-range: entry 0% entry 100%;
   }
 }
 
